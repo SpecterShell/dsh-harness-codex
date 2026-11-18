@@ -2,14 +2,18 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-##  - 2026-11-18
+## [0.2.1] - 2026-11-18
+
+### Fixed
+
+- The provider and model dropdowns on the settings page populate again. The client now injects the remotes plugin, without which the catalog call never ran.
+- The documentation describes the current code: the four presets, this package's own `apply_patch`, and the bundled review-agent skill.
+
+## [0.2.0] - 2026-11-18
 
 ### Changed
 
 - `apply_patch` is now this package's own Codex-faithful implementation, replacing the native `dsh-tool-fs` row. It preserves UTF-8 BOMs and per-line endings (including CR-only files), keeps source context lines on fuzzy matches, appends insertions at the true end of file, and rejects empty patches, matching Codex HEAD.
-
-### Changed
-
 - The presets are renamed. `codex-inspired` is now `codex` with the display name **Codex mode**, and `codex-extended` keeps its id with the display name **Codex+ mode**. The `cordis.patch.yml` row ids (`preset-codex-inspired`, `preset-codex-extended`) are unchanged, so existing profile overrides keep targeting the same rows.
 
 ### Added
@@ -50,6 +54,7 @@ First public release, under the Apache-2.0 license.
 - A settings form on the plugin's detail page and in DSH settings, backed by a live `codexSettings` service, for the free-form rules, the tools kept visible and the project instruction budget.
 - CI on Linux and macOS, CodeQL, OpenSSF Scorecard and Dependabot. Releases carry a build-provenance attestation and stage on npm with provenance.
 
+[0.2.1]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.2.1
 [0.2.0]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.2.0
 [0.1.2]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.1.2
 [0.1.1]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.1.1

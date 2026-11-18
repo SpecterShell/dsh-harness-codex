@@ -20,7 +20,7 @@ Alternatively, the override can be written by hand. A patch that targets the pre
       # the full list from the package, with the desired changes
 ```
 
-The patch row id stays `preset-codex-inspired`; the preset id in its `config` is now `codex`. The other presets use `codex-extended`, `codex-ptc` and `codex-creator`.
+The patch row id stays `preset-codex-inspired`, so existing overrides keep targeting it; only the preset id in its `config` is now `codex`. The other rows are `preset-codex-extended`, `preset-codex-ptc` and `preset-codex-creator`, with `config.id` values `codex-extended`, `codex-ptc` and `codex-creator`.
 
 DSH must be restarted afterwards. Sessions that are already open retain the previous preset.
 
