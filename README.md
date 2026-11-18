@@ -15,19 +15,16 @@ dsh plugin --profile web add @spectershell/dsh-harness-codex
 
 After restarting DSH, the **Codex mode**, **Codex+ mode**, **Codex PTC** and **Codex Creator** presets are available when a session is started. The package requires DSH 0.2.2-rc.1 or a later 0.2 release and Node.js 24.9 or newer.
 
-## What this plugin does
+## Features
 
 ### Presets
 
-The package declares four presets.
-
-**Codex mode** is the strict preset. The model sees the five Codex tools and the `skill` loader for the skills this package ships. Tools contributed by other profile plugins are hidden.
-
-**Codex+ mode** pairs the same tools with the host's non-conflicting tools. It hides only the built-ins that duplicate a Codex tool (`read`, `write`, `edit`, `glob`, `grep`, `read_image`, `bash`, `pwsh`, `todo_write`) and lets everything else through, including tools from plugins installed later.
-
-**Codex PTC** keeps the Codex tool set but reaches it through programs. `run_code` is the only tool that may be called directly, and every Codex tool is available inside the program. The preset also carries the delegation group from DSH's standard preset, so `subagent`, `subagent_fork` and `workflow` work from a program. The persona keeps the inherited guidance instead of replacing it, and the free-form patch bridge stays off because PTC rejects direct tool calls other than `run_code`.
-
-**Codex Creator** starts from the strict set and adds the tools for writing DSH plugins: `cordis_inspect_list` and `cordis_inspect_query` for the live runtime API, the `skill` loader, and the plugin manager and market tools when the profile exposes a plugin context.
+| Preset | Description |
+| --- | --- |
+| **Codex mode** | The strict preset: the model sees only the Codex tools. <ul><li>Five Codex tools, plus the `skill` loader for the skills this package ships</li><li>Tools contributed by other profile plugins are hidden</li></ul> |
+| **Codex+ mode** | The Codex tools plus the host tools that do not overlap with them. <ul><li>Hides only the built-ins that duplicate a Codex tool (`read`, `write`, `edit`, `glob`, `grep`, `read_image`, `bash`, `pwsh`, `todo_write`)</li><li>Everything else passes through, including tools from plugins installed later</li></ul> |
+| **Codex PTC** | The Codex tools reached from inside one program per call. <ul><li>`run_code` is the only tool called directly; every Codex tool is available inside the program</li><li>Carries the delegation group from DSH's standard preset, so `subagent`, `subagent_fork` and `workflow` work from a program</li><li>The persona keeps the inherited guidance instead of replacing it, and the free-form patch bridge stays off because PTC rejects direct tool calls other than `run_code`</li></ul> |
+| **Codex Creator** | The strict tool set plus the tools for writing DSH plugins. <ul><li>`cordis_inspect_list` and `cordis_inspect_query` for the live runtime API</li><li>The `skill` loader</li><li>The plugin manager and market tools when the profile exposes a plugin context</li></ul> |
 
 User-level and project-level `AGENTS.md` files continue to apply in all four.
 
@@ -45,7 +42,7 @@ The parameter and behavior details are in [docs/tools.md](docs/tools.md). The Co
 
 ### Skills
 
-The package ships the `review-agent` skill, adapted from Codex's review-agent sample and licensed under the Apache License 2.0 as recorded in [NOTICE](NOTICE). The skill provider mounted by the Codex mode, Codex+ mode and Creator presets points at this package's [skills/](skills/) directory, so the model can load the review methodology whenever a change needs reviewing. The PTC preset leaves the skill rows out: PTC accepts only `run_code` as a direct call, and instructions fetched inside a program would reach the program result rather than the model as skill instructions.
+The package ships the `review-agent` skill, adapted from Codex's review-agent sample and licensed under the Apache License 2.0 as recorded in [NOTICE](NOTICE). The skill provider mounted by the Codex mode, Codex+ mode and Creator presets points at this package's [skills/](skills/) directory, so the model can load the review methodology whenever a change needs reviewing. The PTC preset leaves the skill rows out: PTC accepts only `run_code` as a direct call, and instructions fetched inside a program would reach the program result rather than the model as skill instructions. Codex's other bundled skills (image generation, OpenAI product documentation, the TUI statusline) depend on Codex features DSH does not have, so they are not ported. Image generation through the ChatGPT subscription is already covered by dsh-codex-subscription.
 
 ### Prompts
 
@@ -80,12 +77,7 @@ Codex presents `apply_patch` to GPT models as a free-form grammar tool rather th
 
 The preset replaces DSH's own compaction engine with a local one that follows Codex's rule. When the context approaches 90% of the model's window, the history is replaced by a summary plus the newest original user messages that fit in 20,000 tokens. `/compact` runs the same engine on demand, automatic compaction that would not shrink the context is skipped, and a failed summary leaves the context untouched.
 
-## What this plugin does not do
-
-- **Provide models.** The preset runs on the model providers already configured in DSH. The package registers no provider and holds no credentials.
-- **Cloud compaction.** Server-side compaction belongs to provider plugins such as [dsh-codex-subscription](https://github.com/WSL043/dsh-codex-subscription), which the ChatGPT subscription already supplies. This package only replaces the local engine.
-- **Most Codex-only skills and tools.** Codex's bundled skills for image generation, OpenAI product documentation and its TUI statusline depend on Codex features that DSH does not have, so they are not ported. The review-agent skill has no such dependency and is shipped in [skills/review-agent](skills/review-agent/SKILL.md). Image generation through the ChatGPT subscription is already covered by dsh-codex-subscription.
-- **Run Codex itself.** The package does not install or invoke the Codex CLI. It reproduces Codex's tool surface, prompts and conventions inside DSH.
+Cloud compaction is not part of this package. Server-side compaction belongs to provider plugins such as [dsh-codex-subscription](https://github.com/WSL043/dsh-codex-subscription), which the ChatGPT subscription already supplies.
 
 ## Settings
 
