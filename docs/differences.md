@@ -1,6 +1,6 @@
 # Differences from Codex
 
-This preset follows [OpenAI Codex](https://github.com/openai/codex) at commit [0184dfa6](https://github.com/openai/codex/tree/0184dfa6a48f0110dd9c6835522492908e5abcf3). It runs inside DeepSeek Harness with DSH's agent loop, sandbox and approvals, so some behaviors differ. Each item below states the reason.
+This preset follows [OpenAI Codex](https://github.com/openai/codex) at commit [ca21fe65](https://github.com/openai/codex/tree/ca21fe65d18a9b6326759fb4263c65dfbb645aa5). It runs inside DeepSeek Harness with DSH's agent loop, sandbox and approvals, so some behaviors differ. Each item below states the reason.
 
 ## exec_command and write_stdin
 

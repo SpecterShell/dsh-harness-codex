@@ -46,12 +46,12 @@ The preset selects a system prompt from the model. GPT models receive Codex's ow
 | [prompts/original.md](prompts/original.md) | Every non-OpenAI model |
 | [prompts/codex/prompt.md](prompts/codex/prompt.md) | OpenAI-style models outside the catalog |
 | [prompts/codex/gpt-5.5.md](prompts/codex/gpt-5.5.md) | gpt-5.5 |
-| [prompts/codex/gpt-5.6-sol.md](prompts/codex/gpt-5.6-sol.md) | gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna, codex-auto-review |
+| [prompts/codex/gpt-5.6-sol.md](prompts/codex/gpt-5.6-sol.md) | gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna, codex-auto-review, gpt-daybreak-blue-latest |
 | [prompts/codex/gpt-6-astra.md](prompts/codex/gpt-6-astra.md) | gpt-6-astra, gpt-6.1-terra |
 | [prompts/codex/gpt-6-luna.md](prompts/codex/gpt-6-luna.md) | gpt-6-luna |
 | [prompts/codex/gpt-6-sol.md](prompts/codex/gpt-6-sol.md) | gpt-6-sol |
 | [prompts/codex/gpt-6.1-sol.md](prompts/codex/gpt-6.1-sol.md) | gpt-6.1-sol |
-| [prompts/codex/gpt-daybreak-blue-latest.md](prompts/codex/gpt-daybreak-blue-latest.md) | gpt-daybreak-blue-latest |
+| [prompts/codex/gpt-6.2-sol.md](prompts/codex/gpt-6.2-sol.md) | gpt-6.2-sol, gpt-6.2-astra |
 | [prompts/codex/gpt-daybreak-red-latest.md](prompts/codex/gpt-daybreak-red-latest.md) | gpt-daybreak-red-latest |
 | [prompts/codex/compact-prompt.md](prompts/codex/compact-prompt.md) | Compaction request |
 | [prompts/codex/compact-summary-prefix.md](prompts/codex/compact-summary-prefix.md) | Compaction summary prefix |

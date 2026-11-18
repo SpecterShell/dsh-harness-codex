@@ -2,7 +2,7 @@
 
 [English](differences.md)
 
-本预设跟随 [OpenAI Codex](https://github.com/openai/codex) 的 [0184dfa6](https://github.com/openai/codex/tree/0184dfa6a48f0110dd9c6835522492908e5abcf3) 提交。它运行在 DeepSeek Harness 之内，使用 DSH 的 Agent 循环、沙箱和审批机制，因此有些行为与 Codex 不同。下面逐项说明原因。
+本预设跟随 [OpenAI Codex](https://github.com/openai/codex) 的 [ca21fe65](https://github.com/openai/codex/tree/ca21fe65d18a9b6326759fb4263c65dfbb645aa5) 提交。它运行在 DeepSeek Harness 之内，使用 DSH 的 Agent 循环、沙箱和审批机制，因此有些行为与 Codex 不同。下面逐项说明原因。
 
 ## exec_command 与 write_stdin
 
