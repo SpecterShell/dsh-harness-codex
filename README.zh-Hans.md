@@ -21,8 +21,8 @@ dsh plugin --profile web add @spectershell/dsh-harness-codex
 
 | 预设 | 说明 |
 | --- | --- |
-| **Codex mode** | 同一套 Codex 工具，外加宿主中不冲突的工具。<ul><li>只隐藏与 Codex 工具重复的内置工具（`read`、`write`、`edit`、`glob`、`grep`、`read_image`、`bash`、`pwsh`、`todo_write`）</li><li>其余工具照常可用，包括之后安装的插件提供的工具</li></ul> |
-| **Codex strict mode** | 严格的预设，模型只能看到 Codex 工具。<ul><li>五个 Codex 工具，外加加载本包自带技能的 `skill` 工具</li><li>其他 profile 插件提供的工具都会被隐藏</li></ul> |
+| **Codex mode** | 同一套 Codex 工具，外加宿主中不冲突的工具。<ul><li>只隐藏与 Codex 工具重复的内置工具（`read`、`write`、`edit`、`glob`、`grep`、`read_image`、`bash`、`pwsh`、`todo_write`）</li><li>其余工具照常可用，包括之后安装的插件提供的工具</li><li>用于委派的子 Agent、消息和工作流</li></ul> |
+| **Codex strict mode** | 严格的预设，模型只能看到 Codex 工具。<ul><li>五个 Codex 工具，外加加载本包自带技能的 `skill` 工具</li><li>其他 profile 插件提供的工具都会被隐藏</li><li>用于委派的子 Agent、消息和工作流</li></ul> |
 | **Codex PTC** | 同一套 Codex 工具，改成在程序里调用。<ul><li>`run_code` 是唯一可以直接调用的工具，所有 Codex 工具都在程序内可用</li><li>带有 DSH 标准预设中的委派组，`subagent`、`subagent_fork` 和 `workflow` 也能在程序里使用</li><li>persona 保留继承的提示词段落而不替换它们，free-form 补丁桥保持关闭，因为 PTC 会拒绝 `run_code` 之外的直接工具调用</li></ul> |
 | **Codex Creator** | 严格工具集，外加编写 DSH 插件的工具。<ul><li>查询实时运行时接口的 `cordis_inspect_list` 和 `cordis_inspect_query`</li><li>`skill` 加载器</li><li>profile 提供插件上下文时的插件管理和插件市场工具</li></ul> |
 

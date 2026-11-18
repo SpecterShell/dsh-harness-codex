@@ -4,6 +4,10 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Added
+
+- Every preset now mounts the delegation group (subagents, messaging and workflows), matching DSH's standard preset. The Agent Team tools are no longer absent from the Codex presets.
+
 ### Changed
 
 - The preset ids were renamed. `codex` is now the preset that keeps non-conflicting host tools (previously `codex-extended`), and the strict preset that hides them is `codex-strict`. `codex-ptc` and `codex-creator` now use the same fixed deny list as `codex`, so tools from plugins installed later stay available in every preset except `codex-strict`. The `cordis.patch.yml` row ids are unchanged.
