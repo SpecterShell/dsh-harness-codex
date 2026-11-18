@@ -1,6 +1,6 @@
 {
   "name": "@spectershell/dsh-harness-codex",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Codex-style agent preset for DeepSeek Harness",
   "type": "module",
   "license": "Apache-2.0",

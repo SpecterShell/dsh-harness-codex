@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-11-18
+
+### Changed
+
+- The package is renamed to `@spectershell/dsh-harness-codex`.
+
 ## [0.1.0] - 2026-11-18
 
 First public release, under the Apache-2.0 license.
@@ -17,4 +23,5 @@ First public release, under the Apache-2.0 license.
 - A settings form on the plugin's detail page and in DSH settings, backed by a live `codexSettings` service, for the free-form rules, the tools kept visible and the project instruction budget.
 - CI on Linux and macOS, CodeQL, OpenSSF Scorecard and Dependabot. Releases carry a build-provenance attestation and stage on npm with provenance.
 
+[0.1.1]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.1.1
 [0.1.0]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.1.0
