@@ -4,6 +4,10 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Added
+
+- The settings card edits the free-form rules as a list: each configured rule has its own remove control, configured providers and models can be picked from the live DSH model catalog, and a wildcard input adds rules the pickers do not list. The stored `freeformRules` text keeps the same newline-joined form, so existing values, the host schema and the freeform bridge are unchanged.
+
 ### Fixed
 
 - The settings card on the plugin's detail page renders with its intended row padding, hairline separators and label and hint typography again. Its class selectors no longer begin with the scoped package name, which browsers dropped as invalid.
