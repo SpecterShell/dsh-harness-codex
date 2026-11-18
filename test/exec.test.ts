@@ -166,7 +166,8 @@ await test('delivers input to a TTY session and reports its exit code', async t 
     cmd: 'printf "READY\\n"; IFS= read -r line; printf "GOT:%s\\n" "$line"; exit 9',
     workdir: cwd,
     tty: true,
-    yield_time_ms: 250,
+    // PTY startup is measurably slower on macOS; the prompt must fit in the wait.
+    yield_time_ms: 5000,
   }))
   assert.match(start.output, /READY/)
   assert.ok(start.sessionId !== undefined)
