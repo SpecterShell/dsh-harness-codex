@@ -64,7 +64,7 @@ jobs:
       # Trusted publishing (OIDC) requires npm 11.5.1 or later. The package
       # must be linked to this repository and workflow on npmjs.com first.
       - name: Update npm for trusted publishing
-        run: npm install --global npm@latest
+        run: npm install --global npm@12.2.3
       # Staged publishing: the package waits for manual promotion on npmjs.com
       # (or `npm stage approve <id>`) instead of going live on its own.
       # Staged versions are invisible to `npm view`, so an already-staged
