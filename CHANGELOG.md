@@ -2,19 +2,16 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.3.0] - 2026-11-19
 
 ### Changed
 
+- The preset ids were renamed. `codex` is now the preset that keeps non-conflicting host tools (previously `codex-extended`), and the strict preset that hides them is `codex-strict`. `codex-ptc` and `codex-creator` now use the same fixed deny list as `codex`, so tools from plugins installed later stay available in every preset except `codex-strict`. The `cordis.patch.yml` row ids are unchanged.
 - The presets now carry the per-preset header note the built-in presets use, and each mounts the `time-context` row as the built-ins do.
 
 ### Added
 
 - Every preset now mounts the delegation group (subagents, messaging and workflows), matching DSH's standard preset. The Agent Team tools are no longer absent from the Codex presets.
-
-### Changed
-
-- The preset ids were renamed. `codex` is now the preset that keeps non-conflicting host tools (previously `codex-extended`), and the strict preset that hides them is `codex-strict`. `codex-ptc` and `codex-creator` now use the same fixed deny list as `codex`, so tools from plugins installed later stay available in every preset except `codex-strict`. The `cordis.patch.yml` row ids are unchanged.
 
 ## [0.2.1] - 2026-11-18
 
@@ -68,6 +65,7 @@ First public release, under the Apache-2.0 license.
 - A settings form on the plugin's detail page and in DSH settings, backed by a live `codexSettings` service, for the free-form rules, the tools kept visible and the project instruction budget.
 - CI on Linux and macOS, CodeQL, OpenSSF Scorecard and Dependabot. Releases carry a build-provenance attestation and stage on npm with provenance.
 
+[0.3.0]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.3.0
 [0.2.1]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.2.1
 [0.2.0]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.2.0
 [0.1.2]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.1.2
