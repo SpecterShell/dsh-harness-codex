@@ -50,4 +50,4 @@ Codex 的提示词会提到本预设没有提供的 Codex 功能，例如托管�
 - 如果预算正好切在多字节字符中间，本预设会退到这个字符之前。Codex 直接按字节截断，可能显示替换字符。
 - 压缩遵循 Codex 的本地规则：模型先收到一段摘要，然后按时间顺序收到能放进 20,000 token 的最新原始用户消息。工具结果和其他步骤会被丢弃，旧摘要会被替换，不会作为用户消息保留。DSH 开头的 system 和 developer 消息原位保留，不会按会话配置重建。
 - 上下文达到模型窗口的 90% 时，自动压缩会在该步开始前执行。Codex 还能在单独的轮次结束阈值处压缩，或者放到后台压缩，本预设把这些都留到步骤边界处理。触发本轮的那条提示词尚未出现在会话界面上，因此会排在摘要之后送达，不会被算作保留下来的用户消息。压缩无法缩小上下文时，自动压缩会跳过；手动压缩则总会执行。
-- profile 提供的工具按每个预设的 surface 规则处理。Codex mode 和 Creator 隐藏所有宿主工具，只放行 `allow` 中列出的名字；Codex+ 和 PTC 只拒绝与 Codex 工具重复的内置工具，之后安装的插件提供的工具仍然可用。见 [configuration.zh-Hans.md](configuration.zh-Hans.md)。
+- profile 提供的工具按每个预设的 surface 规则处理。Codex strict mode 隐藏所有宿主工具，只放行 `allow` 中列出的名字；Codex mode、Creator 和 PTC 只拒绝与 Codex 工具重复的内置工具，之后安装的插件提供的工具仍然可用。见 [configuration.zh-Hans.md](configuration.zh-Hans.md)。

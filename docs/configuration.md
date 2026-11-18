@@ -20,7 +20,7 @@ Alternatively, the override can be written by hand. A patch that targets the pre
       # the full list from the package, with the desired changes
 ```
 
-The patch row id stays `preset-codex-inspired`, so existing overrides keep targeting it; only the preset id in its `config` is now `codex`. The other rows are `preset-codex-extended`, `preset-codex-ptc` and `preset-codex-creator`, with `config.id` values `codex-extended`, `codex-ptc` and `codex-creator`.
+The patch row ids stay unchanged, so existing overrides keep targeting them; only the preset ids in `config` changed. The rows are `preset-codex-inspired` (`config.id` `codex-strict`), `preset-codex-extended` (`codex`), `preset-codex-ptc` (`codex-ptc`) and `preset-codex-creator` (`codex-creator`).
 
 DSH must be restarted afterwards. Sessions that are already open retain the previous preset.
 
@@ -30,8 +30,8 @@ An override can also be tested without modifying the profile by passing it at st
 
 | Preset id | Display name | Composition |
 | --- | --- | --- |
-| `codex` | Codex mode | The strict preset: five Codex tools, the `skill` loader and this package's skills, with every host tool hidden. |
-| `codex-extended` | Codex+ mode | The same tools, with host tools kept unless their names duplicate a Codex tool. |
+| `codex` | Codex mode | The Codex tools, with host tools kept unless their names duplicate a Codex tool. |
+| `codex-strict` | Codex strict mode | The strict preset: five Codex tools, the `skill` loader and this package's skills, with every host tool hidden. |
 | `codex-ptc` | Codex PTC | The Codex tool set reached through `run_code`, plus DSH's standard delegation group. |
 | `codex-creator` | Codex Creator | The strict set plus Cordis inspection, the skill loader, and the plugin manager and market tools. |
 
@@ -66,8 +66,8 @@ The free-form switch applies to the running preset: turning it on patches the ad
 | `update-plan` | `@spectershell/dsh-harness-codex/plan` | `update_plan`. No options. |
 | `view-image` | `@spectershell/dsh-harness-codex/image` | `view_image`. Requires a model with image input. |
 | `surface` | `@spectershell/dsh-harness-codex/surface` | Hides tools contributed by the profile. |
-| `skill-filesystem` | `@deepseek-ai/dsh-skill-filesystem` | Adds this package's `skills/` directory as a skill root. Codex mode, Codex+ mode and Creator. |
-| `tool-skill` | `@deepseek-ai/dsh-tool-skill` | The `skill` loader. Codex mode, Codex+ mode and Creator. |
+| `skill-filesystem` | `@deepseek-ai/dsh-skill-filesystem` | Adds this package's `skills/` directory as a skill root. Codex mode, Codex strict mode and Creator. |
+| `tool-skill` | `@deepseek-ai/dsh-tool-skill` | The `skill` loader. Codex mode, Codex strict mode and Creator. |
 | `tool-cordis` | `@deepseek-ai/dsh-tool-cordis` | `cordis_inspect_list` and `cordis_inspect_query`. Creator only. |
 | `tool-plugin-manager` | `@deepseek-ai/dsh-plugin-manager/tools` | Plugin management tools. Creator only; disabled when no profile context exists. |
 | `tool-plugin-market` | `@deepseek-ai/dsh-plugin-market/tools` | Plugin market tools. Creator only; disabled when no profile context exists. |
@@ -88,7 +88,7 @@ The preset hides every tool registered by the profile, such as `working_director
 
 The five Codex tools and `skill` should remain in the list. If the profile registers a tool with the same name as one of them, the preset's own tool takes precedence. An allow-only mask also filters the preset's own rows when an Agent views them, so every tool the preset mounts needs an entry. Codex Creator lists `cordis_inspect_list`, `cordis_inspect_query` and `skill` for that reason.
 
-**Codex+ mode** (`codex-extended`) mounts the same plugins and differs only in the `surface` row, which uses a fixed `deny` list instead of hiding all host tools:
+**Codex mode** (`codex`) mounts the same plugins and differs only in the `surface` row, which uses a fixed `deny` list instead of hiding all host tools:
 
 ```yaml
 - id: surface

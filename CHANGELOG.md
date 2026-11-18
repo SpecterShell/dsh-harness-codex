@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- The preset ids were renamed. `codex` is now the preset that keeps non-conflicting host tools (previously `codex-extended`), and the strict preset that hides them is `codex-strict`. `codex-ptc` and `codex-creator` now use the same fixed deny list as `codex`, so tools from plugins installed later stay available in every preset except `codex-strict`. The `cordis.patch.yml` row ids are unchanged.
+
 ## [0.2.1] - 2026-11-18
 
 ### Fixed

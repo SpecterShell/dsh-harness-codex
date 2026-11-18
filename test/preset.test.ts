@@ -254,7 +254,7 @@ await test('the codex presets expose the Codex tools and their own additions to 
   const config = { ...presetRow.config, plugins: builtinRows(presetRow.config.plugins, bindings) }
   await loader.create({ id: presetRow.id, name: 'cordis:agent-preset', config })
   await loader.await()
-  assert.deepEqual(await presets.resolve('codex'), { id: 'codex' })
+  assert.deepEqual(await presets.resolve('codex-strict'), { id: 'codex-strict' })
 
   // A second, co-mounted preset with one native tool of its own. Its Agents must
   // keep the host tools: the codex mask has to belong to the preset binding.
@@ -282,7 +282,7 @@ await test('the codex presets expose the Codex tools and their own additions to 
   assert.ok(host.tools.get('working_directory'), 'the early host tool is registered')
 
   // The preset's plugin rows register their tools in the preset's own scope.
-  const lease = await presets.acquireScope('codex')
+  const lease = await presets.acquireScope('codex-strict')
   t.after(() => lease[Symbol.asyncDispose]())
 
   /** A host tool added after the preset mounts, including a skill-shaped name. */
@@ -316,7 +316,7 @@ await test('the codex presets expose the Codex tools and their own additions to 
   }
 
   const agent = await createAgent('preset-test-agent')
-  await presets.mount(agent.ctx, 'codex')
+  await presets.mount(agent.ctx, 'codex-strict')
   const agentScope = scopeOf(agent.ctx)
   assert.equal(agentScope, agent, 'the Agent object is its own scope key')
 
@@ -351,23 +351,23 @@ await test('the codex presets expose the Codex tools and their own additions to 
   // A blank-session switch re-parents the Agent scope (`recompose()` is the
   // bind step `select()` calls); the mask has to arrive and leave with that
   // parent, with no new `agent/created`.
-  await presets.recompose(plainAgent.ctx, 'codex')
+  await presets.recompose(plainAgent.ctx, 'codex-strict')
   assert.deepEqual(
     host.tools.schemas(plainScope).map((tool: HostValue) => tool.name).sort(),
     [...CODEX_TOOLS, ...SKILL_TOOLS].sort(),
-    'switching to codex hides the host tools',
+    'switching to codex-strict hides the host tools',
   )
   await presets.recompose(plainAgent.ctx, 'plain')
   assert.deepEqual(
     host.tools.schemas(plainScope).map((tool: HostValue) => tool.name).sort(),
     plainTools,
-    'switching away from codex restores the host tools',
+    'switching away from codex-strict restores the host tools',
   )
 
   // The extended preset from the same patch file masks only the deny-listed
   // built-ins; the remaining host tools stay visible next to the Codex tools.
   const extendedRow = rows.find((row: HostValue) => row.id === 'preset-codex-extended')
-  assert.ok(extendedRow, 'the codex-extended preset row is present')
+  assert.ok(extendedRow, 'the codex preset row is present')
   await loader.create({
     id: extendedRow.id,
     name: 'cordis:agent-preset',
@@ -375,7 +375,7 @@ await test('the codex presets expose the Codex tools and their own additions to 
   })
   await loader.await()
   const extendedAgent = await createAgent('preset-test-extended')
-  await presets.mount(extendedAgent.ctx, 'codex-extended')
+  await presets.mount(extendedAgent.ctx, 'codex')
   const extendedScope = scopeOf(extendedAgent.ctx)
   assert.deepEqual(
     host.tools.schemas(extendedScope).map((tool: HostValue) => tool.name).sort(),
@@ -411,7 +411,7 @@ await test('the codex presets expose the Codex tools and their own additions to 
   }
   const expectedPresets = [
     ['codex', 'Codex mode', 5],
-    ['codex-extended', 'Codex+ mode', 6],
+    ['codex-strict', 'Codex strict mode', 6],
     ['codex-ptc', 'Codex PTC', 7],
     ['codex-creator', 'Codex Creator', 8],
   ]
@@ -430,18 +430,18 @@ await test('the codex presets expose the Codex tools and their own additions to 
     expectedPresets.map(([id, name, order]) => ({ id, name, order, broken: undefined })),
   )
 
-  // The Creator preset keeps the strict mask and adds its own tool rows in the
-  // preset scope, which the mask does not cover.
+  // The Creator preset shares the Codex mask (deny list) and adds its own tool
+  // rows in the preset scope, which the mask does not cover.
   const creatorAgent = await createAgent('preset-test-creator')
   await presets.mount(creatorAgent.ctx, 'codex-creator')
   const creatorScope = scopeOf(creatorAgent.ctx)
   assert.deepEqual(
     host.tools.schemas(creatorScope).map((tool: HostValue) => tool.name).sort(),
-    CREATOR_TOOLS,
-    'the Creator Agent sees the Codex tools, Cordis inspection and the skill loader',
+    [...CREATOR_TOOLS, 'mcp__demo__search', 'web_search', 'working_directory'].sort(),
+    'the Creator Agent sees the Codex tools, Cordis inspection, the skill loader and the host tools',
   )
-  assert.equal(host.tools.get('working_directory', creatorScope), undefined)
-  assert.equal(host.tools.get('mcp__demo__search', creatorScope), undefined)
+  assert.ok(host.tools.get('working_directory', creatorScope), 'a non-conflicting host tool passes the Creator mask')
+  assert.ok(host.tools.get('mcp__demo__search', creatorScope), 'an MCP tool passes the Creator mask')
   // The skill row's `customSkillDirs` expression must resolve this package's
   // own directory, or the ported skill would be registered but never found.
   const creatorSkills = await host.skills.list({ cwd: root, scope: creatorScope })
