@@ -33,9 +33,7 @@ Files under prompts/codex/ and their upstream sources:
 The files above copied from models.json are its
 `model_messages.instructions_template` values, deduplicated byte for byte. The
 two compact files are Codex's local-compaction prompt and the prefix it puts
-before the model's summary. The Apache License 2.0 text is in
-prompts/codex/LICENSE. The rest of this package remains under the MIT license
-in LICENSE.
+before the model's summary. The Apache License 2.0 text is in LICENSE.
 
 The freeform apply_patch grammar in assets/codex/apply_patch.lark is copied
 byte for byte from OpenAI Codex, commit

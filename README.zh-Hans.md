@@ -80,4 +80,4 @@ pnpm test
 
 ## 许可
 
-MIT。随包附带的 Codex 提示词和补丁语法采用 Apache-2.0，见 [NOTICE](NOTICE)。
+Apache-2.0。随包附带的 Codex 素材的出处说明见 [NOTICE](NOTICE)。
