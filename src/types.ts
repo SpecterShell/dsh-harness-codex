@@ -8,7 +8,7 @@
  * this package compiling; anything else should fail at the boundary, not be
  * papered over with `any`.
  *
- * @module dsh-harness-codex/types
+ * @module @spectershell/dsh-harness-codex/types
  */
 import type { Readable } from 'node:stream'
 import type { CodexSettingsService } from './config.js'

@@ -15,7 +15,7 @@
  * change. Codex reads project docs only when its environment selection changes;
  * this row is deliberately a little fresher.
  *
- * @module dsh-harness-codex/instructions
+ * @module @spectershell/dsh-harness-codex/instructions
  */
 import { createHash, randomUUID } from 'node:crypto'
 import { dirname, join, resolve } from 'node:path'

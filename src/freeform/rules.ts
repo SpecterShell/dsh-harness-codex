@@ -5,7 +5,7 @@
  * and `model` are exact strings or `*` globs, and an omitted field matches
  * anything. The optional Codex catalog match is separate: a model counts as
  * catalog-freeform when Codex's longest-prefix catalog lookup finds it.
- * @module dsh-harness-codex/freeform/rules
+ * @module @spectershell/dsh-harness-codex/freeform/rules
  */
 import { matchCatalogSlug } from '../catalog.ts'
 import { isRecord } from '../guards.ts'

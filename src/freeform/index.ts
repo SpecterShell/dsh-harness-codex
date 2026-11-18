@@ -11,7 +11,7 @@
  * The plugin patches the pi-ai adapter prototype that actually serves the
  * registered routes, because DSH 0.2.2-rc.1 has no supported custom-tool
  * schema. That is the documented risk; see docs/freeform.md.
- * @module dsh-harness-codex/freeform
+ * @module @spectershell/dsh-harness-codex/freeform
  */
 import { createRequire } from 'node:module'
 import { readFileSync } from 'node:fs'

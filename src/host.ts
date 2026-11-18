@@ -6,7 +6,7 @@
  * restart. The preset rows read the service through `ctx.get`, never this
  * module directly, because they run in their own scopes and may be mounted
  * without the host entry in headless profiles.
- * @module dsh-harness-codex/host
+ * @module @spectershell/dsh-harness-codex/host
  */
 import z from '@deepseek-ai/schemastery'
 import type { IncomingMessage, ServerResponse } from 'node:http'
@@ -90,6 +90,6 @@ export function apply(ctx: HostContext, config: CodexVolatileConfig): void {
         res.setHeader('cache-control', 'no-store')
         res.end(JSON.stringify(current))
       },
-    }), 'dsh-harness-codex: settings route')
+    }), '@spectershell/dsh-harness-codex: settings route')
   })
 }

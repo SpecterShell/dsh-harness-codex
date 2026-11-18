@@ -1,7 +1,7 @@
-# dsh-harness-codex
+# @spectershell/dsh-harness-codex
 
 [![CI](https://github.com/SpecterShell/dsh-harness-codex/actions/workflows/ci.yml/badge.svg)](https://github.com/SpecterShell/dsh-harness-codex/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/dsh-harness-codex)](https://www.npmjs.com/package/dsh-harness-codex)
+[![npm](https://img.shields.io/npm/v/@spectershell/dsh-harness-codex)](https://www.npmjs.com/package/@spectershell/dsh-harness-codex)
 
 [English](README.md)
 
@@ -10,7 +10,7 @@
 ## 安装
 
 ```sh
-dsh plugin --profile web add dsh-harness-codex
+dsh plugin --profile web add @spectershell/dsh-harness-codex
 ```
 
 重启 DSH 后，新建会话时可以选择 **Codex-inspired** 预设。本包要求 DSH 0.2.2-rc.1 或之后的 0.2 版本，以及 Node.js 24.9 或更新版本。

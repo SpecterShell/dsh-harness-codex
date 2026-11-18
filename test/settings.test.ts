@@ -168,7 +168,7 @@ await test('the surface row merges the settings allow list and re-syncs on a set
   assert.deepEqual(restrictions.at(-1), ['host_tool', 'ui_tool'])
 
   allowText = 'ui_tool'
-  ctx.emit('settings/document-updated', 'dsh-harness-codex', 1)
+  ctx.emit('settings/document-updated', '@spectershell/dsh-harness-codex', 1)
   assert.deepEqual(restrictions.at(-1), ['host_tool'])
 })
 

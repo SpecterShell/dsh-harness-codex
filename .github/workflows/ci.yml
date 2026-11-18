@@ -93,7 +93,7 @@ jobs:
             assert(/^package\/(?:package.json|LICENSE|NOTICE|CHANGELOG.md|README(?:\.[a-zA-Z-]+)?\.md|cordis\.patch\.yml|(?:lib|locale|prompts|assets)\/.*)$/.test(entry), 'Unexpected package file: ' + entry)
           }
           const manifest = JSON.parse(execFileSync('tar', ['-xOf', archive, 'package/package.json'], { encoding: 'utf8' }))
-          assert.equal(manifest.name, 'dsh-harness-codex')
+          assert.equal(manifest.name, '@spectershell/dsh-harness-codex')
           assert.equal(manifest.repository.url, 'git+https://github.com/SpecterShell/dsh-harness-codex.git')
           for (const entry of [manifest.main, manifest.exports['./client'], manifest.dsh.bundle.patch]) {
             assert.equal(typeof entry, 'string', 'Missing package entry point')
@@ -108,7 +108,7 @@ jobs:
         if: ${{ inputs.upload-artifact }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: dsh-harness-codex-${{ github.sha }}
+          name: "@spectershell/dsh-harness-codex-${{ github.sha }}"
           path: ${{ env.RUNNER_TEMP }}/*.tgz
           if-no-files-found: error
           retention-days: 14

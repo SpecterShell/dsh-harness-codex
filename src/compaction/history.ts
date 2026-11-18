@@ -8,7 +8,7 @@
  * `…N tokens truncated…` marker, exactly as
  * codex-rs/utils/string/src/truncate.rs does.
  *
- * @module dsh-harness-codex/compaction/history
+ * @module @spectershell/dsh-harness-codex/compaction/history
  */
 import type { CompactionBlock, CompactionMessage, CompactionSession } from './types.js'
 

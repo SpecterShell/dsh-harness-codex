@@ -1,7 +1,7 @@
 /**
  * Small structural guards shared by the plugins.
  *
- * @module dsh-harness-codex/guards
+ * @module @spectershell/dsh-harness-codex/guards
  */
 
 /** True for non-null objects, whose own properties are safe to read. */

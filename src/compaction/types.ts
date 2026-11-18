@@ -4,7 +4,7 @@
  * src/types.ts), so these declarations repeat only the members compaction
  * needs and let a host upgrade fail at the boundary.
  *
- * @module dsh-harness-codex/compaction/types
+ * @module @spectershell/dsh-harness-codex/compaction/types
  */
 import type { BaseContext } from '../types.js'
 

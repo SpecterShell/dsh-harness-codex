@@ -26,7 +26,7 @@ An override can also be tested without modifying the profile by passing it at st
 
 ## Settings
 
-The package also ships a host plugin with the id `dsh-harness-codex`. Its form appears on the bundle's own page in the DSH web UI: open the Plugins page, open the `dsh-harness-codex` bundle, and the form sits between the description and the row list. Saved values are written to the profile, and the preset rows read them on the next request, pre-step or tool sync, so no restart is needed.
+The package also ships a host plugin with the id `@spectershell/dsh-harness-codex`. Its form appears on the bundle's own page in the DSH web UI: open the Plugins page, open the `@spectershell/dsh-harness-codex` bundle, and the form sits between the description and the row list. Saved values are written to the profile, and the preset rows read them on the next request, pre-step or tool sync, so no restart is needed.
 
 The row configuration in [cordis.patch.yml](../cordis.patch.yml) stays the fallback when the host plugin is not mounted, for example in a headless profile.
 
@@ -44,16 +44,16 @@ The free-form switch applies to the running preset: turning it on patches the ad
 
 | Row | Plugin | Notes |
 | --- | --- | --- |
-| `persona` | `dsh-harness-codex/persona` | Selects the system prompt according to the model. No options. |
+| `persona` | `@spectershell/dsh-harness-codex/persona` | Selects the system prompt according to the model. No options. |
 | `agent-instructions` | `@deepseek-ai/dsh-agent-instructions` | Loads user-level instruction files. |
-| `project-instructions` | `dsh-harness-codex/instructions` | Loads project `AGENTS.md` files with Codex's precedence and 32 KiB budget. |
-| `exec` | `dsh-harness-codex/exec` | `exec_command` and `write_stdin`. Disabled on Windows. |
+| `project-instructions` | `@spectershell/dsh-harness-codex/instructions` | Loads project `AGENTS.md` files with Codex's precedence and 32 KiB budget. |
+| `exec` | `@spectershell/dsh-harness-codex/exec` | `exec_command` and `write_stdin`. Disabled on Windows. |
 | `tool-fs` | `@deepseek-ai/dsh-tool-fs` | Only `applyPatch` is enabled. |
-| `freeform-patch` | `dsh-harness-codex/freeform` | Free-form `apply_patch`, disabled by default. See [freeform.md](freeform.md). |
-| `update-plan` | `dsh-harness-codex/plan` | `update_plan`. No options. |
-| `view-image` | `dsh-harness-codex/image` | `view_image`. Requires a model with image input. |
-| `surface` | `dsh-harness-codex/surface` | Hides tools contributed by the profile. |
-| `compaction` | `dsh-harness-codex/compaction` | Codex-style local compaction. |
+| `freeform-patch` | `@spectershell/dsh-harness-codex/freeform` | Free-form `apply_patch`, disabled by default. See [freeform.md](freeform.md). |
+| `update-plan` | `@spectershell/dsh-harness-codex/plan` | `update_plan`. No options. |
+| `view-image` | `@spectershell/dsh-harness-codex/image` | `view_image`. Requires a model with image input. |
+| `surface` | `@spectershell/dsh-harness-codex/surface` | Hides tools contributed by the profile. |
+| `compaction` | `@spectershell/dsh-harness-codex/compaction` | Codex-style local compaction. |
 
 ### surface
 
@@ -61,7 +61,7 @@ The preset hides every tool registered by the profile, such as `working_director
 
 ```yaml
 - id: surface
-  name: dsh-harness-codex/surface
+  name: @spectershell/dsh-harness-codex/surface
   config:
     allow: [exec_command, write_stdin, apply_patch, update_plan, view_image, web_search]
 ```
@@ -72,7 +72,7 @@ The package also declares a second preset, **Codex-extended** (`codex-extended`)
 
 ```yaml
 - id: surface
-  name: dsh-harness-codex/surface
+  name: @spectershell/dsh-harness-codex/surface
   config:
     deny: [read, write, edit, glob, grep, read_image, bash, pwsh, todo_write]
     allow: [exec_command, write_stdin, apply_patch, update_plan, view_image]
@@ -86,7 +86,7 @@ Project instruction files are loaded with Codex's precedence: within each direct
 
 ```yaml
 - id: project-instructions
-  name: dsh-harness-codex/instructions
+  name: @spectershell/dsh-harness-codex/instructions
   config:
     maxBytes: 32768
     projectRootMarkers: [.git]

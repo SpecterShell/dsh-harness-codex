@@ -34,7 +34,7 @@ body:
         Node:
         pnpm:
         DSH host:
-        dsh-harness-codex:
+        @spectershell/dsh-harness-codex:
     validations:
       required: true
   - type: textarea

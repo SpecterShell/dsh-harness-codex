@@ -20,7 +20,7 @@
  * The compaction prompt and summary prefix are copied byte for byte from
  * Codex; see ../../NOTICE.
  *
- * @module dsh-harness-codex/compaction
+ * @module @spectershell/dsh-harness-codex/compaction
  */
 import { randomUUID } from 'node:crypto'
 import { readFileSync } from 'node:fs'

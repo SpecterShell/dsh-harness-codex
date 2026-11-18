@@ -28,7 +28,7 @@ DSH Web 界面里的预设编辑器是最省事的做法，保存后的改动会
 
 ## 设置
 
-本包还提供一个宿主插件，id 是 `dsh-harness-codex`。设置表单出现在 DSH Web 界面的插件页里：打开插件页，进入 `dsh-harness-codex` 的详情页，表单就在描述和行列表之间。保存的值会写入 profile，预设各行在下一次请求、下一步或下一次工具同步时读取，不需要重启。
+本包还提供一个宿主插件，id 是 `@spectershell/dsh-harness-codex`。设置表单出现在 DSH Web 界面的插件页里：打开插件页，进入 `@spectershell/dsh-harness-codex` 的详情页，表单就在描述和行列表之间。保存的值会写入 profile，预设各行在下一次请求、下一步或下一次工具同步时读取，不需要重启。
 
 宿主插件没有挂载时，比如在 headless profile 里，仍然以 [cordis.patch.yml](../cordis.patch.yml) 里的行配置为准。
 
@@ -46,16 +46,16 @@ DSH Web 界面里的预设编辑器是最省事的做法，保存后的改动会
 
 | 行 | 插件 | 说明 |
 | --- | --- | --- |
-| `persona` | `dsh-harness-codex/persona` | 根据模型选择系统提示词。没有选项。 |
+| `persona` | `@spectershell/dsh-harness-codex/persona` | 根据模型选择系统提示词。没有选项。 |
 | `agent-instructions` | `@deepseek-ai/dsh-agent-instructions` | 加载用户级指令文件。 |
-| `project-instructions` | `dsh-harness-codex/instructions` | 按 Codex 的优先级和 32 KiB 预算加载项目的 `AGENTS.md` 文件。 |
-| `exec` | `dsh-harness-codex/exec` | `exec_command` 和 `write_stdin`。在 Windows 上禁用。 |
+| `project-instructions` | `@spectershell/dsh-harness-codex/instructions` | 按 Codex 的优先级和 32 KiB 预算加载项目的 `AGENTS.md` 文件。 |
+| `exec` | `@spectershell/dsh-harness-codex/exec` | `exec_command` 和 `write_stdin`。在 Windows 上禁用。 |
 | `tool-fs` | `@deepseek-ai/dsh-tool-fs` | 只启用 `applyPatch`。 |
-| `freeform-patch` | `dsh-harness-codex/freeform` | Free-form 形式的 `apply_patch`，默认关闭。见 [freeform.zh-Hans.md](freeform.zh-Hans.md)。 |
-| `update-plan` | `dsh-harness-codex/plan` | `update_plan`。没有选项。 |
-| `view-image` | `dsh-harness-codex/image` | `view_image`。需要支持图片输入的模型。 |
-| `surface` | `dsh-harness-codex/surface` | 隐藏 profile 提供的工具。 |
-| `compaction` | `dsh-harness-codex/compaction` | Codex 风格的本地压缩。 |
+| `freeform-patch` | `@spectershell/dsh-harness-codex/freeform` | Free-form 形式的 `apply_patch`，默认关闭。见 [freeform.zh-Hans.md](freeform.zh-Hans.md)。 |
+| `update-plan` | `@spectershell/dsh-harness-codex/plan` | `update_plan`。没有选项。 |
+| `view-image` | `@spectershell/dsh-harness-codex/image` | `view_image`。需要支持图片输入的模型。 |
+| `surface` | `@spectershell/dsh-harness-codex/surface` | 隐藏 profile 提供的工具。 |
+| `compaction` | `@spectershell/dsh-harness-codex/compaction` | Codex 风格的本地压缩。 |
 
 ### surface
 
@@ -63,7 +63,7 @@ DSH Web 界面里的预设编辑器是最省事的做法，保存后的改动会
 
 ```yaml
 - id: surface
-  name: dsh-harness-codex/surface
+  name: @spectershell/dsh-harness-codex/surface
   config:
     allow: [exec_command, write_stdin, apply_patch, update_plan, view_image, web_search]
 ```
@@ -74,7 +74,7 @@ DSH Web 界面里的预设编辑器是最省事的做法，保存后的改动会
 
 ```yaml
 - id: surface
-  name: dsh-harness-codex/surface
+  name: @spectershell/dsh-harness-codex/surface
   config:
     deny: [read, write, edit, glob, grep, read_image, bash, pwsh, todo_write]
     allow: [exec_command, write_stdin, apply_patch, update_plan, view_image]
@@ -88,7 +88,7 @@ DSH Web 界面里的预设编辑器是最省事的做法，保存后的改动会
 
 ```yaml
 - id: project-instructions
-  name: dsh-harness-codex/instructions
+  name: @spectershell/dsh-harness-codex/instructions
   config:
     maxBytes: 32768
     projectRootMarkers: [.git]

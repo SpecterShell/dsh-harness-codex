@@ -8,7 +8,7 @@ The `freeform-patch` row sends the Codex form instead, for the providers and mod
 
 ```yaml
 - id: freeform-patch
-  name: dsh-harness-codex/freeform
+  name: @spectershell/dsh-harness-codex/freeform
   config:
     enabled: false
     rules:
