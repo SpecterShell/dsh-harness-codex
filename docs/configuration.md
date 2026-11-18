@@ -4,7 +4,7 @@ The preset is declared in [cordis.patch.yml](../cordis.patch.yml) as one `@deeps
 
 ## Changing a row
 
-The preset editor in the DSH web UI provides the simplest path; saved changes are written to the profile's `cordis.patch.yml`.
+The preset editor in the DSH web UI provides the simplest path. Saved changes are written to the profile's `cordis.patch.yml`.
 
 Alternatively, the override can be written by hand. A patch that targets the preset row replaces its entire `config`, so the preset should be copied from this package's `cordis.patch.yml`, modified as required, and placed in the profile patch:
 
@@ -34,7 +34,7 @@ The row configuration in [cordis.patch.yml](../cordis.patch.yml) stays the fallb
 | --- | --- | --- |
 | Free-form apply_patch | Off | Sends `apply_patch` as an OpenAI Responses grammar tool for matching requests. See [freeform.md](freeform.md). |
 | Follow the Codex catalog | Off | Also matches models the bundled Codex catalog marks as free-form. |
-| Provider and model rules | Empty | One rule per line: `provider:model`, `provider:`, or `:model`. `*` is a glob. Rules add to the preset row's rules; an empty field leaves only the row rules. |
+| Provider and model rules | Empty | One rule per line: `provider:model`, `provider:`, or `:model`. `*` is a glob. Rules add to the preset row's rules. An empty field leaves only the row rules. |
 | Tools kept visible | Empty | Comma or space separated tool names that stay visible inside the preset, added to the surface row's `allow` list. |
 | Project instruction budget | 32768 | UTF-8 bytes for project instruction files, 1024 to 262144. Overrides the `project-instructions` row's `maxBytes`. |
 
