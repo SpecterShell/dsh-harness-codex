@@ -1,7 +1,7 @@
-# dsh-harness-codex
+# @spectershell/dsh-harness-codex
 
 [![CI](https://github.com/SpecterShell/dsh-harness-codex/actions/workflows/ci.yml/badge.svg)](https://github.com/SpecterShell/dsh-harness-codex/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/dsh-harness-codex)](https://www.npmjs.com/package/dsh-harness-codex)
+[![npm](https://img.shields.io/npm/v/@spectershell/dsh-harness-codex)](https://www.npmjs.com/package/@spectershell/dsh-harness-codex)
 
 [简体中文](README.zh-Hans.md)
 
@@ -10,7 +10,7 @@ An agent preset for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-h
 ## Installation
 
 ```sh
-dsh plugin --profile web add dsh-harness-codex
+dsh plugin --profile web add @spectershell/dsh-harness-codex
 ```
 
 After restarting DSH, the **Codex-inspired** preset is available when a session is started. The package requires DSH 0.2.2-rc.1 or a later 0.2 release and Node.js 24.9 or newer.

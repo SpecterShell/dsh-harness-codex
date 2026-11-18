@@ -4,6 +4,6 @@
  * The source module is `./host.ts`; tsc emits this barrel as `lib/index.js`,
  * which is what `main` and the `.` export point at. Cordis finds the named
  * `apply` and `Config` exports through the re-export.
- * @module dsh-harness-codex
+ * @module @spectershell/dsh-harness-codex
  */
 export * from './host.js'

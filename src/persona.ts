@@ -16,7 +16,7 @@
  *
  * The prompt files are copied byte for byte from OpenAI Codex; source and
  * license details are in ../../NOTICE.
- * @module dsh-harness-codex/persona
+ * @module @spectershell/dsh-harness-codex/persona
  */
 import { readFileSync } from 'node:fs'
 import { loadCatalogIndex, matchCatalogSlug, slugCandidates } from './catalog.ts'

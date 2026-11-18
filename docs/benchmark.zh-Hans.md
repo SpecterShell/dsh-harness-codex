@@ -6,7 +6,7 @@
 
 ## 第一轮（2026-11-17）
 
-使用 DSH 0.2.2-rc.1 和 dsh-harness-codex 0.1.0 运行。
+使用 DSH 0.2.2-rc.1 和 @spectershell/dsh-harness-codex 0.1.0 运行。
 
 - 十个 Python 和 Node 编码任务，既有缺陷修复和跨文件重命名，也有失败的测试、缓慢的导出、交互式安装向导、做到一半的重构，还涉及嵌套的 `AGENTS.md` 规则、824 行的代码库、含义不清的配置和一次日期重构。
 - 两个预设：Codex-inspired 与 Standard。
@@ -44,7 +44,7 @@ Codex-inspired 在两个模型上用的 token 也更少，约为 Standard 的三
 
 ## 第二轮（2026-11-18）
 
-使用 DSH 0.2.2-rc.3 和提交 `4a0f9bf` 处的 dsh-harness-codex 运行。模型与第一轮相同，条件更严格。
+使用 DSH 0.2.2-rc.3 和提交 `4a0f9bf` 处的 @spectershell/dsh-harness-codex 运行。模型与第一轮相同，条件更严格。
 
 - 为本轮构建的十个任务：只在检查时才复制进来的隐藏测试、必须保持字节完全一致的受保护文件、一个多轮任务、两个在 Workspace Write 下运行的任务、一个 dev-server 生命周期任务、一个确实不稳定的测试套件，以及两个大型 fixture。
 - 五个单元格：DeepSeek-V4.1-Flash（High）上的 Codex-inspired 与 Standard，GPT-6.1-Sol（Medium）上的 Codex-inspired 与 Standard，以及一个消融单元格，重复 Codex-inspired 的 GPT 配置并关闭 free-form `apply_patch` 覆盖层。

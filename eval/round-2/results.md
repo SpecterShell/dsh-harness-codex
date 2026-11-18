@@ -9,7 +9,7 @@ kept in /tmp during the run and are transient; the session logs under
 | Date | 2026-11-18 |
 | --- | --- |
 | DSH | 0.2.2-rc.3 |
-| Package | dsh-harness-codex, branch implement/preset |
+| Package | @spectershell/dsh-harness-codex, branch implement/preset |
 | Presets | Codex-inspired, Standard |
 | Models | DeepSeek-V4.1-Flash (high), GPT-6.1-Sol (medium, ChatGPT subscription) |
 | Freeform apply_patch | on for CI-GPT, off otherwise |
@@ -141,7 +141,7 @@ Cell: preset **Codex-inspired**, model **GPT-6.1-Sol** (`openai-codex` /
 `http://127.0.0.1:13181` (patchright session `r2-CI-GPT`, headless).
 
 - Date: 2026-11-18, 02:26 to 03:35 (Asia/Singapore)
-- DSH 0.2.2-rc.3; repository `dsh-harness-codex` at commit `4a0f9bf`
+- DSH 0.2.2-rc.3; repository `@spectershell/dsh-harness-codex` at commit `4a0f9bf`
 - Python 3.10.12, Node v24.22.2, git 2.34.1, patchright-cli 0.13.1 (headless)
 - Access mode: per task `access.txt` - 24 runs `danger-full-access`, 6 runs
   `workspace-write` (tasks 06 and 07, three repeats each)
@@ -377,7 +377,7 @@ and `bash`; no `apply_patch` tool is registered in this preset at all).
 `http://127.0.0.1:13181` (patchright session `r2-ST-GPT`, headless).
 
 - Date: 2026-11-18, 03:34 to 04:56 (Asia/Singapore)
-- DSH 0.2.2-rc.3; repository `dsh-harness-codex` at commit `4a0f9bf`
+- DSH 0.2.2-rc.3; repository `@spectershell/dsh-harness-codex` at commit `4a0f9bf`
 - Python 3.10.12, Node v24.22.2, git 2.34.1, patchright-cli 0.13.1 (headless)
 - Access mode: per task `access.txt` - 24 runs `danger-full-access`, 6 runs
   `workspace-write` (tasks 06 and 07, three repeats each)
@@ -653,7 +653,7 @@ the plain JSON function tool with an `input` string property; call ids are
 `http://127.0.0.1:13181` (patchright session `r2-CI-DS`, headless).
 
 - Date: 2026-11-18, 04:55 to 05:52 (Asia/Singapore)
-- DSH 0.2.2-rc.3; repository `dsh-harness-codex` at commit `4a0f9bf`
+- DSH 0.2.2-rc.3; repository `@spectershell/dsh-harness-codex` at commit `4a0f9bf`
 - Python 3.10.12, Node v24.22.2, git 2.34.1, patchright-cli 0.13.1 (headless)
 - Access mode: per task `access.txt` - 24 runs `danger-full-access`, 6 runs
   `workspace-write` (tasks 06 and 07, three repeats each)
@@ -914,7 +914,7 @@ and `bash`; no `apply_patch` tool is registered in this preset at all).
 `http://127.0.0.1:13181` (patchright session `r2-ST-DS`, headless).
 
 - Date: 2026-11-18, 05:53 onward (Asia/Singapore)
-- DSH 0.2.2-rc.3; repository `dsh-harness-codex` at commit `4a0f9bf`
+- DSH 0.2.2-rc.3; repository `@spectershell/dsh-harness-codex` at commit `4a0f9bf`
 - Python 3.10.12, Node v24.22.2, git 2.34.1, patchright-cli 0.13.1 (headless)
 - Access mode: per task `access.txt` - 24 runs `danger-full-access`, 6 runs
   `workspace-write` (tasks 06 and 07, three repeats each)
@@ -1343,7 +1343,7 @@ Cell: preset **Codex-inspired**, model **GPT-6.1-Sol** (`openai-codex` /
 2026-11-18 07:16 Asia/Singapore), patchright session `r2-ABL-GPT`, headless.
 
 - Date: 2026-11-18, 07:17 to 08:14 (Asia/Singapore)
-- DSH 0.2.2-rc.3; repository `dsh-harness-codex` at commit `4a0f9bf`
+- DSH 0.2.2-rc.3; repository `@spectershell/dsh-harness-codex` at commit `4a0f9bf`
 - Python 3.10.12, Node v24.22.2, git 2.34.1, patchright-cli 0.13.1 (headless)
 - Access mode: per task `access.txt` - 24 runs `danger-full-access`, 6 runs
   `workspace-write` (tasks 06 and 07, three repeats each)

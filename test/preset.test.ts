@@ -6,7 +6,7 @@
  * The preset rows are read and parsed by the host's own patch loader, so ids,
  * configs and group structure are the shipping ones. Only module specifiers
  * are rewritten to `cordis:` builtins: this source repository is not installed
- * in a DSH profile, so `dsh-harness-codex/*` and the host's `@deepseek-ai/*`
+ * in a DSH profile, so `@spectershell/dsh-harness-codex/*` and the host's `@deepseek-ai/*`
  * packages cannot be resolved by Node from here. Every builtin is the real
  * module; none of the preset's plugin behavior is replaced.
  *
@@ -116,16 +116,16 @@ await test('the codex-inspired preset exposes exactly the Codex tools to its Age
   loader.builtins.executor = executor
   loader.builtins.group = Group
   const bindings = new Map([
-    ['dsh-harness-codex/persona', 'codex-persona'],
+    ['@spectershell/dsh-harness-codex/persona', 'codex-persona'],
     ['@deepseek-ai/dsh-agent-instructions', 'agent-instructions'],
-    ['dsh-harness-codex/instructions', 'codex-instructions'],
-    ['dsh-harness-codex/compaction', 'codex-compaction'],
-    ['dsh-harness-codex/exec', 'codex-exec'],
+    ['@spectershell/dsh-harness-codex/instructions', 'codex-instructions'],
+    ['@spectershell/dsh-harness-codex/compaction', 'codex-compaction'],
+    ['@spectershell/dsh-harness-codex/exec', 'codex-exec'],
     ['@deepseek-ai/dsh-tool-fs', 'tool-fs'],
-    ['dsh-harness-codex/plan', 'codex-plan'],
-    ['dsh-harness-codex/image', 'codex-image'],
-    ['dsh-harness-codex/surface', 'codex-surface'],
-    ['dsh-harness-codex/freeform', 'codex-freeform'],
+    ['@spectershell/dsh-harness-codex/plan', 'codex-plan'],
+    ['@spectershell/dsh-harness-codex/image', 'codex-image'],
+    ['@spectershell/dsh-harness-codex/surface', 'codex-surface'],
+    ['@spectershell/dsh-harness-codex/freeform', 'codex-freeform'],
     ['@deepseek-ai/dsh-compaction-basic', 'compaction-basic'],
     ['@deepseek-ai/dsh-command-compact', 'command-compact'],
   ])

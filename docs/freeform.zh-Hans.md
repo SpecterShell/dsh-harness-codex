@@ -10,7 +10,7 @@ Codex 把 `apply_patch` 作为带 Lark 语法的自定义工具提供给 GPT 模
 
 ```yaml
 - id: freeform-patch
-  name: dsh-harness-codex/freeform
+  name: @spectershell/dsh-harness-codex/freeform
   config:
     enabled: false
     rules:

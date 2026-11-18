@@ -5,7 +5,7 @@
  * `approval` objects. Importing them at build time keeps the browser free of
  * runtime dictionary fetches, and the filter below keeps the nested objects
  * out of the flat map the locale service expects.
- * @module dsh-harness-codex/locales
+ * @module @spectershell/dsh-harness-codex/locales
  */
 import en from '../locale/en.json' with { type: 'json' }
 import zh from '../locale/zh.json' with { type: 'json' }

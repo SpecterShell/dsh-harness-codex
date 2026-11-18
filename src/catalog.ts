@@ -6,7 +6,7 @@
  * (`openai/gpt-6.1-sol` becomes `gpt-6.1-sol`). The generated
  * prompts/codex/models.json is the bundled catalog index; both consumers read
  * the same slugs from it so the persona and the freeform set cannot drift.
- * @module dsh-harness-codex/catalog
+ * @module @spectershell/dsh-harness-codex/catalog
  */
 import { readFileSync } from 'node:fs'
 

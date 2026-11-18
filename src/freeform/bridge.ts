@@ -18,7 +18,7 @@
  * methods do not look like the verified shape nothing is patched. The
  * snapshot/receiver technique follows Anionex/dsh-smarter-edit's MIT-licensed
  * freeform bridge, which faced the same missing DSH seam.
- * @module dsh-harness-codex/freeform/bridge
+ * @module @spectershell/dsh-harness-codex/freeform/bridge
  */
 import { errorMessage, isRecord } from '../guards.ts'
 import { FREEFORM_DESCRIPTION, RESPONSES_APIS } from './spec.ts'
@@ -71,7 +71,7 @@ interface BridgeAdapter {
 }
 
 /** Global state, so a second module instance or preset revision cannot patch twice. */
-const STATE: unique symbol = Symbol.for('dsh-harness-codex/freeform-bridge')
+const STATE: unique symbol = Symbol.for('@spectershell/dsh-harness-codex/freeform-bridge')
 const globalRoot = globalThis as typeof globalThis & { [STATE]?: BridgeState }
 
 /** The methods every verified adapter prototype must expose. */

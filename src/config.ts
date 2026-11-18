@@ -7,7 +7,7 @@
  * without remounting the preset. When the service is absent, for example in a
  * headless profile or in a test that mounts a row directly, the row's own
  * `config` remains the only source and this module is inert.
- * @module dsh-harness-codex/config
+ * @module @spectershell/dsh-harness-codex/config
  */
 
 /** A resolved volatile config field, read through `get()` on every call. */

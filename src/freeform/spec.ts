@@ -5,7 +5,7 @@
  * 0184dfa6a48f0110dd9c6835522492908e5abcf3; source and license details are in
  * ../../NOTICE. The grammar file is read by the plugin, not embedded, so the
  * bytes sent on the wire are the bytes on disk.
- * @module dsh-harness-codex/freeform/spec
+ * @module @spectershell/dsh-harness-codex/freeform/spec
  */
 
 /** Codex's exact description for the custom `apply_patch` tool. */

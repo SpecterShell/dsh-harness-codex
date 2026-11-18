@@ -20,7 +20,7 @@ export default defineConfig({
     // DSH reconciles this registration against the package name, so the id
     // must match `name` in package.json. A stale id fails client activation
     // with "loaded without registering".
-    banner: 'window.__ModuleLoader__.load({ id: "dsh-harness-codex", factory: (require) => {',
+    banner: 'window.__ModuleLoader__.load({ id: "@spectershell/dsh-harness-codex", factory: (require) => {',
     intro: 'var module = { exports: {} }; var exports = module.exports;',
     footer: 'return module.exports; } });',
   },

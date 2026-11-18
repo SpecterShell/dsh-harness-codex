@@ -4,7 +4,7 @@ This document compares the Codex-inspired preset with DSH's Standard preset on t
 
 ## Round 1 (2026-11-17)
 
-Run with DSH 0.2.2-rc.1 and dsh-harness-codex 0.1.0.
+Run with DSH 0.2.2-rc.1 and @spectershell/dsh-harness-codex 0.1.0.
 
 - Ten coding tasks in Python and Node: bug fixes, a rename across files, failing tests, a slow export, an interactive setup wizard, a half-finished refactor, nested `AGENTS.md` rules, an 824-line codebase, an ambiguous configuration and a date refactor.
 - Two presets, Codex-inspired and Standard.
@@ -42,7 +42,7 @@ Every run passed, so this round does not separate the presets on correctness. Th
 
 ## Round 2 (2026-11-18)
 
-Run with DSH 0.2.2-rc.3 and dsh-harness-codex at commit `4a0f9bf`. The models are the same as in round 1 and the conditions are stricter.
+Run with DSH 0.2.2-rc.3 and @spectershell/dsh-harness-codex at commit `4a0f9bf`. The models are the same as in round 1 and the conditions are stricter.
 
 - Ten tasks built for this round: hidden tests copied in only by the check, protected files that must remain byte-identical, one multi-turn task, two tasks under Workspace Write, a dev-server lifecycle, a genuinely flaky suite and two large fixtures.
 - Five cells: Codex-inspired and Standard on DeepSeek-V4.1-Flash (High), Codex-inspired and Standard on GPT-6.1-Sol (Medium), and an ablation cell that repeats the Codex-inspired GPT configuration with the free-form `apply_patch` overlay disabled.

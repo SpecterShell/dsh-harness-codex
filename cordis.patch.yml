@@ -10,8 +10,8 @@
 - insert:
     # The host entry carries the Config the Settings UI renders and provides
     # the live `codexSettings` service the preset rows read when present.
-    - id: dsh-harness-codex
-      name: dsh-harness-codex
+    - id: '@spectershell/dsh-harness-codex'
+      name: '@spectershell/dsh-harness-codex'
     - id: preset-codex-inspired
       name: '@deepseek-ai/dsh-agent-preset'
       config:
@@ -21,21 +21,21 @@
         order: 5
         plugins:
           - id: persona
-            name: dsh-harness-codex/persona
+            name: '@spectershell/dsh-harness-codex/persona'
           - id: agent-instructions
             name: '@deepseek-ai/dsh-agent-instructions'
             config:
               maxBytes: 32768
-              # Project files are read by dsh-harness-codex/instructions with
+              # Project files are read by @spectershell/dsh-harness-codex/instructions with
               # Codex's first-present ordering; this row keeps user-global files.
               instructionFileCandidates: []
               localInstructionFileCandidates: []
           - id: project-instructions
-            name: dsh-harness-codex/instructions
+            name: '@spectershell/dsh-harness-codex/instructions'
             config:
               maxBytes: 32768
           - id: exec
-            name: dsh-harness-codex/exec
+            name: '@spectershell/dsh-harness-codex/exec'
             disabled: !!js process.platform === 'win32'
           - id: tool-fs
             name: '@deepseek-ai/dsh-tool-fs'
@@ -46,15 +46,15 @@
               readImage: false
               applyPatch: true
           - id: freeform-patch
-            name: dsh-harness-codex/freeform
+            name: '@spectershell/dsh-harness-codex/freeform'
             config:
               enabled: false
           - id: update-plan
-            name: dsh-harness-codex/plan
+            name: '@spectershell/dsh-harness-codex/plan'
           - id: view-image
-            name: dsh-harness-codex/image
+            name: '@spectershell/dsh-harness-codex/image'
           - id: surface
-            name: dsh-harness-codex/surface
+            name: '@spectershell/dsh-harness-codex/surface'
             config:
               # Never deny these names, so a host tool that happens to share a
               # name with one of ours is shadowed by our row instead of hiding it.
@@ -69,7 +69,7 @@
               # this row replaces the native basic engine. /compact still uses
               # the same compaction seam.
               - id: compaction-codex
-                name: dsh-harness-codex/compaction
+                name: '@spectershell/dsh-harness-codex/compaction'
               - id: command-compact
                 name: '@deepseek-ai/dsh-command-compact'
     # The extended preset shares every row with Codex-inspired. Only the
@@ -85,7 +85,7 @@
         order: 6
         plugins:
           - id: persona
-            name: dsh-harness-codex/persona
+            name: '@spectershell/dsh-harness-codex/persona'
           - id: agent-instructions
             name: '@deepseek-ai/dsh-agent-instructions'
             config:
@@ -93,11 +93,11 @@
               instructionFileCandidates: []
               localInstructionFileCandidates: []
           - id: project-instructions
-            name: dsh-harness-codex/instructions
+            name: '@spectershell/dsh-harness-codex/instructions'
             config:
               maxBytes: 32768
           - id: exec
-            name: dsh-harness-codex/exec
+            name: '@spectershell/dsh-harness-codex/exec'
             disabled: !!js process.platform === 'win32'
           - id: tool-fs
             name: '@deepseek-ai/dsh-tool-fs'
@@ -108,15 +108,15 @@
               readImage: false
               applyPatch: true
           - id: freeform-patch
-            name: dsh-harness-codex/freeform
+            name: '@spectershell/dsh-harness-codex/freeform'
             config:
               enabled: false
           - id: update-plan
-            name: dsh-harness-codex/plan
+            name: '@spectershell/dsh-harness-codex/plan'
           - id: view-image
-            name: dsh-harness-codex/image
+            name: '@spectershell/dsh-harness-codex/image'
           - id: surface
-            name: dsh-harness-codex/surface
+            name: '@spectershell/dsh-harness-codex/surface'
             config:
               # Only the built-ins that duplicate a Codex tool are hidden:
               # reading/searching (exec_command), editing (apply_patch),
@@ -130,6 +130,6 @@
               compaction: true
             config:
               - id: compaction-codex
-                name: dsh-harness-codex/compaction
+                name: '@spectershell/dsh-harness-codex/compaction'
               - id: command-compact
                 name: '@deepseek-ai/dsh-command-compact'
