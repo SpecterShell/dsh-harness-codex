@@ -13,7 +13,7 @@
 dsh plugin --profile web add @spectershell/dsh-harness-codex
 ```
 
-重启 DSH 后，新建会话时可以选择 **Codex mode**、**Codex+ mode**、**Codex PTC** 和 **Codex Creator** 预设。本包要求 DSH 0.2.2-rc.1 或之后的 0.2 版本，以及 Node.js 24.9 或更新版本。
+重启 DSH 后，新建会话时可以选择 **Codex mode**、**Codex strict mode**、**Codex PTC** 和 **Codex Creator** 预设。本包要求 DSH 0.2.2-rc.1 或之后的 0.2 版本，以及 Node.js 24.9 或更新版本。
 
 ## 功能
 
@@ -21,8 +21,8 @@ dsh plugin --profile web add @spectershell/dsh-harness-codex
 
 | 预设 | 说明 |
 | --- | --- |
-| **Codex mode** | 严格的预设，模型只能看到 Codex 工具。<ul><li>五个 Codex 工具，外加加载本包自带技能的 `skill` 工具</li><li>其他 profile 插件提供的工具都会被隐藏</li></ul> |
-| **Codex+ mode** | 同一套 Codex 工具，外加宿主中不冲突的工具。<ul><li>只隐藏与 Codex 工具重复的内置工具（`read`、`write`、`edit`、`glob`、`grep`、`read_image`、`bash`、`pwsh`、`todo_write`）</li><li>其余工具照常可用，包括之后安装的插件提供的工具</li></ul> |
+| **Codex mode** | 同一套 Codex 工具，外加宿主中不冲突的工具。<ul><li>只隐藏与 Codex 工具重复的内置工具（`read`、`write`、`edit`、`glob`、`grep`、`read_image`、`bash`、`pwsh`、`todo_write`）</li><li>其余工具照常可用，包括之后安装的插件提供的工具</li></ul> |
+| **Codex strict mode** | 严格的预设，模型只能看到 Codex 工具。<ul><li>五个 Codex 工具，外加加载本包自带技能的 `skill` 工具</li><li>其他 profile 插件提供的工具都会被隐藏</li></ul> |
 | **Codex PTC** | 同一套 Codex 工具，改成在程序里调用。<ul><li>`run_code` 是唯一可以直接调用的工具，所有 Codex 工具都在程序内可用</li><li>带有 DSH 标准预设中的委派组，`subagent`、`subagent_fork` 和 `workflow` 也能在程序里使用</li><li>persona 保留继承的提示词段落而不替换它们，free-form 补丁桥保持关闭，因为 PTC 会拒绝 `run_code` 之外的直接工具调用</li></ul> |
 | **Codex Creator** | 严格工具集，外加编写 DSH 插件的工具。<ul><li>查询实时运行时接口的 `cordis_inspect_list` 和 `cordis_inspect_query`</li><li>`skill` 加载器</li><li>profile 提供插件上下文时的插件管理和插件市场工具</li></ul> |
 
@@ -38,11 +38,11 @@ dsh plugin --profile web add @spectershell/dsh-harness-codex
 | `update_plan` | 更新待办面板中显示的计划。 |
 | `view_image` | 让模型查看本地图片。 |
 
-参数和行为细节见 [docs/tools.zh-Hans.md](docs/tools.zh-Hans.md)。Codex mode、Codex+ mode 和 Codex Creator 还会提供 `skill`。
+参数和行为细节见 [docs/tools.zh-Hans.md](docs/tools.zh-Hans.md)。Codex mode、Codex strict mode 和 Codex Creator 还会提供 `skill`。
 
 ### 技能
 
-本包附带 `review-agent` 技能，改编自 Codex 的 review-agent 示例，按 Apache License 2.0 授权，出处见 [NOTICE](NOTICE)。Codex mode、Codex+ mode 和 Codex Creator 预设挂载的技能提供方指向本包的 [skills/](skills/) 目录，需要审阅改动时模型可以加载这套审阅方法。PTC 预设不挂载技能相关行：PTC 只接受 `run_code` 作为直接调用，在程序里取回的说明只会进入程序结果，不会作为技能指令送到模型。Codex 自带的其他技能（图片生成、OpenAI 产品文档、TUI 状态栏）依赖 DSH 没有的 Codex 功能，因此不在移植范围内，通过 ChatGPT 订阅生成图片已由 dsh-codex-subscription 覆盖。
+本包附带 `review-agent` 技能，改编自 Codex 的 review-agent 示例，按 Apache License 2.0 授权，出处见 [NOTICE](NOTICE)。Codex mode、Codex strict mode 和 Codex Creator 预设挂载的技能提供方指向本包的 [skills/](skills/) 目录，需要审阅改动时模型可以加载这套审阅方法。PTC 预设不挂载技能相关行：PTC 只接受 `run_code` 作为直接调用，在程序里取回的说明只会进入程序结果，不会作为技能指令送到模型。Codex 自带的其他技能（图片生成、OpenAI 产品文档、TUI 状态栏）依赖 DSH 没有的 Codex 功能，因此不在移植范围内，通过 ChatGPT 订阅生成图片已由 dsh-codex-subscription 覆盖。
 
 ### 提示词
 

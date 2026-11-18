@@ -14,10 +14,10 @@
     - id: preset-codex-inspired
       name: '@deepseek-ai/dsh-agent-preset'
       config:
-        id: codex
-        name: Codex mode
+        id: codex-strict
+        name: Codex strict mode
         description: Shell inspection, patch editing and one process per command, in the style of Codex.
-        order: 5
+        order: 6
         plugins:
           - id: persona
             name: '@spectershell/dsh-harness-codex/persona'
@@ -83,10 +83,10 @@
     - id: preset-codex-extended
       name: '@deepseek-ai/dsh-agent-preset'
       config:
-        id: codex-extended
-        name: Codex+ mode
+        id: codex
+        name: Codex mode
         description: The Codex tool set, plus host tools that do not overlap with it.
-        order: 6
+        order: 5
         plugins:
           - id: persona
             name: '@spectershell/dsh-harness-codex/persona'
@@ -269,17 +269,10 @@
           - id: surface
             name: '@spectershell/dsh-harness-codex/surface'
             config:
-              # The allow-only mask filters the preset's own registrations too
-              # when an Agent views them, so every Creator tool is listed.
-              allow:
-                - exec_command
-                - write_stdin
-                - apply_patch
-                - update_plan
-                - view_image
-                - cordis_inspect_list
-                - cordis_inspect_query
-                - skill
+              # Same mask as Codex mode. The Creator tools register in the
+              # preset scope, so the deny list does not hide them.
+              deny: [read, write, edit, glob, grep, read_image, bash, pwsh, todo_write]
+              allow: [exec_command, write_stdin, apply_patch, update_plan, view_image]
           - id: tool-cordis
             name: '@deepseek-ai/dsh-tool-cordis'
           - id: skill-filesystem
