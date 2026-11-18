@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Codex-style agent preset for DeepSeek Harness",
   "type": "module",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "author": "SpecterShell",
   "homepage": "https://github.com/SpecterShell/dsh-harness-codex#readme",
   "repository": {

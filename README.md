@@ -80,4 +80,4 @@ The tests require a DSH installation (`npm install -g @deepseek-ai/dsh`). [CONTR
 
 ## License
 
-MIT. The bundled Codex prompts and patch grammar are Apache-2.0; see [NOTICE](NOTICE).
+Apache-2.0. Attribution for the bundled Codex material is in [NOTICE](NOTICE).
