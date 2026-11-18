@@ -15,7 +15,19 @@ dsh plugin --profile web add @spectershell/dsh-harness-codex
 
 After restarting DSH, the **Codex-inspired** preset is available when a session is started. The package requires DSH 0.2.2-rc.1 or a later 0.2 release and Node.js 24.9 or newer.
 
-## Tools
+## What this plugin does
+
+### Presets
+
+The package declares two presets.
+
+**Codex-inspired** is the strict preset. The model sees the five Codex tools and nothing else. Tools contributed by other profile plugins are hidden.
+
+**Codex-extended** pairs the same Codex tools with the host's non-conflicting tools. It hides only the built-ins that duplicate a Codex tool (`read`, `write`, `edit`, `glob`, `grep`, `read_image`, `bash`, `pwsh`, `todo_write`) and lets everything else through, including tools from plugins installed later.
+
+User-level and project-level `AGENTS.md` files continue to apply in both.
+
+### Tools
 
 | Tool | Description |
 | --- | --- |
@@ -27,17 +39,7 @@ After restarting DSH, the **Codex-inspired** preset is available when a session 
 
 The parameter and behavior details are in [docs/tools.md](docs/tools.md).
 
-## Presets
-
-The package declares two presets.
-
-**Codex-inspired** is the strict preset. The model sees the five Codex tools and nothing else. Tools contributed by other profile plugins are hidden.
-
-**Codex-extended** pairs the same Codex tools with the host's non-conflicting tools. It hides only the built-ins that duplicate a Codex tool (`read`, `write`, `edit`, `glob`, `grep`, `read_image`, `bash`, `pwsh`, `todo_write`) and lets everything else through, including tools from plugins installed later.
-
-User-level and project-level `AGENTS.md` files continue to apply in both.
-
-## Prompts
+### Prompts
 
 The preset selects a system prompt from the model. GPT models receive Codex's own prompt for that model, taken from Codex's model catalog. Other models receive [prompts/original.md](prompts/original.md).
 
@@ -58,19 +60,24 @@ The preset selects a system prompt from the model. GPT models receive Codex's ow
 
 The catalog files are generated from a Codex checkout. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Instructions
+### Instructions
 
 Project instruction files load with Codex's precedence: within each directory, `AGENTS.override.md` replaces `AGENTS.md`, and the chain runs from the project root down to the working directory under a 32 KiB budget. User-level files continue to come from DSH, and project files are re-read at every step.
 
-## Free-form patches
+### Free-form patches
 
 Codex presents `apply_patch` to GPT models as a free-form grammar tool rather than a JSON function. This package can reproduce that behavior on any provider that speaks the OpenAI Responses API, including the ChatGPT subscription, OpenRouter and compatible endpoints. The feature is disabled by default. See [docs/freeform.md](docs/freeform.md).
 
-## Compaction
+### Compaction
 
 The preset replaces DSH's own compaction engine with a local one that follows Codex's rule. When the context approaches 90% of the model's window, the history is replaced by a summary plus the newest original user messages that fit in 20,000 tokens. `/compact` runs the same engine on demand, automatic compaction that would not shrink the context is skipped, and a failed summary leaves the context untouched.
 
-Cloud compaction is not part of this package. For server-side compaction with the ChatGPT subscription, use a provider plugin such as [dsh-codex-subscription](https://github.com/WSL043/dsh-codex-subscription).
+## What this plugin does not do
+
+- **Provide models.** The preset runs on the model providers already configured in DSH. The package registers no provider and holds no credentials.
+- **Cloud compaction.** Server-side compaction belongs to provider plugins such as [dsh-codex-subscription](https://github.com/WSL043/dsh-codex-subscription), which the ChatGPT subscription already supplies. This package only replaces the local engine.
+- **Codex-only skills and tools.** Codex's bundled skills for image generation, OpenAI product documentation and its TUI statusline depend on Codex features that DSH does not have, so they are not ported. Image generation through the ChatGPT subscription is already covered by dsh-codex-subscription.
+- **Run Codex itself.** The package does not install or invoke the Codex CLI. It reproduces Codex's tool surface, prompts and conventions inside DSH.
 
 ## Settings
 
