@@ -85,6 +85,9 @@ const CODEX_TOOLS = ['apply_patch', 'exec_command', 'update_plan', 'view_image',
 /** The skill loader the three non-PTC presets add beside the Codex tools. */
 const SKILL_TOOLS = ['skill']
 
+/** The delegation group every preset mounts. */
+const DELEGATION_TOOLS = ['list_agents', 'list_subagent_models', 'send_message', 'subagent', 'subagent_fork', 'wait_agent', 'workflow']
+
 /** The Creator preset's additions: read-only Cordis inspection and the skill loader. */
 const CREATOR_TOOLS = [
   ...CODEX_TOOLS,
@@ -290,7 +293,7 @@ await test('the codex presets expose the Codex tools and their own additions to 
   t.after(() => removeSkill())
   assert.deepEqual(
     host.tools.schemas(lease.key).map((tool: HostValue) => tool.name).sort(),
-    [...CODEX_TOOLS, ...SKILL_TOOLS].sort(),
+    [...CODEX_TOOLS, ...SKILL_TOOLS, ...DELEGATION_TOOLS].sort(),
     'the deny lives in the preset scope, so that scope sees only the preset tools',
   )
 
@@ -300,7 +303,7 @@ await test('the codex presets expose the Codex tools and their own additions to 
    */
   async function createAgent(id: string) {
     const session = host.sessions.create(id, { meta: { cwd: root } })
-    const agent: { id: string; session: HostValue; ctx: HostValue } = { id: session.id, session, ctx: undefined }
+    const agent: { id: string; session: HostValue; ctx: HostValue; options: HostValue } = { id: session.id, session, ctx: undefined, options: {} }
     await mount(host, {
       name: id,
       inject: ['tools', 'systemPrompt'],
@@ -322,7 +325,7 @@ await test('the codex presets expose the Codex tools and their own additions to 
 
   assert.deepEqual(
     host.tools.schemas(agentScope).map((tool: HostValue) => tool.name).sort(),
-    [...CODEX_TOOLS, ...SKILL_TOOLS].sort(),
+    [...CODEX_TOOLS, ...SKILL_TOOLS, ...DELEGATION_TOOLS].sort(),
     'the Agent sees exactly the five Codex tools and the skill loader',
   )
   assert.equal(host.tools.get('working_directory', agentScope), undefined)
@@ -334,7 +337,7 @@ await test('the codex presets expose the Codex tools and their own additions to 
   host.tools.register(hostTool('mcp__demo__search'))
   assert.deepEqual(
     host.tools.schemas(agentScope).map((tool: HostValue) => tool.name).sort(),
-    [...CODEX_TOOLS, ...SKILL_TOOLS].sort(),
+    [...CODEX_TOOLS, ...SKILL_TOOLS, ...DELEGATION_TOOLS].sort(),
     'a late host tool does not leak into an existing Agent scope',
   )
 
@@ -354,7 +357,7 @@ await test('the codex presets expose the Codex tools and their own additions to 
   await presets.recompose(plainAgent.ctx, 'codex-strict')
   assert.deepEqual(
     host.tools.schemas(plainScope).map((tool: HostValue) => tool.name).sort(),
-    [...CODEX_TOOLS, ...SKILL_TOOLS].sort(),
+    [...CODEX_TOOLS, ...SKILL_TOOLS, ...DELEGATION_TOOLS].sort(),
     'switching to codex-strict hides the host tools',
   )
   await presets.recompose(plainAgent.ctx, 'plain')
@@ -379,8 +382,8 @@ await test('the codex presets expose the Codex tools and their own additions to 
   const extendedScope = scopeOf(extendedAgent.ctx)
   assert.deepEqual(
     host.tools.schemas(extendedScope).map((tool: HostValue) => tool.name).sort(),
-    [...CODEX_TOOLS, 'mcp__demo__search', 'skill', 'working_directory'].sort(),
-    'the extended preset keeps non-conflicting host tools',
+    [...CODEX_TOOLS, ...DELEGATION_TOOLS, 'mcp__demo__search', 'skill', 'working_directory'].sort(),
+    'the extended preset keeps non-conflicting host tools and the delegation group',
   )
   host.tools.register(hostTool('read'))
   assert.equal(host.tools.get('read', extendedScope), undefined, 'a deny-listed built-in stays hidden when it registers late')
@@ -388,7 +391,7 @@ await test('the codex presets expose the Codex tools and their own additions to 
   assert.ok(host.tools.get('web_search', extendedScope), 'a non-conflicting tool registers into an existing Agent scope')
   assert.deepEqual(
     host.tools.schemas(agentScope).map((tool: HostValue) => tool.name).sort(),
-    [...CODEX_TOOLS, ...SKILL_TOOLS].sort(),
+    [...CODEX_TOOLS, ...SKILL_TOOLS, ...DELEGATION_TOOLS].sort(),
     'the strict preset is unaffected by the extended one',
   )
 
@@ -437,7 +440,7 @@ await test('the codex presets expose the Codex tools and their own additions to 
   const creatorScope = scopeOf(creatorAgent.ctx)
   assert.deepEqual(
     host.tools.schemas(creatorScope).map((tool: HostValue) => tool.name).sort(),
-    [...CREATOR_TOOLS, 'mcp__demo__search', 'web_search', 'working_directory'].sort(),
+    [...CREATOR_TOOLS, ...DELEGATION_TOOLS, 'mcp__demo__search', 'web_search', 'working_directory'].sort(),
     'the Creator Agent sees the Codex tools, Cordis inspection, the skill loader and the host tools',
   )
   assert.ok(host.tools.get('working_directory', creatorScope), 'a non-conflicting host tool passes the Creator mask')
@@ -461,6 +464,6 @@ await test('the codex presets expose the Codex tools and their own additions to 
   t.diagnostic(JSON.stringify({ scope: 'preset', assembly: presetPrompt }))
   const agentPrompt = await host.systemPrompt.assemble({ scope: agentScope, agent })
   assert.deepEqual(await host.systemPrompt.assemble({ scope: agentScope, agent }), agentPrompt)
-  assert.deepEqual(agentPrompt.tools.map((tool: HostValue) => tool.name).sort(), [...CODEX_TOOLS, ...SKILL_TOOLS].sort())
+  assert.deepEqual(agentPrompt.tools.map((tool: HostValue) => tool.name).sort(), [...CODEX_TOOLS, ...SKILL_TOOLS, ...DELEGATION_TOOLS].sort())
   t.diagnostic(JSON.stringify({ scope: 'agent', assembly: agentPrompt }))
 })

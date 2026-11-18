@@ -21,8 +21,8 @@ After restarting DSH, the **Codex mode**, **Codex strict mode**, **Codex PTC** a
 
 | Preset | Description |
 | --- | --- |
-| **Codex mode** | The Codex tools plus the host tools that do not overlap with them. <ul><li>Hides only the built-ins that duplicate a Codex tool (`read`, `write`, `edit`, `glob`, `grep`, `read_image`, `bash`, `pwsh`, `todo_write`)</li><li>Everything else passes through, including tools from plugins installed later</li></ul> |
-| **Codex strict mode** | The strict preset: the model sees only the Codex tools. <ul><li>Five Codex tools, plus the `skill` loader for the skills this package ships</li><li>Tools contributed by other profile plugins are hidden</li></ul> |
+| **Codex mode** | The Codex tools plus the host tools that do not overlap with them. <ul><li>Hides only the built-ins that duplicate a Codex tool (`read`, `write`, `edit`, `glob`, `grep`, `read_image`, `bash`, `pwsh`, `todo_write`)</li><li>Everything else passes through, including tools from plugins installed later</li><li>Subagents, messaging and workflows for delegation</li></ul> |
+| **Codex strict mode** | The strict preset: the model sees only the Codex tools. <ul><li>Five Codex tools, plus the `skill` loader for the skills this package ships</li><li>Tools contributed by other profile plugins are hidden</li><li>Subagents, messaging and workflows for delegation</li></ul> |
 | **Codex PTC** | The Codex tools reached from inside one program per call. <ul><li>`run_code` is the only tool called directly; every Codex tool is available inside the program</li><li>Carries the delegation group from DSH's standard preset, so `subagent`, `subagent_fork` and `workflow` work from a program</li><li>The persona keeps the inherited guidance instead of replacing it, and the free-form patch bridge stays off because PTC rejects direct tool calls other than `run_code`</li></ul> |
 | **Codex Creator** | The strict tool set plus the tools for writing DSH plugins. <ul><li>`cordis_inspect_list` and `cordis_inspect_query` for the live runtime API</li><li>The `skill` loader</li><li>The plugin manager and market tools when the profile exposes a plugin context</li></ul> |
 
