@@ -25,11 +25,13 @@ After restarting DSH, the **Codex-inspired** preset is available when a session 
 | `update_plan` | Updates the plan shown in the To-dos panel. |
 | `view_image` | Shows a local image to the model. |
 
+The parameter and behavior details are in [docs/tools.md](docs/tools.md).
+
 ## Presets
 
 The package declares two presets.
 
-**Codex-inspired** is the strict preset. The model sees the five Codex tools and nothing else; tools contributed by other profile plugins are hidden.
+**Codex-inspired** is the strict preset. The model sees the five Codex tools and nothing else. Tools contributed by other profile plugins are hidden.
 
 **Codex-extended** pairs the same Codex tools with the host's non-conflicting tools. It hides only the built-ins that duplicate a Codex tool (`read`, `write`, `edit`, `glob`, `grep`, `read_image`, `bash`, `pwsh`, `todo_write`) and lets everything else through, including tools from plugins installed later.
 
@@ -54,14 +56,29 @@ The preset selects a system prompt from the model. GPT models receive Codex's ow
 | [prompts/codex/compact-prompt.md](prompts/codex/compact-prompt.md) | Compaction request |
 | [prompts/codex/compact-summary-prefix.md](prompts/codex/compact-summary-prefix.md) | Compaction summary prefix |
 
-The catalog files are generated from a Codex checkout; see [CONTRIBUTING.md](CONTRIBUTING.md).
+The catalog files are generated from a Codex checkout. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Instructions
+
+Project instruction files load with Codex's precedence: within each directory, `AGENTS.override.md` replaces `AGENTS.md`, and the chain runs from the project root down to the working directory under a 32 KiB budget. User-level files continue to come from DSH, and project files are re-read at every step.
 
 ## Free-form patches
 
 Codex presents `apply_patch` to GPT models as a free-form grammar tool rather than a JSON function. This package can reproduce that behavior on any provider that speaks the OpenAI Responses API, including the ChatGPT subscription, OpenRouter and compatible endpoints. The feature is disabled by default. See [docs/freeform.md](docs/freeform.md).
 
+## Compaction
+
+The preset replaces DSH's own compaction engine with a local one that follows Codex's rule. When the context approaches 90% of the model's window, the history is replaced by a summary plus the newest original user messages that fit in 20,000 tokens. `/compact` runs the same engine on demand, automatic compaction that would not shrink the context is skipped, and a failed summary leaves the context untouched.
+
+Cloud compaction is not part of this package. For server-side compaction with the ChatGPT subscription, use a provider plugin such as [dsh-codex-subscription](https://github.com/WSL043/dsh-codex-subscription).
+
+## Settings
+
+The plugin's settings form, rendered in the DSH settings and on the plugin's detail page under Plugins, holds the free-form patch controls, the surface allow list and the project instruction budget. Saved values apply live and need no restart. The same values are served as JSON at `/codex/settings.json` for diagnostics. The fields are listed in [docs/configuration.md](docs/configuration.md).
+
 ## Documentation
 
+- [Tools](docs/tools.md)
 - [Configuration](docs/configuration.md)
 - [Free-form patches](docs/freeform.md)
 - [Differences from Codex](docs/differences.md)
@@ -80,4 +97,4 @@ The tests require a DSH installation (`npm install -g @deepseek-ai/dsh`). [CONTR
 
 ## License
 
-Apache-2.0. Attribution for the bundled Codex material is in [NOTICE](NOTICE).
+[Apache-2.0](LICENSE). Attribution for the bundled Codex material is in [NOTICE](NOTICE).
