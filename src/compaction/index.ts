@@ -1,5 +1,5 @@
 /**
- * Codex-style local compaction for the codex-inspired preset.
+ * Codex-style local compaction for the Codex preset.
  *
  * Codex does not keep a recent stretch of the conversation. It sends the
  * current history plus a compaction prompt, then replaces the history with the

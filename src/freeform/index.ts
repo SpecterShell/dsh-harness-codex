@@ -1,5 +1,5 @@
 /**
- * Opt-in freeform `apply_patch` bridge for the Codex-inspired preset.
+ * Opt-in freeform `apply_patch` bridge for the Codex preset.
  *
  * Enable it per provider, model, or provider+model with glob rules. The
  * bridge only changes the OpenAI Responses API wire: DSH keeps persisting

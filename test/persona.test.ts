@@ -60,6 +60,39 @@ test('persona follows the Codex model mapping and keeps other models original', 
   assert.deepEqual(first, second)
 })
 
+test('persona is a complete section by default and can keep inherited sections', async t => {
+  const host = new Context()
+  t.after(() => host.fiber.dispose())
+  await mount(host, SystemPrompt, { includeHarnessIdentity: false })
+  host.systemPrompt.section({ name: 'proof:inherited', order: 0, text: 'inherited guidance' })
+
+  const original = await read('original.md')
+  const assemble = async (config?: unknown) => {
+    const key = {}
+    const scope = createScope(host, key)
+    await scope.ctx.fiber.await()
+    await mount(scope.ctx, persona, config)
+    return host.systemPrompt.assemble({
+      scope: key,
+      modelSelection: { provider: 'deepseek', model: 'deepseek-flash' },
+    })
+  }
+
+  // The schema default is the historic behavior: the selected persona replaces
+  // every inherited section.
+  assert.equal(persona.Config({}).complete, true)
+  const complete = await assemble()
+  assert.equal(renderPrompt(complete), original)
+
+  // `complete: false` omits the flag, so the inherited section renders beside
+  // the persona instead of being suppressed.
+  const partial = await assemble({ complete: false })
+  const prompt = renderPrompt(partial)
+  assert.notEqual(prompt, original)
+  assert.ok(prompt.startsWith(original), prompt)
+  assert.ok(prompt.endsWith('inherited guidance'), prompt)
+})
+
 const codexCheckout = process.env.CODEX_CHECKOUT ?? ''
 const codexMissing = `Codex checkout not found at ${codexCheckout}`
 

@@ -1,12 +1,11 @@
-# Codex-inspired agent preset. The host row carries the settings schema and
-# service; the preset declaration below mounts its plugins only for Agents that
-# select the preset.
+# Codex agent preset. The host row carries the settings schema and service;
+# the preset declaration below mounts its plugins only for Agents that select
+# the preset.
 #
-# exec_command, write_stdin, update_plan and view_image come from this
-# package; apply_patch is the native dsh-tool-fs implementation, which already
-# uses Codex's patch grammar and `input` field. freeform-patch is an opt-in
-# wire bridge that sends that same tool to Responses API models as a custom
-# grammar tool; it is disabled by default.
+# exec_command, write_stdin, update_plan, view_image and apply_patch come from
+# this package; apply_patch is our port of Codex's own parser and text updater.
+# freeform-patch is an opt-in wire bridge that sends that same tool to Responses
+# API models as a custom grammar tool; it is disabled by default.
 - insert:
     # The host entry carries the Config the Settings UI renders and provides
     # the live `codexSettings` service the preset rows read when present.
@@ -15,8 +14,8 @@
     - id: preset-codex-inspired
       name: '@deepseek-ai/dsh-agent-preset'
       config:
-        id: codex-inspired
-        name: Codex-inspired
+        id: codex
+        name: Codex mode
         description: Shell inspection, patch editing and one process per command, in the style of Codex.
         order: 5
         plugins:
@@ -37,14 +36,8 @@
           - id: exec
             name: '@spectershell/dsh-harness-codex/exec'
             disabled: !!js process.platform === 'win32'
-          - id: tool-fs
-            name: '@deepseek-ai/dsh-tool-fs'
-            config:
-              read: false
-              write: false
-              edit: false
-              readImage: false
-              applyPatch: true
+          - id: patch
+            name: '@spectershell/dsh-harness-codex/patch'
           - id: freeform-patch
             name: '@spectershell/dsh-harness-codex/freeform'
             config:
@@ -58,7 +51,18 @@
             config:
               # Never deny these names, so a host tool that happens to share a
               # name with one of ours is shadowed by our row instead of hiding it.
-              allow: [exec_command, write_stdin, apply_patch, update_plan, view_image]
+              # `skill` is the preset's own tool; the mask filters preset-scope
+              # registrations too when an Agent views them, so it is listed.
+              allow: [exec_command, write_stdin, apply_patch, update_plan, view_image, skill]
+          # The `skill` tool is allowed in the surface row above; the provider
+          # row only supplies the catalog and registers no tool.
+          - id: skill-filesystem
+            name: '@deepseek-ai/dsh-skill-filesystem'
+            config:
+              customSkillDirs:
+                - !!js process.getBuiltinModule('node:path').join(process.getBuiltinModule('node:path').dirname(process.getBuiltinModule('node:module').createRequire(baseUrl).resolve('@spectershell/dsh-harness-codex/package.json')), 'skills')
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
           - id: compaction
             name: cordis:group
             group: true
@@ -72,7 +76,7 @@
                 name: '@spectershell/dsh-harness-codex/compaction'
               - id: command-compact
                 name: '@deepseek-ai/dsh-command-compact'
-    # The extended preset shares every row with Codex-inspired. Only the
+    # The extended preset shares every row with Codex mode. Only the
     # surface row differs: instead of hiding every host tool, it masks the
     # built-in tools that overlap with the Codex ones, so plugins installed
     # later (web, MCP, skills) remain available.
@@ -80,8 +84,8 @@
       name: '@deepseek-ai/dsh-agent-preset'
       config:
         id: codex-extended
-        name: Codex-extended
-        description: The Codex-inspired tool set, plus host tools that do not overlap with it.
+        name: Codex+ mode
+        description: The Codex tool set, plus host tools that do not overlap with it.
         order: 6
         plugins:
           - id: persona
@@ -99,14 +103,8 @@
           - id: exec
             name: '@spectershell/dsh-harness-codex/exec'
             disabled: !!js process.platform === 'win32'
-          - id: tool-fs
-            name: '@deepseek-ai/dsh-tool-fs'
-            config:
-              read: false
-              write: false
-              edit: false
-              readImage: false
-              applyPatch: true
+          - id: patch
+            name: '@spectershell/dsh-harness-codex/patch'
           - id: freeform-patch
             name: '@spectershell/dsh-harness-codex/freeform'
             config:
@@ -123,6 +121,180 @@
               # images (view_image), plans (update_plan) and shells (exec).
               deny: [read, write, edit, glob, grep, read_image, bash, pwsh, todo_write]
               allow: [exec_command, write_stdin, apply_patch, update_plan, view_image]
+          # The deny mask below does not name `skill`, so the row stays visible.
+          - id: skill-filesystem
+            name: '@deepseek-ai/dsh-skill-filesystem'
+            config:
+              customSkillDirs:
+                - !!js process.getBuiltinModule('node:path').join(process.getBuiltinModule('node:path').dirname(process.getBuiltinModule('node:module').createRequire(baseUrl).resolve('@spectershell/dsh-harness-codex/package.json')), 'skills')
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+            config:
+              - id: compaction-codex
+                name: '@spectershell/dsh-harness-codex/compaction'
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+    # PTC keeps the extended preset's deny-list surface and adds the executor
+    # that makes `run_code` the only directly callable tool. Every other tool
+    # in the preset is reachable from inside a program.
+    - id: preset-codex-ptc
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: codex-ptc
+        name: Codex PTC
+        description: The Codex tools, reached from inside one program per call.
+        order: 7
+        plugins:
+          - id: persona
+            name: '@spectershell/dsh-harness-codex/persona'
+            config:
+              # Keep every inherited prompt section instead of replacing them;
+              # the PTC transport instructions and tool SDK render after the
+              # persona.
+              complete: false
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 32768
+              instructionFileCandidates: []
+              localInstructionFileCandidates: []
+          - id: project-instructions
+            name: '@spectershell/dsh-harness-codex/instructions'
+            config:
+              maxBytes: 32768
+          - id: exec
+            name: '@spectershell/dsh-harness-codex/exec'
+            disabled: !!js process.platform === 'win32'
+          - id: patch
+            name: '@spectershell/dsh-harness-codex/patch'
+          - id: freeform-patch
+            name: '@spectershell/dsh-harness-codex/freeform'
+            config:
+              # PTC's transport rejects direct tool calls other than run_code,
+              # so a free-form apply_patch has no direct call route to serve.
+              enabled: false
+          - id: update-plan
+            name: '@spectershell/dsh-harness-codex/plan'
+          - id: view-image
+            name: '@spectershell/dsh-harness-codex/image'
+          - id: surface
+            name: '@spectershell/dsh-harness-codex/surface'
+            config:
+              deny: [read, write, edit, glob, grep, read_image, bash, pwsh, todo_write]
+              allow: [exec_command, write_stdin, apply_patch, update_plan, view_image]
+          # Same delegation composition as DSH's standard preset. The isolate
+          # on workflowEngine is mandatory: the group owns its engine row and
+          # must not share or replace the deployment's engine.
+          - id: delegation
+            name: cordis:group
+            group: true
+            isolate:
+              workflowEngine: true
+            config:
+              - id: tool-subagent-control
+                name: '@deepseek-ai/dsh-tool-subagent-control'
+                config:
+                  interrupt: false
+              - id: tool-subagent
+                name: '@deepseek-ai/dsh-tool-subagent'
+                config:
+                  provider: spawn
+                  toolName: subagent
+                  modelSelection: true
+                  modelDiscovery: true
+              - id: tool-subagent-fork
+                name: '@deepseek-ai/dsh-tool-subagent'
+                config:
+                  provider: fork
+                  toolName: subagent_fork
+              - id: workflow-ptc
+                name: '@deepseek-ai/dsh-workflow-ptc'
+                config:
+                  provider: spawn
+              - id: tool-workflow
+                name: '@deepseek-ai/dsh-tool-workflow'
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+            config:
+              - id: compaction-codex
+                name: '@spectershell/dsh-harness-codex/compaction'
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+          - id: tool-executor-ptc
+            name: '@deepseek-ai/dsh-tool-executor-ptc'
+    # Creator starts from the strict preset and adds the tooling for writing
+    # DSH plugins: runtime inspection, the package's skills, and the plugin
+    # manager and market tools when a profile context is available.
+    - id: preset-codex-creator
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: codex-creator
+        name: Codex Creator
+        description: The Codex tools, plus the tools for writing DSH plugins.
+        order: 8
+        plugins:
+          - id: persona
+            name: '@spectershell/dsh-harness-codex/persona'
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 32768
+              instructionFileCandidates: []
+              localInstructionFileCandidates: []
+          - id: project-instructions
+            name: '@spectershell/dsh-harness-codex/instructions'
+            config:
+              maxBytes: 32768
+          - id: exec
+            name: '@spectershell/dsh-harness-codex/exec'
+            disabled: !!js process.platform === 'win32'
+          - id: patch
+            name: '@spectershell/dsh-harness-codex/patch'
+          - id: freeform-patch
+            name: '@spectershell/dsh-harness-codex/freeform'
+            config:
+              enabled: false
+          - id: update-plan
+            name: '@spectershell/dsh-harness-codex/plan'
+          - id: view-image
+            name: '@spectershell/dsh-harness-codex/image'
+          - id: surface
+            name: '@spectershell/dsh-harness-codex/surface'
+            config:
+              # The allow-only mask filters the preset's own registrations too
+              # when an Agent views them, so every Creator tool is listed.
+              allow:
+                - exec_command
+                - write_stdin
+                - apply_patch
+                - update_plan
+                - view_image
+                - cordis_inspect_list
+                - cordis_inspect_query
+                - skill
+          - id: tool-cordis
+            name: '@deepseek-ai/dsh-tool-cordis'
+          - id: skill-filesystem
+            name: '@deepseek-ai/dsh-skill-filesystem'
+            config:
+              customSkillDirs:
+                - !!js process.getBuiltinModule('node:path').join(process.getBuiltinModule('node:path').dirname(process.getBuiltinModule('node:module').createRequire(baseUrl).resolve('@spectershell/dsh-harness-codex/package.json')), 'skills')
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
+          - id: tool-plugin-manager
+            name: '@deepseek-ai/dsh-plugin-manager/tools'
+            disabled: !!js "!ctx.get('profileContext')"
+          - id: tool-plugin-market
+            name: '@deepseek-ai/dsh-plugin-market/tools'
+            disabled: !!js "!ctx.get('profileContext')"
           - id: compaction
             name: cordis:group
             group: true

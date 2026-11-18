@@ -4,7 +4,8 @@
     "description": "让 AI 按 Codex 的方式工作：用 Shell 查看代码，用补丁修改文件，每条命令独立运行。"
   },
   "approval": {
-    "unsandboxed": "允许这条命令在沙箱外运行：{justification}"
+    "unsandboxed": "允许这条命令在沙箱外运行：{justification}",
+    "unsandboxedFiles": "允许这次文件操作在沙箱外执行：{justification}"
   },
   "settings.title": "Codex 预设",
   "settings.description": "在这里设置 Codex 预设的自由格式补丁，以及预设内保持可见的工具和项目指令预算。",

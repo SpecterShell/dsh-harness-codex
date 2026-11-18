@@ -10,8 +10,7 @@
  * are left out of the schema rather than accepted and ignored.
  */
 
-import en from '../../locale/en.json' with { type: 'json' }
-import zh from '../../locale/zh.json' with { type: 'json' }
+import { approvalText } from '../approval.ts'
 import type {
   ExecCommandArgs,
   ExecContext,
@@ -24,9 +23,6 @@ import type {
 /** DSH mode that matches Codex's unsandboxed execution. */
 const UNSANDBOXED = 'danger-full-access'
 
-/** Locale catalogs for the user-facing approval prompt, keyed as the DSH client expects. */
-const CATALOGS = { en, zh }
-
 /** The override fields this module adds to the `exec_command` schema. */
 export interface SandboxController {
   schemaFields(): Record<string, JsonSchema>
@@ -36,19 +32,6 @@ export interface SandboxController {
     policy: SandboxExecutionPolicy,
     signal: AbortSignal,
   ): Promise<{ argv: string[] }>
-}
-
-/**
- * Localize the approval prompt for every shipped catalog. The client picks the
- * user's language, and the model's justification is kept verbatim.
- * @param justification - text shown to the user.
- * @returns a DSH localized-text map.
- */
-function approvalText(justification: string): Record<string, string> {
-  return Object.fromEntries(Object.entries(CATALOGS).map(([locale, catalog]) => [
-    locale,
-    catalog.approval.unsandboxed.replace('{justification}', justification),
-  ] as const))
 }
 
 /**
@@ -115,7 +98,7 @@ async function resolvePolicy(
     toolName: 'exec_command',
     callId: exec.callId,
     reason: `run without the sandbox: ${justification}`,
-    displayReason: approvalText(String(justification)),
+    displayReason: approvalText('unsandboxed', String(justification)),
     signal: exec.signal,
   })
   if (outcome === 'allowed-once') return { ...standing, mode: UNSANDBOXED }

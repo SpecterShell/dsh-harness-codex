@@ -13,19 +13,23 @@
 dsh plugin --profile web add @spectershell/dsh-harness-codex
 ```
 
-重启 DSH 后，新建会话时可以选择 **Codex-inspired** 预设。本包要求 DSH 0.2.2-rc.1 或之后的 0.2 版本，以及 Node.js 24.9 或更新版本。
+重启 DSH 后，新建会话时可以选择 **Codex mode**、**Codex+ mode**、**Codex PTC** 和 **Codex Creator** 预设。本包要求 DSH 0.2.2-rc.1 或之后的 0.2 版本，以及 Node.js 24.9 或更新版本。
 
 ## 本插件做什么
 
 ### 预设
 
-本包声明两个预设。
+本包声明四个预设。
 
-**Codex-inspired** 是严格的预设。模型只能看到五个 Codex 工具，其他 profile 插件提供的工具都会被隐藏。
+**Codex mode** 是严格的预设。模型能看到五个 Codex 工具，以及加载本包自带技能的 `skill` 工具。其他 profile 插件提供的工具都会被隐藏。
 
-**Codex-extended** 在同一套 Codex 工具之外保留宿主中不冲突的工具。它只隐藏与 Codex 工具重复的内置工具（`read`、`write`、`edit`、`glob`、`grep`、`read_image`、`bash`、`pwsh`、`todo_write`），其余工具照常可用，包括之后安装的插件提供的工具。
+**Codex+ mode** 在同一套 Codex 工具之外保留宿主中不冲突的工具。它只隐藏与 Codex 工具重复的内置工具（`read`、`write`、`edit`、`glob`、`grep`、`read_image`、`bash`、`pwsh`、`todo_write`），其余工具照常可用，包括之后安装的插件提供的工具。
 
-用户级和项目级的 `AGENTS.md` 在两个预设中都照常生效。
+**Codex PTC** 保留同一套 Codex 工具，但改成在程序里调用。`run_code` 是唯一可以直接调用的工具，所有 Codex 工具都在程序内可用。预设还带上 DSH 标准预设中的委派组，所以 `subagent`、`subagent_fork` 和 `workflow` 也能在程序里使用。persona 保留继承的提示词段落，不替换它们；free-form 补丁桥保持关闭，因为 PTC 会拒绝 `run_code` 之外的直接工具调用。
+
+**Codex Creator** 从严格套件出发，加入编写 DSH 插件所需的工具：用来查询实时运行时接口的 `cordis_inspect_list` 和 `cordis_inspect_query`、`skill` 加载器，以及 profile 提供插件上下文时的插件管理和插件市场工具。
+
+用户级和项目级的 `AGENTS.md` 在四个预设中都照常生效。
 
 ### 工具
 
@@ -37,7 +41,11 @@ dsh plugin --profile web add @spectershell/dsh-harness-codex
 | `update_plan` | 更新待办面板中显示的计划。 |
 | `view_image` | 让模型查看本地图片。 |
 
-参数和行为细节见 [docs/tools.zh-Hans.md](docs/tools.zh-Hans.md)。
+参数和行为细节见 [docs/tools.zh-Hans.md](docs/tools.zh-Hans.md)。Codex mode、Codex+ mode 和 Codex Creator 还会提供 `skill`。
+
+### 技能
+
+本包附带 `review-agent` 技能，改编自 Codex 的 review-agent 示例，按 Apache License 2.0 授权，出处见 [NOTICE](NOTICE)。Codex mode、Codex+ mode 和 Codex Creator 预设挂载的技能提供方指向本包的 [skills/](skills/) 目录，需要审阅改动时模型可以加载这套审阅方法。PTC 预设不挂载技能相关行：PTC 只接受 `run_code` 作为直接调用，在程序里取回的说明只会进入程序结果，不会作为技能指令送到模型。
 
 ### 提示词
 
@@ -76,7 +84,7 @@ Codex 向 GPT 模型提供 `apply_patch` 的方式是带语法约束的 free-for
 
 - **不提供模型。** 预设运行在 DSH 已配置的模型服务商之上。本包不注册服务商，也不保存凭据。
 - **不做云端压缩。** 服务端压缩属于服务商插件的职责，ChatGPT 订阅已由 [dsh-codex-subscription](https://github.com/WSL043/dsh-codex-subscription) 提供。本包只替换本地压缩引擎。
-- **不移植 Codex 专属的技能和工具。** Codex 自带的图片生成、OpenAI 产品文档和 TUI 状态栏等技能依赖 DSH 没有的 Codex 功能，因此不在移植范围内。通过 ChatGPT 订阅生成图片已由 dsh-codex-subscription 覆盖。
+- **多数 Codex 专属技能和工具不移植。** Codex 自带的图片生成、OpenAI 产品文档和 TUI 状态栏等技能依赖 DSH 没有的 Codex 功能，因此不在移植范围内。review-agent 技能没有这种依赖，已随包放在 [skills/review-agent](skills/review-agent/SKILL.md)。通过 ChatGPT 订阅生成图片已由 dsh-codex-subscription 覆盖。
 - **不运行 Codex 本体。** 本包不会安装或调用 Codex CLI，只在 DSH 内复现 Codex 的工具面、提示词和约定。
 
 ## 设置

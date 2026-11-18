@@ -391,8 +391,13 @@ function bridgeTools(tools: unknown, instance: BridgeInstance): unknown[] | unde
   return changed ? bridged : undefined
 }
 
-/** The one schema pi-ai's grammar-tool inference accepts. */
-function canonicalPatchTool(tool: unknown): boolean {
+/**
+ * The one schema pi-ai's grammar-tool inference accepts. Exported so the
+ * apply_patch row's contract test can prove its registered schema still passes.
+ * @param tool - a candidate pi-ai tool definition.
+ * @returns whether the bridge may replace it with a grammar tool.
+ */
+export function canonicalPatchTool(tool: unknown): boolean {
   if (!isRecord(tool)) return false
   const parameters = tool.parameters
   if (!isRecord(parameters) || Array.isArray(parameters)) return false

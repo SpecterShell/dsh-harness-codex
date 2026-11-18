@@ -1,5 +1,5 @@
 /**
- * Codex-ordered project instruction files for the Codex-inspired preset.
+ * Codex-ordered project instruction files for the Codex preset.
  *
  * DSH's native `agent-instructions` row loads every candidate in a directory,
  * so it cannot express Codex's first-present rule (`AGENTS.override.md` wins
