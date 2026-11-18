@@ -36,7 +36,7 @@ DSH Web 界面里的预设编辑器是最省事的做法，保存后的改动会
 | --- | --- | --- |
 | 自由格式 apply_patch | 关闭 | 对匹配的请求把 `apply_patch` 作为 OpenAI Responses 语法工具发送。见 [freeform.zh-Hans.md](freeform.zh-Hans.md)。 |
 | 跟随 Codex 模型目录 | 关闭 | 内置 Codex 目录标记为自由格式的模型也一并匹配。 |
-| 服务商与模型规则 | 空 | 每行一条规则，写成 `provider:model`、`provider:` 或 `:model`。`*` 是通配符。规则会追加到预设行的规则后面；留空则只用行配置里的规则。 |
+| 服务商与模型规则 | 空 | 设置页以列表管理规则，可以从服务商和模型的下拉菜单添加，也可以用支持通配符的输入框。存储形式是每行一条规则：`provider:model`、`provider:` 或 `:model`。`*` 是通配符。规则会追加到预设行的规则后面，留空则只用行配置里的规则。 |
 | 保留可见的工具 | 空 | 用逗号或空格分隔的工具名，在预设内保持可见，并与 surface 行的 `allow` 列表叠加。 |
 | 项目指令预算 | 32768 | 项目指令文件的 UTF-8 字节数，范围 1024 到 262144。会覆盖 `project-instructions` 行的 `maxBytes`。 |
 

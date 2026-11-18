@@ -34,7 +34,7 @@ The row configuration in [cordis.patch.yml](../cordis.patch.yml) stays the fallb
 | --- | --- | --- |
 | Free-form apply_patch | Off | Sends `apply_patch` as an OpenAI Responses grammar tool for matching requests. See [freeform.md](freeform.md). |
 | Follow the Codex catalog | Off | Also matches models the bundled Codex catalog marks as free-form. |
-| Provider and model rules | Empty | One rule per line: `provider:model`, `provider:`, or `:model`. `*` is a glob. Rules add to the preset row's rules. An empty field leaves only the row rules. |
+| Provider and model rules | Empty | The settings page lists the rules and adds them from provider and model dropdowns or a wildcard input. The stored form is one rule per line: `provider:model`, `provider:`, or `:model`. `*` is a glob. Rules add to the preset row's rules. An empty list leaves only the row rules. |
 | Tools kept visible | Empty | Comma or space separated tool names that stay visible inside the preset, added to the surface row's `allow` list. |
 | Project instruction budget | 32768 | UTF-8 bytes for project instruction files, 1024 to 262144. Overrides the `project-instructions` row's `maxBytes`. |
 
