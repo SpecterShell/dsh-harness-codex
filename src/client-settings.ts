@@ -126,20 +126,20 @@ const NAMESPACES = ['@spectershell/dsh-harness-codex', 'include:@spectershell/ds
  * with it.
  */
 const STYLE = `
-.@spectershell/dsh-harness-codex-settings-field { padding: 12px 0; border-top: 0.5px solid var(--dsw-alias-border-l2); }
-.@spectershell/dsh-harness-codex-settings-head { display: flex; align-items: center; gap: 8px; }
-.@spectershell/dsh-harness-codex-settings-label { flex: 1; min-width: 0; font-size: 13px; font-weight: 500; line-height: 1.5; color: var(--dsw-alias-label-primary); }
-.@spectershell/dsh-harness-codex-settings-hint { margin: 4px 0 0; font-size: 12px; line-height: 1.5; color: var(--dsw-alias-label-tertiary); }
-.@spectershell/dsh-harness-codex-settings-note { margin: 12px 0 0; font-size: 12px; line-height: 1.5; color: var(--dsw-alias-label-tertiary); }
-.@spectershell/dsh-harness-codex-settings-badge { font-size: 12px; line-height: 1.5; color: var(--dsw-alias-label-tertiary); }
-.@spectershell/dsh-harness-codex-settings-reset { padding: 0; border: 0; background: none; font-size: 12px; line-height: 1.5; color: var(--dsw-alias-label-secondary); cursor: pointer; }
-.@spectershell/dsh-harness-codex-settings-reset:disabled { cursor: default; opacity: 0.5; }
+.dsh-harness-codex-settings-field { padding: 12px 0; border-top: 0.5px solid var(--dsw-alias-border-l2); }
+.dsh-harness-codex-settings-head { display: flex; align-items: center; gap: 8px; }
+.dsh-harness-codex-settings-label { flex: 1; min-width: 0; font-size: 13px; font-weight: 500; line-height: 1.5; color: var(--dsw-alias-label-primary); }
+.dsh-harness-codex-settings-hint { margin: 4px 0 0; font-size: 12px; line-height: 1.5; color: var(--dsw-alias-label-tertiary); }
+.dsh-harness-codex-settings-note { margin: 12px 0 0; font-size: 12px; line-height: 1.5; color: var(--dsw-alias-label-tertiary); }
+.dsh-harness-codex-settings-badge { font-size: 12px; line-height: 1.5; color: var(--dsw-alias-label-tertiary); }
+.dsh-harness-codex-settings-reset { padding: 0; border: 0; background: none; font-size: 12px; line-height: 1.5; color: var(--dsw-alias-label-secondary); cursor: pointer; }
+.dsh-harness-codex-settings-reset:disabled { cursor: default; opacity: 0.5; }
 `
 
-const FIELD_CLASS = '@spectershell/dsh-harness-codex-settings-field'
-const HEAD_CLASS = '@spectershell/dsh-harness-codex-settings-head'
-const LABEL_CLASS = '@spectershell/dsh-harness-codex-settings-label'
-const HINT_CLASS = '@spectershell/dsh-harness-codex-settings-hint'
+const FIELD_CLASS = 'dsh-harness-codex-settings-field'
+const HEAD_CLASS = 'dsh-harness-codex-settings-head'
+const LABEL_CLASS = 'dsh-harness-codex-settings-label'
+const HINT_CLASS = 'dsh-harness-codex-settings-hint'
 
 /** A labelled switch rendered as a two-option segmented control. */
 function ChoiceField(props: {
@@ -172,12 +172,12 @@ function ChoiceField(props: {
         disabled: props.disabled,
         onChange: (next: string) => props.onEdit(next),
       }),
-      props.overridden ? h('span', { key: 'badge', className: '@spectershell/dsh-harness-codex-settings-badge' }, props.overriddenLabel) : null,
+      props.overridden ? h('span', { key: 'badge', className: 'dsh-harness-codex-settings-badge' }, props.overriddenLabel) : null,
       props.overridden
         ? h('button', {
           key: 'reset',
           type: 'button',
-          className: '@spectershell/dsh-harness-codex-settings-reset',
+          className: 'dsh-harness-codex-settings-reset',
           disabled: props.disabled,
           onClick: props.onReset,
         }, props.resetLabel)
@@ -275,7 +275,7 @@ function CodexSettingsCard(props: CardProps): ReactNode {
       onEdit: (text: string) => props.edit('instructionsMaxBytes', text),
       onReset: () => props.resetField('instructionsMaxBytes'),
     }),
-    h('p', { key: 'reload', className: '@spectershell/dsh-harness-codex-settings-note' }, t('settings.reload')),
+    h('p', { key: 'reload', className: 'dsh-harness-codex-settings-note' }, t('settings.reload')),
   ])
 }
 

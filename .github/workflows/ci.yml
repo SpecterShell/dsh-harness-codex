@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: openai/codex
-          ref: 0184dfa6a48f0110dd9c6835522492908e5abcf3
+          ref: ca21fe65d18a9b6326759fb4263c65dfbb645aa5
           path: codex
           sparse-checkout: |
             codex-rs/models-manager

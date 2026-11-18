@@ -10,7 +10,7 @@
  * prompt and summary prefix. Every shipped prompt can then be refreshed from a
  * newer Codex checkout.
  *
- * Expected Codex commit: 0184dfa6a48f0110dd9c6835522492908e5abcf3.
+ * Expected Codex commit: ca21fe65d18a9b6326759fb4263c65dfbb645aa5.
  *
  * Usage: node scripts/extract-codex-prompts.ts <codex-checkout> [out-dir]
  */

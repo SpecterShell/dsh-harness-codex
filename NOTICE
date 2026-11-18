@@ -1,6 +1,6 @@
 This product includes system prompt text copied verbatim from OpenAI Codex
 (https://github.com/openai/codex), commit
-0184dfa6a48f0110dd9c6835522492908e5abcf3. That code is licensed under the
+ca21fe65d18a9b6326759fb4263c65dfbb645aa5. That code is licensed under the
 Apache License, Version 2.0.
 
 Files under prompts/codex/ and their upstream sources:
@@ -8,17 +8,17 @@ Files under prompts/codex/ and their upstream sources:
   prompts/codex/gpt-5.5.md
     codex-rs/models-manager/models.json (gpt-5.5)
   prompts/codex/gpt-5.6-sol.md
-    codex-rs/models-manager/models.json (gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna, codex-auto-review)
+    codex-rs/models-manager/models.json (gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna, codex-auto-review, gpt-daybreak-blue-latest)
   prompts/codex/gpt-6.1-sol.md
     codex-rs/models-manager/models.json (gpt-6.1-sol)
+  prompts/codex/gpt-6.2-sol.md
+    codex-rs/models-manager/models.json (gpt-6.2-sol, gpt-6.2-astra)
   prompts/codex/gpt-6-astra.md
     codex-rs/models-manager/models.json (gpt-6-astra, gpt-6.1-terra)
   prompts/codex/gpt-6-luna.md
     codex-rs/models-manager/models.json (gpt-6-luna)
   prompts/codex/gpt-6-sol.md
     codex-rs/models-manager/models.json (gpt-6-sol)
-  prompts/codex/gpt-daybreak-blue-latest.md
-    codex-rs/models-manager/models.json (gpt-daybreak-blue-latest)
   prompts/codex/gpt-daybreak-red-latest.md
     codex-rs/models-manager/models.json (gpt-daybreak-red-latest)
   prompts/codex/models.json
@@ -37,7 +37,7 @@ before the model's summary. The Apache License 2.0 text is in LICENSE.
 
 The freeform apply_patch grammar in assets/codex/apply_patch.lark is copied
 byte for byte from OpenAI Codex, commit
-0184dfa6a48f0110dd9c6835522492908e5abcf3:
+ca21fe65d18a9b6326759fb4263c65dfbb645aa5:
 
   assets/codex/apply_patch.lark
     codex-rs/core/assets/tools/apply_patch.lark

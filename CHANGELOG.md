@@ -2,6 +2,22 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- The settings card on the plugin's detail page renders with its intended row padding, hairline separators and label and hint typography again. Its class selectors no longer begin with the scoped package name, which browsers dropped as invalid.
+
+## [0.1.2] - 2026-11-18
+
+### Added
+
+- Prompts for GPT-6.2-Sol and GPT-6.2-Astra from Codex's catalog. The bundled prompts now follow Codex commit ca21fe65.
+
+### Fixed
+
+- The settings card's styles render again after the package rename; its CSS class names no longer contain characters that break selectors.
+
 ## [0.1.1] - 2026-11-18
 
 ### Changed
@@ -23,5 +39,6 @@ First public release, under the Apache-2.0 license.
 - A settings form on the plugin's detail page and in DSH settings, backed by a live `codexSettings` service, for the free-form rules, the tools kept visible and the project instruction budget.
 - CI on Linux and macOS, CodeQL, OpenSSF Scorecard and Dependabot. Releases carry a build-provenance attestation and stage on npm with provenance.
 
+[0.1.2]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.1.2
 [0.1.1]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.1.1
 [0.1.0]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.1.0

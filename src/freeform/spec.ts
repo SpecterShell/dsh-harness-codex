@@ -2,7 +2,7 @@
  * Constants from OpenAI Codex's freeform `apply_patch` tool.
  *
  * The description and grammar are copied from Codex commit
- * 0184dfa6a48f0110dd9c6835522492908e5abcf3; source and license details are in
+ * ca21fe65d18a9b6326759fb4263c65dfbb645aa5; source and license details are in
  * ../../NOTICE. The grammar file is read by the plugin, not embedded, so the
  * bytes sent on the wire are the bytes on disk.
  * @module @spectershell/dsh-harness-codex/freeform/spec
