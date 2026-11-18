@@ -1,0 +1,62 @@
+This product includes system prompt text copied verbatim from OpenAI Codex
+(https://github.com/openai/codex), commit
+0184dfa6a48f0110dd9c6835522492908e5abcf3. That code is licensed under the
+Apache License, Version 2.0.
+
+Files under prompts/codex/ and their upstream sources:
+
+  prompts/codex/gpt-5.5.md
+    codex-rs/models-manager/models.json (gpt-5.5)
+  prompts/codex/gpt-5.6-sol.md
+    codex-rs/models-manager/models.json (gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna, codex-auto-review)
+  prompts/codex/gpt-6.1-sol.md
+    codex-rs/models-manager/models.json (gpt-6.1-sol)
+  prompts/codex/gpt-6-astra.md
+    codex-rs/models-manager/models.json (gpt-6-astra, gpt-6.1-terra)
+  prompts/codex/gpt-6-luna.md
+    codex-rs/models-manager/models.json (gpt-6-luna)
+  prompts/codex/gpt-6-sol.md
+    codex-rs/models-manager/models.json (gpt-6-sol)
+  prompts/codex/gpt-daybreak-blue-latest.md
+    codex-rs/models-manager/models.json (gpt-daybreak-blue-latest)
+  prompts/codex/gpt-daybreak-red-latest.md
+    codex-rs/models-manager/models.json (gpt-daybreak-red-latest)
+  prompts/codex/models.json
+    codex-rs/models-manager/models.json (generated slug-to-file index)
+  prompts/codex/prompt.md
+    codex-rs/models-manager/prompt.md
+  prompts/codex/compact-prompt.md
+    codex-rs/prompts/templates/compact/prompt.md
+  prompts/codex/compact-summary-prefix.md
+    codex-rs/prompts/templates/compact/summary_prefix.md
+
+The files above copied from models.json are its
+`model_messages.instructions_template` values, deduplicated byte for byte. The
+two compact files are Codex's local-compaction prompt and the prefix it puts
+before the model's summary. The Apache License 2.0 text is in
+prompts/codex/LICENSE. The rest of this package remains under the MIT license
+in LICENSE.
+
+The freeform apply_patch grammar in assets/codex/apply_patch.lark is copied
+byte for byte from OpenAI Codex, commit
+0184dfa6a48f0110dd9c6835522492908e5abcf3:
+
+  assets/codex/apply_patch.lark
+    codex-rs/core/assets/tools/apply_patch.lark
+
+The exact freeform tool description sent by the bridge is copied from
+codex-rs/core/src/tools/handlers/apply_patch_spec.rs in that commit. That code
+is licensed under the Apache License, Version 2.0.
+
+The adapter snapshot technique in src/freeform/bridge.ts follows Anionex's
+dsh-smarter-edit freeform bridge (https://github.com/Anionex/dsh-smarter-edit),
+which is licensed under the MIT license.
+
+OpenAI Codex NOTICE:
+
+OpenAI Codex
+Copyright 2025 OpenAI
+
+This project includes code derived from [Ratatui](https://github.com/ratatui/ratatui), licensed under the MIT license.
+Copyright (c) 2016-2022 Florian Dehau
+Copyright (c) 2023-2025 The Ratatui Developers

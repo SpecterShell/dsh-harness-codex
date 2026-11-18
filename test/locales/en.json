@@ -1,0 +1,31 @@
+{
+  "errors": {
+    "anchor": "Set DSH_NATIVE_ANCHOR to the installed @deepseek-ai/dsh/package.json before running native integration tests.",
+    "version": "These API proofs require DSH 0.2.2-rc.1.",
+    "temporary": "Refusing cleanup outside the fixture-owned temporary directory."
+  },
+  "tests": {
+    "composition": "Real Loader isolates scoped tools and persona across reload and disposal",
+    "catalogs": "Native fixture catalogs have matching translator-owned keys",
+    "pipe": "Native shell preserves independent processes and verified exit facts",
+    "pipeCancel": "Native shell cancellation settles and service disposal joins owned work",
+    "tty": "Native subprocess terminal owns one command, input and exit status",
+    "ttyInterrupt": "Native terminal interruption and termination join owned work",
+    "sandbox": "Native confinement denies writes through pipe and terminal subprocess paths",
+    "replacement": "Native Session preserves original events and late input across single-node replacement",
+    "multiNode": "A tail-appended summary lands after input accepted during compaction",
+    "positional": "Public positional replacements express selected input and summary before late input in separate commits",
+    "instructions": "Native instruction exports preserve global instructions and expose precedence differences"
+  },
+  "fixture": {
+    "tool": "Fixture command that returns localized text without starting a process",
+    "result": "Scoped fixture result",
+    "shared": "Shared patch fixture",
+    "read": "Inherited read fixture",
+    "late": "Late inherited fixture",
+    "persona": "Scoped Codex-inspired fixture policy",
+    "globalPolicy": "Ordinary fixture policy",
+    "runtime": "Required fixture runtime context",
+    "sandboxUnavailable": "No usable native confinement runner was available. Confined execution remains unverified."
+  }
+}

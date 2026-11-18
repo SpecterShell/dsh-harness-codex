@@ -1,0 +1,23 @@
+diff --git a/README.md b/README.md
+index a36614d..ee2a6dd 100644
+--- a/README.md
++++ b/README.md
+@@ -14,3 +14,5 @@ field falls back to `unknown` and `8080`.
+ The staging deploy creates an empty `config/service.json` before the real
+ config arrives. The current command crashes in that window with a JSON
+ traceback.
++
++Empty config: defaults
+diff --git a/status.py b/status.py
+index b51cf45..6a11aed 100644
+--- a/status.py
++++ b/status.py
+@@ -15,7 +15,7 @@ def main(argv=None):
+     args = parser.parse_args(argv)
+ 
+     text = Path(args.config).read_text(encoding="utf-8")
+-    config = json.loads(text)
++    config = json.loads(text) if text.strip() else {}
+ 
+     name = config.get("name", "unknown")
+     port = config.get("port", 8080)

@@ -1,0 +1,5 @@
+order_id,region,product,quantity,unit_price_cents
+2001,west,widget,2,100
+2002,"west, central",gizmo,1,250
+2003,,widget,3,100
+2004,east,gadget,1,999

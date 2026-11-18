@@ -1,0 +1,83 @@
+diff --git a/docs/configuration.md b/docs/configuration.md
+index 231b6f5..4b7b402 100644
+--- a/docs/configuration.md
++++ b/docs/configuration.md
+@@ -5,7 +5,7 @@ result.
+ 
+ | Key | Type | Default | Notes |
+ | --- | --- | --- | --- |
+-| `retryCount` | non-negative integer | `3` | attempts per send |
++| `retry_count` | non-negative integer | `3` | attempts per send |
+ | `timeoutMs` | positive integer | `5000` | per-request timeout |
+ | `endpoint` | non-empty string | `https://notify.invalid` | gateway base URL |
+ 
+diff --git a/src/client.js b/src/client.js
+index 9fc8c96..4f2163e 100644
+--- a/src/client.js
++++ b/src/client.js
+@@ -13,7 +13,7 @@ export class Client {
+   plan(payload) {
+     return {
+       url: this.config.endpoint,
+-      attempts: this.config.retryCount,
++      attempts: this.config.retry_count,
+       timeoutMs: this.config.timeoutMs,
+       payload
+     }
+diff --git a/src/config.js b/src/config.js
+index f130f11..b4b44a3 100644
+--- a/src/config.js
++++ b/src/config.js
+@@ -1,6 +1,6 @@
+ /** Default client configuration. */
+ export const DEFAULTS = {
+-  retryCount: 3,
++  retry_count: 3,
+   timeoutMs: 5000,
+   endpoint: 'https://notify.invalid'
+ }
+@@ -12,8 +12,8 @@ export const DEFAULTS = {
+ export function loadConfig(overrides = {}) {
+   const config = { ...DEFAULTS, ...overrides }
+ 
+-  if (!Number.isInteger(config.retryCount) || config.retryCount < 0) {
+-    throw new TypeError('retryCount must be a non-negative integer')
++  if (!Number.isInteger(config.retry_count) || config.retry_count < 0) {
++    throw new TypeError('retry_count must be a non-negative integer')
+   }
+   if (!Number.isInteger(config.timeoutMs) || config.timeoutMs <= 0) {
+     throw new TypeError('timeoutMs must be a positive integer')
+diff --git a/test/config.test.js b/test/config.test.js
+index 0139334..a5f2edc 100644
+--- a/test/config.test.js
++++ b/test/config.test.js
+@@ -5,24 +5,24 @@ import { Client } from '../src/client.js'
+ import { DEFAULTS, loadConfig } from '../src/config.js'
+ 
+ test('defaults are stable', () => {
+-  assert.equal(DEFAULTS.retryCount, 3)
++  assert.equal(DEFAULTS.retry_count, 3)
+   assert.equal(DEFAULTS.timeoutMs, 5000)
+   assert.equal(DEFAULTS.endpoint, 'https://notify.invalid')
+ })
+ 
+ test('overrides replace the default retry count', () => {
+-  const config = loadConfig({ retryCount: 7 })
+-  assert.equal(config.retryCount, 7)
++  const config = loadConfig({ retry_count: 7 })
++  assert.equal(config.retry_count, 7)
+ })
+ 
+ test('client plans one attempt per retry', () => {
+-  const plan = new Client({ retryCount: 2 }).plan({ id: 'evt-1' })
++  const plan = new Client({ retry_count: 2 }).plan({ id: 'evt-1' })
+   assert.equal(plan.attempts, 2)
+   assert.equal(plan.payload.id, 'evt-1')
+ })
+ 
+ test('negative retry counts are rejected', () => {
+-  assert.throws(() => loadConfig({ retryCount: -1 }), /retryCount/)
++  assert.throws(() => loadConfig({ retry_count: -1 }), /retry_count/)
+ })
+ 
+ test('timeouts are still validated', () => {

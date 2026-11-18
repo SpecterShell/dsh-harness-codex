@@ -1,0 +1,66 @@
+diff --git a/tickets/cli.py b/tickets/cli.py
+index 6b7c8b8..9a50d99 100644
+--- a/tickets/cli.py
++++ b/tickets/cli.py
+@@ -31,10 +31,12 @@ def build_parser():
+ 
+     list_cmd = sub.add_parser("list")
+     list_cmd.add_argument("--assignee")
++    list_cmd.add_argument("--status")
+     list_cmd.add_argument("--json", action="store_true")
+ 
+     count_cmd = sub.add_parser("count")
+     count_cmd.add_argument("--assignee")
++    count_cmd.add_argument("--status")
+     count_cmd.add_argument("--json", action="store_true")
+ 
+     show_cmd = sub.add_parser("show")
+@@ -46,15 +48,16 @@ def build_parser():
+ def main(argv=None):
+     args = build_parser().parse_args(argv)
+     service = TicketService(load_tickets(args.data))
++    statuses = args.status.split(",") if args.status else None
+ 
+     if args.command == "list":
+-        tickets = service.tickets(assignee=args.assignee)
++        tickets = service.tickets(assignee=args.assignee, statuses=statuses)
+         if args.json:
+             as_json([ticket.__dict__ for ticket in tickets])
+         else:
+             print(format_table(tickets))
+     elif args.command == "count":
+-        value = service.count(assignee=args.assignee)
++        value = service.count(assignee=args.assignee, statuses=statuses)
+         if args.json:
+             as_json({"count": value})
+         else:
+diff --git a/tickets/service.py b/tickets/service.py
+index 3ec2341..d288e34 100644
+--- a/tickets/service.py
++++ b/tickets/service.py
+@@ -1,15 +1,22 @@
++def _normalise(value):
++    return value.strip().casefold()
++
++
+ class TicketService:
+     def __init__(self, tickets):
+         self._tickets = list(tickets)
+ 
+-    def tickets(self, assignee=None):
++    def tickets(self, assignee=None, statuses=None):
+         rows = self._tickets
+         if assignee is not None:
+             rows = [ticket for ticket in rows if ticket.assignee == assignee]
++        if statuses:
++            wanted = {_normalise(status) for status in statuses}
++            rows = [ticket for ticket in rows if _normalise(ticket.status) in wanted]
+         return rows
+ 
+-    def count(self, assignee=None):
+-        return len(self.tickets(assignee=assignee))
++    def count(self, assignee=None, statuses=None):
++        return len(self.tickets(assignee=assignee, statuses=statuses))
+ 
+     def get(self, ticket_id):
+         for ticket in self._tickets:

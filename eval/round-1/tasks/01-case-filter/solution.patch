@@ -1,0 +1,15 @@
+diff --git a/expenses/query.py b/expenses/query.py
+index 2140c5b..a5dd510 100644
+--- a/expenses/query.py
++++ b/expenses/query.py
+@@ -3,8 +3,8 @@
+ 
+ def filter_by_category(rows, category):
+     """Return the rows in one category, ordered by id."""
+-    wanted = category.strip()
++    wanted = category.strip().casefold()
+     return sorted(
+-        (row for row in rows if row["category"].strip() == wanted),
++        (row for row in rows if row["category"].strip().casefold() == wanted),
+         key=lambda row: row["id"],
+     )

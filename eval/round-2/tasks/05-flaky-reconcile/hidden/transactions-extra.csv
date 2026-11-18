@@ -1,0 +1,6 @@
+transaction_id,account,amount_cents,memo
+x-1,globex,500,first
+x-2,acme,250,first
+x-3,initech,-100,refund
+x-1,globex,999,retry must be ignored
+x-2,acme,777,retry must be ignored

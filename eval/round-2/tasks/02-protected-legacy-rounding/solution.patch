@@ -1,0 +1,60 @@
+diff --git a/billing/credit.py b/billing/credit.py
+index 205c92d..914b193 100644
+--- a/billing/credit.py
++++ b/billing/credit.py
+@@ -1,5 +1,11 @@
++from decimal import Decimal
++
++from .rounding import round_money
++
++
+ def credit_total(lines):
+-    total = 0.0
+-    for amount, quantity in lines:
+-        total += float(amount) * quantity
+-    return round(total, 2)
++    total = sum(
++        (Decimal(str(amount)) * quantity for amount, quantity in lines),
++        Decimal("0"),
++    )
++    return round_money(total)
+diff --git a/billing/invoice.py b/billing/invoice.py
+index 49d0abb..bfc9de1 100644
+--- a/billing/invoice.py
++++ b/billing/invoice.py
+@@ -1,14 +1,11 @@
+-from decimal import Decimal, ROUND_HALF_UP
++from decimal import Decimal
+ 
+-CENT = Decimal("0.01")
+-
+-
+-def _round(value):
+-    return Decimal(value).quantize(CENT, rounding=ROUND_HALF_UP)
++from .rounding import round_money
+ 
+ 
+ def invoice_total(lines):
+-    total = Decimal("0")
+-    for amount, quantity in lines:
+-        total += _round(Decimal(str(amount))) * quantity
+-    return _round(total)
++    total = sum(
++        (Decimal(str(amount)) * quantity for amount, quantity in lines),
++        Decimal("0"),
++    )
++    return round_money(total)
+diff --git a/billing/rounding.py b/billing/rounding.py
+new file mode 100644
+index 0000000..1c5f32d
+--- /dev/null
++++ b/billing/rounding.py
+@@ -0,0 +1,8 @@
++from decimal import Decimal, ROUND_HALF_UP
++
++CENT = Decimal("0.01")
++
++
++def round_money(value):
++    """Round a decimal amount to cents, ties away from zero."""
++    return Decimal(value).quantize(CENT, rounding=ROUND_HALF_UP)

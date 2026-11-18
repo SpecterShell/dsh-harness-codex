@@ -1,0 +1,15 @@
+diff --git a/src/cache.mjs b/src/cache.mjs
+index ebca520..4041624 100644
+--- a/src/cache.mjs
++++ b/src/cache.mjs
+@@ -23,9 +23,8 @@ export function createCache({ ttlMs = 60_000, now = Date.now } = {}) {
+     },
+ 
+     invalidate(prefix) {
+-      const namespace = prefix.replace(/:$/, "");
+       for (const key of entries.keys()) {
+-        if (key.startsWith(namespace)) entries.delete(key);
++        if (key.startsWith(prefix)) entries.delete(key);
+       }
+     },
+ 

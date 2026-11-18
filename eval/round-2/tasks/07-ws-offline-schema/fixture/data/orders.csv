@@ -1,0 +1,4 @@
+order_id,currency,quantity,unit_price_cents,email
+ORD-0001,EUR,2,1500,ada@example.com
+ORD-0002,USD,1,999,grace@example.com
+ORD-0003,GBP,4,250,

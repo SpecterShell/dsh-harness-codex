@@ -1,0 +1,77 @@
+diff --git a/src/lib/dates.js b/src/lib/dates.js
+new file mode 100644
+index 0000000..80585bd
+--- /dev/null
++++ b/src/lib/dates.js
+@@ -0,0 +1,11 @@
++/**
++ * Format a date as a local calendar date in YYYY-MM-DD form.
++ * @param {Date | string} value
++ */
++export function formatDate(value) {
++  const date = value instanceof Date ? value : new Date(value)
++  const year = date.getFullYear()
++  const month = String(date.getMonth() + 1).padStart(2, '0')
++  const day = String(date.getDate()).padStart(2, '0')
++  return `${year}-${month}-${day}`
++}
+diff --git a/src/reports/daily.js b/src/reports/daily.js
+index 49857e7..ffddf8e 100644
+--- a/src/reports/daily.js
++++ b/src/reports/daily.js
+@@ -1,12 +1,8 @@
+ /** Daily report aggregation. */
+ 
+-/**
+- * Format a date as YYYY-MM-DD.
+- * @param {Date | string} value
+- */
+-export function formatDate(value) {
+-  return new Date(value).toISOString().slice(0, 10)
+-}
++import { formatDate } from '../lib/dates.js'
++
++export { formatDate }
+ 
+ /**
+  * Sum order totals per day.
+diff --git a/src/reports/monthly.js b/src/reports/monthly.js
+index 13f35de..f31f4ce 100644
+--- a/src/reports/monthly.js
++++ b/src/reports/monthly.js
+@@ -1,12 +1,8 @@
+ /** Monthly report aggregation. */
+ 
+-/**
+- * Format a date as YYYY-MM-DD.
+- * @param {Date | string} value
+- */
+-export function formatDate(value) {
+-  return new Date(value).toISOString().slice(0, 10)
+-}
++import { formatDate } from '../lib/dates.js'
++
++export { formatDate }
+ 
+ /**
+  * Sum order totals per month.
+diff --git a/src/ui/dates.js b/src/ui/dates.js
+index 247bd6a..028ff68 100644
+--- a/src/ui/dates.js
++++ b/src/ui/dates.js
+@@ -1,12 +1,8 @@
+ /** Date labels for the dashboard. */
+ 
+-/**
+- * Format a date as YYYY-MM-DD.
+- * @param {Date | string} value
+- */
+-export function formatDate(value) {
+-  return new Date(value).toISOString().slice(0, 10)
+-}
++import { formatDate } from '../lib/dates.js'
++
++export { formatDate }
+ 
+ /**
+  * Format a date for the compact table view.

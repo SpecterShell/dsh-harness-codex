@@ -1,0 +1,21 @@
+{
+  "total_failures": 3,
+  "skipped_lines": 1,
+  "services": {
+    "billing": {
+      "failures": 1,
+      "retried": 1,
+      "p95_ms": 300
+    },
+    "notify": {
+      "failures": 1,
+      "retried": 0,
+      "p95_ms": 200
+    },
+    "search": {
+      "failures": 1,
+      "retried": 1,
+      "p95_ms": 900
+    }
+  }
+}

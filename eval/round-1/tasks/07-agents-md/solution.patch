@@ -1,0 +1,61 @@
+diff --git a/packages/api/CHANGELOG.md b/packages/api/CHANGELOG.md
+index 7e392e6..b863a5f 100644
+--- a/packages/api/CHANGELOG.md
++++ b/packages/api/CHANGELOG.md
+@@ -2,6 +2,8 @@
+ 
+ ## Unreleased
+ 
++- Added `GET /users/:id`.
++
+ ## 0.2.0
+ 
+ - Added `GET /health`.
+diff --git a/packages/api/src/index.js b/packages/api/src/index.js
+index 895a88f..2172de5 100644
+--- a/packages/api/src/index.js
++++ b/packages/api/src/index.js
+@@ -2,7 +2,18 @@ import { handleHealth } from './routes/health.js'
+ import { findUser } from './routes/users.js'
+ 
+ const routes = [
+-  { method: 'GET', pattern: /^\/health$/, handler: handleHealth }
++  { method: 'GET', pattern: /^\/health$/, handler: handleHealth },
++  {
++    method: 'GET',
++    pattern: /^\/users\/([^/]+)$/,
++    handler: (id) => {
++      const user = findUser(id)
++      if (!user) {
++        return { status: 404, body: { data: null, error: 'user not found' } }
++      }
++      return { status: 200, body: { data: user, error: null } }
++    }
++  }
+ ]
+ 
+ export function handle(method, path) {
+diff --git a/packages/api/test/users.test.js b/packages/api/test/users.test.js
+new file mode 100644
+index 0000000..695fb12
+--- /dev/null
++++ b/packages/api/test/users.test.js
+@@ -0,0 +1,18 @@
++import test from 'node:test'
++import assert from 'node:assert/strict'
++
++import { handle } from '../src/index.js'
++
++test('users route returns the user in the envelope', () => {
++  const response = handle('GET', '/users/2')
++  assert.equal(response.status, 200)
++  assert.deepEqual(response.body.data, { id: '2', name: 'Grace' })
++  assert.equal(response.body.error, null)
++})
++
++test('users route returns a 404 envelope for a missing user', () => {
++  const response = handle('GET', '/users/999')
++  assert.equal(response.status, 404)
++  assert.equal(response.body.data, null)
++  assert.equal(typeof response.body.error, 'string')
++})

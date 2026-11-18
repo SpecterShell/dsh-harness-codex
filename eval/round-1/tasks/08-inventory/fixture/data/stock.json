@@ -1,0 +1,68 @@
+{
+  "items": [
+    {
+      "sku": "A-100",
+      "name": "Widget",
+      "warehouse": "ams",
+      "quantity": 12,
+      "reorder_point": 5,
+      "unit_cost_cents": 450
+    },
+    {
+      "sku": "A-101",
+      "name": "Widget XL",
+      "warehouse": "ams",
+      "quantity": 3,
+      "reorder_point": 6,
+      "unit_cost_cents": 620
+    },
+    {
+      "sku": "A-102",
+      "name": "Gasket",
+      "warehouse": "ams",
+      "quantity": 25,
+      "reorder_point": 20,
+      "unit_cost_cents": 35
+    },
+    {
+      "sku": "B-200",
+      "name": "Bolt",
+      "warehouse": "berlin",
+      "quantity": 40,
+      "reorder_point": 10,
+      "unit_cost_cents": 12
+    },
+    {
+      "sku": "B-201",
+      "name": "Nut",
+      "warehouse": "berlin",
+      "quantity": 8,
+      "reorder_point": 15,
+      "unit_cost_cents": 8
+    },
+    {
+      "sku": "B-202",
+      "name": "Washer",
+      "warehouse": "berlin",
+      "quantity": 100,
+      "reorder_point": 50,
+      "unit_cost_cents": 3
+    },
+    {
+      "sku": "C-300",
+      "name": "Cable",
+      "warehouse": "lisbon",
+      "quantity": 0,
+      "reorder_point": 4,
+      "unit_cost_cents": 275
+    },
+    {
+      "sku": "C-301",
+      "name": "Adapter",
+      "warehouse": "lisbon",
+      "quantity": 7,
+      "reorder_point": 7,
+      "unit_cost_cents": 940
+    }
+  ]
+}

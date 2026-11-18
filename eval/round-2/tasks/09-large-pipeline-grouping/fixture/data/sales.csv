@@ -1,0 +1,9 @@
+order_id,region,product,quantity,unit_price_cents
+1001,north,widget,2,1250
+1002,south,gadget,1,999
+1003,east,widget,3,1250
+1004,west,gizmo,2,499
+1005,north,gadget,4,999
+1006,"north, east",widget,1,1250
+1007,,gizmo,2,499
+1008,south,widget,1,1250

@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "title": "Codex 风格预设",
+    "description": "让 AI 按 Codex 的方式工作：用 Shell 查看代码，用补丁修改文件，每条命令独立运行。"
+  },
+  "approval": {
+    "unsandboxed": "允许这条命令在沙箱外运行：{justification}"
+  },
+  "settings.title": "Codex 预设",
+  "settings.description": "在这里设置 Codex 预设的自由格式补丁，以及预设内保持可见的工具和项目指令预算。",
+  "settings.freeformEnabled": "自由格式 apply_patch",
+  "settings.freeformEnabledHint": "开启后，匹配的模型会把 apply_patch 当作语法工具使用，而不是 JSON 函数。",
+  "settings.freeformCodexCatalog": "跟随 Codex 模型目录",
+  "settings.freeformCodexCatalogHint": "内置目录里标为自由格式的模型也一起启用。",
+  "settings.freeformRules": "服务商与模型规则",
+  "settings.freeformRulesHint": "每行一条规则，写成 provider:model，也可以只写 provider: 或 :model。星号 * 匹配任意文字，留空则沿用预设自身配置的规则。",
+  "settings.surfaceAllow": "保留可见的工具",
+  "settings.surfaceAllowHint": "用逗号或空格分隔工具名。这些工具在预设内保持可见，并与 surface 行里的 allow 列表叠加。",
+  "settings.instructionsMaxBytes": "项目指令预算（字节）",
+  "settings.instructionsMaxBytesHint": "项目指令文件的 UTF-8 总预算，取值范围 1024 到 262144。",
+  "settings.on": "启用",
+  "settings.off": "停用",
+  "settings.save": "保存",
+  "settings.saving": "保存中…",
+  "settings.saveFailed": "部署没有接受这些值，请修改后重新保存。",
+  "settings.reset": "恢复默认",
+  "settings.overridden": "已覆盖",
+  "settings.invalidNumber": "请输入整数。留空则使用默认值。",
+  "settings.invalidText": "请检查这一项。",
+  "settings.unavailable": "插件尚未加载，暂时无法配置。",
+  "settings.readOnly": "这个部署中的设置是只读的。",
+  "settings.reload": "保存后立即生效，不需要重启 DSH。"
+}

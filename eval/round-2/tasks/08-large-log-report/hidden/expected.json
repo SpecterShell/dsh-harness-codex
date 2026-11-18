@@ -1,0 +1,26 @@
+{
+  "total_failures": 3474,
+  "skipped_lines": 4,
+  "services": {
+    "billing": {
+      "failures": 892,
+      "retried": 323,
+      "p95_ms": 2766
+    },
+    "ingest": {
+      "failures": 824,
+      "retried": 298,
+      "p95_ms": 2743
+    },
+    "notify": {
+      "failures": 845,
+      "retried": 291,
+      "p95_ms": 2762
+    },
+    "search": {
+      "failures": 913,
+      "retried": 333,
+      "p95_ms": 2749
+    }
+  }
+}

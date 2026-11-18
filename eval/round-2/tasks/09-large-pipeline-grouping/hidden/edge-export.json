@@ -1,0 +1,26 @@
+{
+  "group_by": "region",
+  "groups": [
+    {
+      "key": "(unknown)",
+      "rows": 1,
+      "total_cents": 300
+    },
+    {
+      "key": "east",
+      "rows": 1,
+      "total_cents": 999
+    },
+    {
+      "key": "west",
+      "rows": 1,
+      "total_cents": 200
+    },
+    {
+      "key": "west, central",
+      "rows": 1,
+      "total_cents": 250
+    }
+  ],
+  "grand_total_cents": 1749
+}

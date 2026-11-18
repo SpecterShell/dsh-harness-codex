@@ -1,0 +1,41 @@
+diff --git a/lib/summary.js b/lib/summary.js
+index e42a862..47a1ae1 100644
+--- a/lib/summary.js
++++ b/lib/summary.js
+@@ -4,16 +4,19 @@ export function buildSummary(rows) {
+   const byCustomer = new Map()
+ 
+   for (const row of rows) {
+-    total += row.unit_price_cents
+-    byCustomer.set(row.customer, (byCustomer.get(row.customer) ?? 0) + 1)
++    total += row.quantity * row.unit_price_cents
++    byCustomer.set(
++      row.customer,
++      (byCustomer.get(row.customer) ?? 0) + row.quantity * row.unit_price_cents
++    )
+   }
+ 
+   let topCustomer = null
+-  let topCount = -1
+-  for (const [customer, count] of byCustomer) {
+-    if (count > topCount) {
++  let topSpend = -1
++  for (const [customer, spend] of byCustomer) {
++    if (spend > topSpend) {
+       topCustomer = customer
+-      topCount = count
++      topSpend = spend
+     }
+   }
+ 
+diff --git a/out/summary.json b/out/summary.json
+new file mode 100644
+index 0000000..11f3154
+--- /dev/null
++++ b/out/summary.json
+@@ -0,0 +1,5 @@
++{
++  "orders": 4,
++  "total_cents": 25500,
++  "top_customer": "globex"
++}

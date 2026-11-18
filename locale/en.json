@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "title": "Codex-inspired preset",
+    "description": "Lets the AI work like Codex: shell inspection, patch edits and one process per command."
+  },
+  "approval": {
+    "unsandboxed": "Allow this command to run without the sandbox: {justification}"
+  },
+  "settings.title": "Codex preset",
+  "settings.description": "Free-form patches, visible tools and the project instruction budget for the Codex-inspired preset.",
+  "settings.freeformEnabled": "Free-form apply_patch",
+  "settings.freeformEnabledHint": "Send apply_patch to matching models as a grammar tool instead of a JSON function.",
+  "settings.freeformCodexCatalog": "Follow the Codex catalog",
+  "settings.freeformCodexCatalogHint": "Also enable the bridge for models the bundled Codex catalog marks as free-form.",
+  "settings.freeformRules": "Provider and model rules",
+  "settings.freeformRulesHint": "One rule per line: provider:model, provider:, or :model. * matches any text. Empty keeps the preset row rules.",
+  "settings.surfaceAllow": "Tools kept visible",
+  "settings.surfaceAllowHint": "Comma or space separated tool names that stay visible inside the preset, in addition to the surface row allow list.",
+  "settings.instructionsMaxBytes": "Project instruction budget (bytes)",
+  "settings.instructionsMaxBytesHint": "Total UTF-8 budget for project instruction files, 1024 to 262144.",
+  "settings.on": "On",
+  "settings.off": "Off",
+  "settings.save": "Save",
+  "settings.saving": "Saving…",
+  "settings.saveFailed": "The deployment did not accept these values. Correct them and save again.",
+  "settings.reset": "Reset to default",
+  "settings.overridden": "Overridden",
+  "settings.invalidNumber": "Enter a whole number, or leave blank to use the default.",
+  "settings.invalidText": "Check this value.",
+  "settings.unavailable": "This plugin is not loaded, so it cannot be configured right now.",
+  "settings.readOnly": "This deployment stores settings read-only.",
+  "settings.reload": "Saved values apply as soon as the form is saved, without restarting DSH."
+}

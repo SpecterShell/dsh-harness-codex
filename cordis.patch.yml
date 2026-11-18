@@ -1,0 +1,135 @@
+# Codex-inspired agent preset. The host row carries the settings schema and
+# service; the preset declaration below mounts its plugins only for Agents that
+# select the preset.
+#
+# exec_command, write_stdin, update_plan and view_image come from this
+# package; apply_patch is the native dsh-tool-fs implementation, which already
+# uses Codex's patch grammar and `input` field. freeform-patch is an opt-in
+# wire bridge that sends that same tool to Responses API models as a custom
+# grammar tool; it is disabled by default.
+- insert:
+    # The host entry carries the Config the Settings UI renders and provides
+    # the live `codexSettings` service the preset rows read when present.
+    - id: dsh-harness-codex
+      name: dsh-harness-codex
+    - id: preset-codex-inspired
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: codex-inspired
+        name: Codex-inspired
+        description: Shell inspection, patch editing and one process per command, in the style of Codex.
+        order: 5
+        plugins:
+          - id: persona
+            name: dsh-harness-codex/persona
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 32768
+              # Project files are read by dsh-harness-codex/instructions with
+              # Codex's first-present ordering; this row keeps user-global files.
+              instructionFileCandidates: []
+              localInstructionFileCandidates: []
+          - id: project-instructions
+            name: dsh-harness-codex/instructions
+            config:
+              maxBytes: 32768
+          - id: exec
+            name: dsh-harness-codex/exec
+            disabled: !!js process.platform === 'win32'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+            config:
+              read: false
+              write: false
+              edit: false
+              readImage: false
+              applyPatch: true
+          - id: freeform-patch
+            name: dsh-harness-codex/freeform
+            config:
+              enabled: false
+          - id: update-plan
+            name: dsh-harness-codex/plan
+          - id: view-image
+            name: dsh-harness-codex/image
+          - id: surface
+            name: dsh-harness-codex/surface
+            config:
+              # Never deny these names, so a host tool that happens to share a
+              # name with one of ours is shadowed by our row instead of hiding it.
+              allow: [exec_command, write_stdin, apply_patch, update_plan, view_image]
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+            config:
+              # Codex keeps user messages plus a summary, not a recent tail, so
+              # this row replaces the native basic engine. /compact still uses
+              # the same compaction seam.
+              - id: compaction-codex
+                name: dsh-harness-codex/compaction
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+    # The extended preset shares every row with Codex-inspired. Only the
+    # surface row differs: instead of hiding every host tool, it masks the
+    # built-in tools that overlap with the Codex ones, so plugins installed
+    # later (web, MCP, skills) remain available.
+    - id: preset-codex-extended
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: codex-extended
+        name: Codex-extended
+        description: The Codex-inspired tool set, plus host tools that do not overlap with it.
+        order: 6
+        plugins:
+          - id: persona
+            name: dsh-harness-codex/persona
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 32768
+              instructionFileCandidates: []
+              localInstructionFileCandidates: []
+          - id: project-instructions
+            name: dsh-harness-codex/instructions
+            config:
+              maxBytes: 32768
+          - id: exec
+            name: dsh-harness-codex/exec
+            disabled: !!js process.platform === 'win32'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+            config:
+              read: false
+              write: false
+              edit: false
+              readImage: false
+              applyPatch: true
+          - id: freeform-patch
+            name: dsh-harness-codex/freeform
+            config:
+              enabled: false
+          - id: update-plan
+            name: dsh-harness-codex/plan
+          - id: view-image
+            name: dsh-harness-codex/image
+          - id: surface
+            name: dsh-harness-codex/surface
+            config:
+              # Only the built-ins that duplicate a Codex tool are hidden:
+              # reading/searching (exec_command), editing (apply_patch),
+              # images (view_image), plans (update_plan) and shells (exec).
+              deny: [read, write, edit, glob, grep, read_image, bash, pwsh, todo_write]
+              allow: [exec_command, write_stdin, apply_patch, update_plan, view_image]
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+            config:
+              - id: compaction-codex
+                name: dsh-harness-codex/compaction
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'

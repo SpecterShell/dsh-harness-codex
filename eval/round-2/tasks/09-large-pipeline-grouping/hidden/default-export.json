@@ -1,0 +1,21 @@
+{
+  "rows": 8,
+  "total_cents": 15741,
+  "products": [
+    {
+      "product": "gadget",
+      "rows": 2,
+      "total_cents": 4995
+    },
+    {
+      "product": "gizmo",
+      "rows": 2,
+      "total_cents": 1996
+    },
+    {
+      "product": "widget",
+      "rows": 4,
+      "total_cents": 8750
+    }
+  ]
+}

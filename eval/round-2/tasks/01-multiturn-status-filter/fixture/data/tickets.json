@@ -1,0 +1,12 @@
+{
+  "tickets": [
+    {"id": "TCK-101", "title": "Export ignores filters", "status": "open", "assignee": "mira", "priority": 2},
+    {"id": "TCK-102", "title": "Slow board load", "status": "Open", "assignee": "jon", "priority": 3},
+    {"id": "TCK-103", "title": "Broken avatar", "status": " blocked ", "assignee": "mira", "priority": 4},
+    {"id": "TCK-104", "title": "Add keyboard shortcuts", "status": "in progress", "assignee": "sam", "priority": 2},
+    {"id": "TCK-105", "title": "CSV newline handling", "status": "OPEN", "assignee": "jon", "priority": 1},
+    {"id": "TCK-106", "title": "Stale cache after rename", "status": "Blocked", "assignee": "mira", "priority": 2},
+    {"id": "TCK-107", "title": "Docs typo", "status": "done", "assignee": null, "priority": 5},
+    {"id": "TCK-108", "title": "Retry webhook delivery", "status": "In Progress", "assignee": "sam", "priority": 3}
+  ]
+}

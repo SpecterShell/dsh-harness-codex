@@ -1,0 +1,4 @@
+PRODUCT  ROWS   TOTAL
+gadget   2     $49.95
+gizmo    2     $19.96
+widget   4     $87.50

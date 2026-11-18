@@ -1,0 +1,7 @@
+REGION       ROWS   TOTAL
+(unknown)    1      $9.98
+east         1     $37.50
+north        2     $64.96
+north, east  1     $12.50
+south        2     $22.49
+west         1      $9.98

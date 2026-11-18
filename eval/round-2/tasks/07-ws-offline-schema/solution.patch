@@ -1,0 +1,105 @@
+diff --git a/NOTES.md b/NOTES.md
+new file mode 100644
+index 0000000..d9d1d30
+--- /dev/null
++++ b/NOTES.md
+@@ -0,0 +1,14 @@
++# Notes
++
++The canonical schema at `https://schemas.example.invalid/orders-v2.json` was
++not fetched: this environment is offline. Validation uses the bundled copy in
++`schema/orders.schema.json`.
++
++No new dependency was added; `package.json` is unchanged and there is no
++`node_modules`.
++
++Commands run:
++
++- `node src/import.mjs data/orders.csv`
++- `node src/import.mjs` against a temporary invalid CSV (rejected with exit 1)
++- `npm test`
+diff --git a/src/import.mjs b/src/import.mjs
+index 5feadf8..a27c557 100644
+--- a/src/import.mjs
++++ b/src/import.mjs
+@@ -5,7 +5,7 @@ import { validateRow } from "./validate.mjs";
+ function parseCsv(text) {
+   const lines = text.trimEnd().split("\n");
+   const header = lines[0].split(",");
+-  return lines.slice(1).map((line, index) => {
++  const rows = lines.slice(1).map((line, index) => {
+     const values = line.split(",");
+     const row = { line: index + 2 };
+     header.forEach((name, column) => {
+@@ -13,22 +13,23 @@ function parseCsv(text) {
+     });
+     return row;
+   });
++  return { rows, header };
+ }
+ 
+ export function run(path) {
+-  const rows = parseCsv(readFileSync(path, "utf8"));
++  const { rows } = parseCsv(readFileSync(path, "utf8"));
+   const errors = [];
+   for (const row of rows) {
+     const fields = validateRow(row);
+-    if (fields.length > 0) errors.push({ line: row.line, fields });
++    if (fields.length > 0) errors.push({ line: row.line, fields: [...fields].sort() });
+   }
+-  return errors;
++  return { rows, errors };
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
+-  const errors = run(process.argv[2]);
++  const { rows, errors } = run(process.argv[2]);
+   if (errors.length === 0) {
+-    console.log(JSON.stringify({ valid: true, rows: 3 }));
++    console.log(JSON.stringify({ valid: true, rows: rows.length }));
+   } else {
+     console.log(JSON.stringify({ valid: false, errors }));
+     process.exitCode = 1;
+diff --git a/src/validate.mjs b/src/validate.mjs
+index e346fad..ebbe41e 100644
+--- a/src/validate.mjs
++++ b/src/validate.mjs
+@@ -1,5 +1,35 @@
++import { readFileSync } from "node:fs";
++import { dirname, join } from "node:path";
++import { fileURLToPath } from "node:url";
++
++const here = dirname(fileURLToPath(import.meta.url));
++const schema = JSON.parse(
++  readFileSync(join(here, "..", "schema", "orders.schema.json"), "utf8"),
++);
++
++const INTEGER = /^-?\d+$/;
++
+ export function validateRow(row) {
+-  const fields = [];
+-  if (!row.order_id) fields.push("order_id");
+-  return fields;
++  const invalid = [];
++  for (const [name, rule] of Object.entries(schema.fields)) {
++    const raw = row[name];
++    const empty = raw === undefined || raw === "";
++    if (empty) {
++      if (rule.required) invalid.push(name);
++      continue;
++    }
++    if (rule.type === "integer") {
++      if (!INTEGER.test(raw)) {
++        invalid.push(name);
++        continue;
++      }
++      const value = Number(raw);
++      if (rule.minimum !== undefined && value < rule.minimum) invalid.push(name);
++      else if (rule.maximum !== undefined && value > rule.maximum) invalid.push(name);
++    } else if (rule.type === "string") {
++      if (rule.enum && !rule.enum.includes(raw)) invalid.push(name);
++      else if (rule.pattern && !new RegExp(rule.pattern).test(raw)) invalid.push(name);
++    }
++  }
++  return invalid;
+ }

@@ -1,0 +1,51 @@
+diff --git a/src/commands/export.js b/src/commands/export.js
+index fec5561..108bde4 100644
+--- a/src/commands/export.js
++++ b/src/commands/export.js
+@@ -17,7 +17,11 @@ export function buildExport(rows, { groupBy = null } = {}) {
+   }
+   return {
+     group_by: groupBy,
+-    groups: groupRows(rows, groupBy),
++    groups: groupRows(rows, groupBy).map((group) => ({
++      key: group.key,
++      rows: group.rows,
++      total_cents: group.totalCents,
++    })),
+     grand_total_cents: rows.reduce((total, row) => total + row.quantity * row.unitPriceCents, 0),
+   };
+ }
+diff --git a/src/core/aggregate.js b/src/core/aggregate.js
+index 7f8fd74..92910ba 100644
+--- a/src/core/aggregate.js
++++ b/src/core/aggregate.js
+@@ -1,5 +1,12 @@
+ import { sumCents } from "../lib/money.js";
+ 
++function groupKey(row, column) {
++  const value = row[column];
++  if (value === undefined || value === null) return "(unknown)";
++  const text = String(value).trim();
++  return text === "" ? "(unknown)" : text;
++}
++
+ export function summarize(rows) {
+   const products = new Map();
+   for (const row of rows) {
+@@ -20,5 +27,15 @@ export function summarize(rows) {
+ }
+ 
+ export function groupRows(rows, column) {
+-  return null;
++  const groups = new Map();
++  for (const row of rows) {
++    const key = groupKey(row, column);
++    const bucket = groups.get(key) ?? { key, rows: 0, totalCents: 0 };
++    bucket.rows += 1;
++    bucket.totalCents += row.quantity * row.unitPriceCents;
++    groups.set(key, bucket);
++  }
++  return [...groups.values()].sort((left, right) =>
++    left.key < right.key ? -1 : left.key > right.key ? 1 : 0,
++  );
+ }

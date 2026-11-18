@@ -1,0 +1,31 @@
+{
+  "errors": {
+    "anchor": "运行原生集成测试前，请将 DSH_NATIVE_ANCHOR 设为已安装的 @deepseek-ai/dsh/package.json。",
+    "version": "这些 API 验证要求 DSH 0.2.2-rc.1。",
+    "temporary": "拒绝清理测试所属临时目录以外的路径。"
+  },
+  "tests": {
+    "composition": "真实 Loader 在重载与卸载中隔离作用域工具和人格",
+    "catalogs": "原生测试的独立翻译词条键一致",
+    "pipe": "原生 shell 保留独立进程及已确认退出信息",
+    "pipeCancel": "原生 shell 取消完成后服务卸载等待所属工作退出",
+    "tty": "原生 subprocess 终端持有单条命令、输入与退出码",
+    "ttyInterrupt": "原生终端中断和终止等待所属工作退出",
+    "sandbox": "原生隔离在管道和终端 subprocess 路径中拒绝写入",
+    "replacement": "原生 Session 的单节点替换保留原始事件及后续输入",
+    "multiNode": "尾部追加的摘要位于压缩期间接纳的输入之后",
+    "positional": "公开位置替换可通过多次提交将用户输入与摘要放在后续输入之前",
+    "instructions": "原生指令导出保留全局指令并展示优先级差异"
+  },
+  "fixture": {
+    "tool": "返回本地化文字且不启动进程的测试命令",
+    "result": "作用域测试结果",
+    "shared": "共享补丁测试",
+    "read": "继承阅读测试",
+    "late": "延迟继承测试",
+    "persona": "作用域内 Codex 风格测试策略",
+    "globalPolicy": "普通测试策略",
+    "runtime": "测试所需运行时上下文",
+    "sandboxUnavailable": "原生隔离没有可用后端，受限执行仍未验证。"
+  }
+}

@@ -1,0 +1,94 @@
+diff --git a/README.md b/README.md
+index 87d912c..8009caf 100644
+--- a/README.md
++++ b/README.md
+@@ -7,5 +7,14 @@ A tiny in-process HTTP handler. The server adapter is not committed; call
+ GET /items
+ ```
+ 
+-returns `200` with `{"items": [...]}`. Items keep the order of
++returns `200` with `{"items": [...], "total": N}`. Items keep the order of
+ `data/items.json`. Unknown paths are `404`.
++
++Query parameters:
++
++- `tag`: exact tag match; omitted means every item.
++- `limit`: optional integer from 1 to 50; omitted means every remaining item.
++- `offset`: non-negative integer; defaults to 0 and works without `limit`.
++
++`total` counts the items after `tag` and before pagination. Invalid `limit` or
++`offset` returns `400` with an `error` string.
+diff --git a/items/handler.py b/items/handler.py
+index 34cc0b2..a37ac95 100644
+--- a/items/handler.py
++++ b/items/handler.py
+@@ -5,10 +5,42 @@ def response(status, body):
+     return {"status": status, "body": body}
+ 
+ 
++def parse_integer(value, name, minimum, maximum=None):
++    try:
++        number = int(value)
++    except (TypeError, ValueError):
++        raise ValueError(f"{name} must be an integer")
++    if isinstance(value, str) and str(number) != value.strip():
++        raise ValueError(f"{name} must be an integer")
++    if number < minimum:
++        raise ValueError(f"{name} must be at least {minimum}")
++    if maximum is not None and number > maximum:
++        raise ValueError(f"{name} must be at most {maximum}")
++    return number
++
++
+ def handle(method, path, query=None):
+     query = query or {}
+     if method != "GET":
+         return response(405, {"error": "method not allowed"})
+-    if path == "/items":
+-        return response(200, {"items": load_items()})
+-    return response(404, {"error": "not found"})
++    if path != "/items":
++        return response(404, {"error": "not found"})
++
++    items = load_items()
++    tag = query.get("tag")
++    if tag:
++        items = [item for item in items if item.get("tag") == tag]
++    total = len(items)
++
++    try:
++        offset = 0
++        limit = None
++        if "offset" in query:
++            offset = parse_integer(query["offset"], "offset", 0)
++        if "limit" in query:
++            limit = parse_integer(query["limit"], "limit", 1, 50)
++    except ValueError as error:
++        return response(400, {"error": str(error)})
++
++    page = items[offset:] if limit is None else items[offset:offset + limit]
++    return response(200, {"items": page, "total": total})
+diff --git a/tests/test_handler.py b/tests/test_handler.py
+index 993e95b..19389db 100644
+--- a/tests/test_handler.py
++++ b/tests/test_handler.py
+@@ -16,6 +16,19 @@ class HandlerTest(unittest.TestCase):
+         result = handle("GET", "/nope")
+         self.assertEqual(result["status"], 404)
+ 
++    def test_tag_filter(self):
++        result = handle("GET", "/items", {"tag": "office"})
++        self.assertEqual([item["id"] for item in result["body"]["items"]], [1, 2, 6])
++        self.assertEqual(result["body"]["total"], 3)
++
++    def test_pagination(self):
++        result = handle("GET", "/items", {"limit": "2", "offset": "2"})
++        self.assertEqual([item["id"] for item in result["body"]["items"]], [3, 4])
++        self.assertEqual(result["body"]["total"], 8)
++
++    def test_bad_limit(self):
++        self.assertEqual(handle("GET", "/items", {"limit": "0"})["status"], 400)
++
+     def test_other_method(self):
+         result = handle("POST", "/items")
+         self.assertEqual(result["status"], 405)

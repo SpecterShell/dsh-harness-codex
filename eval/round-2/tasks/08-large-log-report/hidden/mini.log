@@ -1,0 +1,9 @@
+2026-04-01T00:00:00Z level=INFO service=billing job=J-1 attempt=1 duration_ms=50 msg="ok"
+2026-04-01T00:01:00Z level=ERROR service=billing job=J-2 attempt=1 duration_ms=100 msg="first, with comma"
+2026-04-01T00:02:00Z level=ERROR service=billing job=J-2 attempt=2 duration_ms=300 msg="retry after 300ms"
+2026-04-01T00:03:00Z level=WARN service=search job=J-3 attempt=1 duration_ms=20 msg="slow"
+2026-04-01T00:04:00Z level=ERROR service=search job=J-3 attempt=1 duration_ms=500 msg="q=price>=100 failed"
+2026-04-01T00:05:00Z this line is malformed
+2026-04-01T00:06:00Z level=ERROR service=notify job=J-4 attempt=1 duration_ms=200 msg="missing edge"
+2026-04-01T00:07:00Z level=ERROR service=search job=J-3 attempt=2 duration_ms=900 msg="retry"
+

@@ -1,0 +1,35 @@
+diff --git a/docs/testing.md b/docs/testing.md
+index 3ba32cf..3bbd0c9 100644
+--- a/docs/testing.md
++++ b/docs/testing.md
+@@ -6,3 +6,7 @@ The suite is `python3 -m unittest discover -s tests`.
+ 
+ - Run from the repository root.
+ - `data/transactions.csv` is a fixture; production data is not committed.
++
++## Verified
++
++`python3 -m unittest discover -s tests`
+diff --git a/ledger/reconcile.py b/ledger/reconcile.py
+index 7f12943..511c4b1 100644
+--- a/ledger/reconcile.py
++++ b/ledger/reconcile.py
+@@ -1,8 +1,15 @@
+ def reconcile(rows):
+-    accounts = {row["account"] for row in rows}
++    seen = set()
++    unique = []
++    for row in rows:
++        if row["transaction_id"] in seen:
++            continue
++        seen.add(row["transaction_id"])
++        unique.append(row)
++
+     result = {}
+-    for account in accounts:
+-        group = [row for row in rows if row["account"] == account]
++    for account in sorted({row["account"] for row in unique}):
++        group = [row for row in unique if row["account"] == account]
+         result[account] = {
+             "total_cents": sum(row["amount_cents"] for row in group),
+             "count": len(group),

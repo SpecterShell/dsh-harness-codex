@@ -1,0 +1,36 @@
+{
+  "group_by": "region",
+  "groups": [
+    {
+      "key": "(unknown)",
+      "rows": 1,
+      "total_cents": 998
+    },
+    {
+      "key": "east",
+      "rows": 1,
+      "total_cents": 3750
+    },
+    {
+      "key": "north",
+      "rows": 2,
+      "total_cents": 6496
+    },
+    {
+      "key": "north, east",
+      "rows": 1,
+      "total_cents": 1250
+    },
+    {
+      "key": "south",
+      "rows": 2,
+      "total_cents": 2249
+    },
+    {
+      "key": "west",
+      "rows": 1,
+      "total_cents": 998
+    }
+  ],
+  "grand_total_cents": 15741
+}

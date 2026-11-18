@@ -1,0 +1,5 @@
+order_id,customer,quantity,unit_price_cents
+1001,acme,2,1500
+1002,globex,1,9900
+1003,acme,3,1200
+1004,initech,2,4500

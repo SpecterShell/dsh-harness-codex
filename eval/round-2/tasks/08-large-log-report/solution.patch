@@ -1,0 +1,147 @@
+diff --git a/ops/logparse.py b/ops/logparse.py
+index b06d8b8..dba23ce 100644
+--- a/ops/logparse.py
++++ b/ops/logparse.py
+@@ -3,7 +3,7 @@ from dataclasses import dataclass
+ 
+ LINE = re.compile(
+     r'^(?P<ts>\S+) level=(?P<level>[A-Z]+) service=(?P<service>\S+) '
+-    r'job=(?P<job>\S+) attempt=(?P<attempt>\d+) duration_ms=(?P<duration>\d+) '
++    r'job=(?P<job>\S+) attempt=(?P<attempt>\d+) duration_ms=(?P<duration_ms>\d+) '
+     r'msg="(?P<msg>.*)"$'
+ )
+ 
+@@ -20,23 +20,18 @@ class Entry:
+ 
+ 
+ def parse_line(line):
+-    line = line.rstrip("\n")
+-    if not line.strip():
++    match = LINE.match(line.rstrip("\n"))
++    if match is None:
+         return None
+-    fields = {}
+-    for part in line.split(" "):
+-        if "=" in part:
+-            key, value = part.split("=", 1)
+-            fields[key] = value
+-    ts = fields.get("ts") or line.split(" ", 1)[0]
++    values = match.groupdict()
+     return Entry(
+-        ts=ts,
+-        level=fields.get("level", "INFO"),
+-        service=fields.get("service", "unknown"),
+-        job=fields.get("job", "unknown"),
+-        attempt=int(fields.get("attempt", "1")),
+-        duration_ms=int(fields.get("duration_ms", "0")),
+-        msg=fields.get("msg", "").strip('"'),
++        ts=values["ts"],
++        level=values["level"],
++        service=values["service"],
++        job=values["job"],
++        attempt=int(values["attempt"]),
++        duration_ms=int(values["duration_ms"]),
++        msg=values["msg"],
+     )
+ 
+ 
+@@ -45,6 +40,8 @@ def parse_file(path):
+     skipped = 0
+     with open(path, encoding="utf-8") as handle:
+         for line in handle:
++            if not line.strip():
++                continue
+             entry = parse_line(line)
+             if entry is None:
+                 skipped += 1
+diff --git a/ops/report.py b/ops/report.py
+index 8260919..715a6e1 100644
+--- a/ops/report.py
++++ b/ops/report.py
+@@ -4,31 +4,40 @@ from collections import defaultdict
+ from pathlib import Path
+ 
+ from .logparse import parse_file
++from .metrics import nearest_rank
+ 
+ 
+ def build_report(entries):
+-    errors = [entry for entry in entries if entry.level == "ERROR"]
+-    services = defaultdict(lambda: {"failures": 0, "retried": 0, "durations": []})
+-    for entry in errors:
+-        bucket = services[entry.service]
+-        bucket["failures"] += 1
+-        if entry.attempt > 1:
+-            bucket["retried"] += 1
+-        bucket["durations"].append(entry.duration_ms)
++    duration_by_service = defaultdict(list)
++    attempts_by_job = {}
++    failed_jobs = set()
++
++    for entry in entries:
++        if entry.level != "ERROR":
++            continue
++        key = (entry.service, entry.job)
++        failed_jobs.add(key)
++        duration_by_service[entry.service].append(entry.duration_ms)
++        attempts_by_job[key] = max(attempts_by_job.get(key, 0), entry.attempt)
++
++    services = defaultdict(lambda: {"failures": 0, "retried": 0})
++    for key in failed_jobs:
++        service = key[0]
++        services[service]["failures"] += 1
++        if attempts_by_job[key] > 1:
++            services[service]["retried"] += 1
+ 
+     summary = {}
+-    for name, bucket in services.items():
+-        durations = sorted(bucket["durations"])
+-        index = int(len(durations) * 0.95)
+-        index = min(index, len(durations) - 1)
++    for name in sorted(services):
++        bucket = services[name]
+         summary[name] = {
+             "failures": bucket["failures"],
+             "retried": bucket["retried"],
+-            "p95_ms": durations[index],
++            "p95_ms": nearest_rank(duration_by_service[name], 95),
+         }
+ 
+     return {
+-        "total_failures": len(errors),
++        "total_failures": len(failed_jobs),
+         "skipped_lines": 0,
+         "services": summary,
+     }
+diff --git a/out/report.json b/out/report.json
+new file mode 100644
+index 0000000..d13e560
+--- /dev/null
++++ b/out/report.json
+@@ -0,0 +1,26 @@
++{
++  "total_failures": 3474,
++  "skipped_lines": 4,
++  "services": {
++    "billing": {
++      "failures": 892,
++      "retried": 323,
++      "p95_ms": 2766
++    },
++    "ingest": {
++      "failures": 824,
++      "retried": 298,
++      "p95_ms": 2743
++    },
++    "notify": {
++      "failures": 845,
++      "retried": 291,
++      "p95_ms": 2762
++    },
++    "search": {
++      "failures": 913,
++      "retried": 333,
++      "p95_ms": 2749
++    }
++  }
++}

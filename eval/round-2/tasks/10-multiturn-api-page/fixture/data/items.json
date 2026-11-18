@@ -1,0 +1,12 @@
+{
+  "items": [
+    {"id": 1, "name": "pen", "tag": "office", "price_cents": 250},
+    {"id": 2, "name": "notebook", "tag": "office", "price_cents": 550},
+    {"id": 3, "name": "laptop stand", "tag": "desk", "price_cents": 4200},
+    {"id": 4, "name": "usb hub", "tag": "desk", "price_cents": 3100},
+    {"id": 5, "name": "api reference", "tag": "api", "price_cents": 0},
+    {"id": 6, "name": "marker", "tag": "office", "price_cents": 175},
+    {"id": 7, "name": "hdmi cable", "tag": "desk", "price_cents": 900},
+    {"id": 8, "name": "api sandbox token", "tag": "api", "price_cents": 100}
+  ]
+}

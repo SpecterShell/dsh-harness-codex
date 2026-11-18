@@ -1,0 +1,136 @@
+diff --git a/README.md b/README.md
+index b87cbc4..f34ebff 100644
+--- a/README.md
++++ b/README.md
+@@ -5,7 +5,9 @@ you can run it against a copy without a database.
+ 
+ ```sh
+ python3 -m inventory.cli list
++python3 -m inventory.cli list --warehouse ams
+ python3 -m inventory.cli low-stock
++python3 -m inventory.cli low-stock --warehouse berlin
+ python3 -m inventory.cli value
+ python3 -m inventory.cli show A-100
+ python3 -m inventory.cli adjust A-100 -2
+@@ -16,8 +18,8 @@ overrides it. Every command accepts `--json` for machine output.
+ 
+ `list` prints every item with its warehouse, quantity, reorder point and value.
+ `low-stock` prints items at or below their reorder point, with the shortfall.
+-Both are sorted by SKU. `value` prints the total value of the stock file.
+-`show` and `adjust` work on one SKU.
++Both are sorted by SKU and accept `--warehouse` to show one site. `value`
++prints the total value of the stock file. `show` and `adjust` work on one SKU.
+ 
+ Unless `--json` is given, output is a plain table.
+ 
+diff --git a/inventory/cli.py b/inventory/cli.py
+index 0c90600..09a8400 100644
+--- a/inventory/cli.py
++++ b/inventory/cli.py
+@@ -28,11 +28,13 @@ def build_parser():
+ 
+     list_parser = subcommands.add_parser("list", help="list every item")
+     list_parser.add_argument("--json", action="store_true", help="print JSON")
++    list_parser.add_argument("--warehouse", help="only show items from this warehouse")
+ 
+     low_parser = subcommands.add_parser(
+         "low-stock", help="list items at or below their reorder point"
+     )
+     low_parser.add_argument("--json", action="store_true", help="print JSON")
++    low_parser.add_argument("--warehouse", help="only show items from this warehouse")
+ 
+     value_parser = subcommands.add_parser("value", help="print the total stock value")
+     value_parser.add_argument("--json", action="store_true", help="print JSON")
+@@ -67,10 +69,15 @@ def main(argv=None):
+ 
+     try:
+         if args.command == "list":
+-            return _print_items(service.list_items(), args.json, render_items, "no items")
++            return _print_items(
++                service.list_items(args.warehouse),
++                args.json,
++                render_items,
++                "no items",
++            )
+         if args.command == "low-stock":
+             return _print_items(
+-                service.low_stock(),
++                service.low_stock(args.warehouse),
+                 args.json,
+                 render_low_stock,
+                 "no items need reordering",
+diff --git a/inventory/service.py b/inventory/service.py
+index c9f9c16..46a3c62 100644
+--- a/inventory/service.py
++++ b/inventory/service.py
+@@ -9,16 +9,19 @@ class InventoryService:
+     def __init__(self, store):
+         self.store = store
+ 
+-    def list_items(self):
+-        """Every item, sorted by SKU."""
+-        return sorted(self.store.load(), key=lambda item: item.sku)
++    def list_items(self, warehouse=None):
++        """Every item, optionally narrowed to one warehouse, sorted by SKU."""
++        items = self.store.load()
++        if warehouse is not None:
++            items = [item for item in items if item.warehouse == warehouse]
++        return sorted(items, key=lambda item: item.sku)
+ 
+-    def low_stock(self):
++    def low_stock(self, warehouse=None):
+         """Items at or below their reorder point, sorted by SKU."""
+-        return sorted(
+-            (item for item in self.store.load() if item.needs_reorder),
+-            key=lambda item: item.sku,
+-        )
++        items = [item for item in self.store.load() if item.needs_reorder]
++        if warehouse is not None:
++            items = [item for item in items if item.warehouse == warehouse]
++        return sorted(items, key=lambda item: item.sku)
+ 
+     def get_item(self, sku):
+         """Return one item or raise NotFoundError."""
+diff --git a/tests/test_cli.py b/tests/test_cli.py
+index 1d5783a..53f5d09 100644
+--- a/tests/test_cli.py
++++ b/tests/test_cli.py
+@@ -76,6 +76,19 @@ class CliTests(unittest.TestCase):
+         self.assertEqual(code, 2)
+         self.assertIn("unknown sku", err)
+ 
++    def test_list_filters_by_warehouse(self):
++        code, out, _ = self.run_cli("list", "--json", "--warehouse", "berlin")
++        payload = json.loads(out)
++        self.assertEqual(code, 0)
++        self.assertEqual(payload["count"], 1)
++        self.assertEqual([entry["sku"] for entry in payload["items"]], ["B-1"])
++
++    def test_low_stock_filters_by_warehouse(self):
++        code, out, _ = self.run_cli("low-stock", "--json", "--warehouse", "ams")
++        payload = json.loads(out)
++        self.assertEqual(code, 0)
++        self.assertEqual([entry["sku"] for entry in payload["items"]], ["A-1"])
++
+     def test_adjust_writes_file(self):
+         code, out, _ = self.run_cli("adjust", "A-1", "5", "--json")
+         self.assertEqual(code, 0)
+diff --git a/tests/test_service.py b/tests/test_service.py
+index 00e2ec0..1326e12 100644
+--- a/tests/test_service.py
++++ b/tests/test_service.py
+@@ -50,6 +50,14 @@ class ServiceTests(unittest.TestCase):
+             [entry.sku for entry in self.service.low_stock()], ["A-1"]
+         )
+ 
++    def test_list_can_filter_by_warehouse(self):
++        self.assertEqual(
++            [entry.sku for entry in self.service.list_items(warehouse="berlin")], ["B-2"]
++        )
++
++    def test_low_stock_can_filter_by_warehouse(self):
++        self.assertEqual(self.service.low_stock(warehouse="berlin"), [])
++
+     def test_get_item(self):
+         self.assertEqual(self.service.get_item("A-3").quantity, 9)
+ 

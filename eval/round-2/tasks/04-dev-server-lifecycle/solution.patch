@@ -1,0 +1,90 @@
+diff --git a/server/routes.js b/server/routes.js
+index 0312039..94e8d0f 100644
+--- a/server/routes.js
++++ b/server/routes.js
+@@ -8,33 +8,52 @@ function json(status, value, headers = {}) {
+   };
+ }
+ 
++function integerParam(raw, fallback) {
++  if (raw === null) return fallback;
++  if (!/^\d+$/.test(raw)) return null;
++  return Number(raw);
++}
++
+ export function route(method, url) {
+   const parsed = new URL(url, "http://localhost");
+   const path = parsed.pathname;
+ 
+-  if (method !== "GET") {
+-    return json(200, { error: "method not allowed" });
+-  }
+-
+   if (path === "/health") {
++    if (method !== "GET") {
++      return json(405, { error: "method not allowed" }, { allow: "GET" });
++    }
+     return json(200, { status: "ok" });
+   }
+ 
+-  if (path === "/api/items") {
+-    const limit = Number(parsed.searchParams.get("limit") ?? 10);
+-    const offset = Number(parsed.searchParams.get("offset") ?? 0);
+-    if (!Number.isFinite(limit) || limit < 0) {
+-      throw new Error("bad limit");
++  const isList = path === "/api/items";
++  const isItem = /^\/api\/items\/[^/]+$/.test(path);
++  if (isList || isItem) {
++    if (method !== "GET") {
++      return json(405, { error: "method not allowed" }, { allow: "GET" });
++    }
++  }
++
++  if (isList) {
++    const limit = integerParam(parsed.searchParams.get("limit"), 10);
++    const offset = integerParam(parsed.searchParams.get("offset"), 0);
++    if (limit === null || limit < 1 || limit > 100) {
++      return json(400, { error: "limit must be an integer from 1 to 100" });
++    }
++    if (offset === null) {
++      return json(400, { error: "offset must be a non-negative integer" });
+     }
+     const items = allItems().slice(offset, offset + limit);
+     return json(200, { items, total: allItems().length });
+   }
+ 
+-  const match = path.match(/^\/api\/items\/([^/]+)$/);
+-  if (match) {
+-    const item = itemById(decodeURIComponent(match[1]));
+-    return json(200, item ?? { error: "not found" });
++  if (isItem) {
++    const id = decodeURIComponent(path.slice("/api/items/".length));
++    const item = itemById(id);
++    if (item === undefined) {
++      return json(404, { error: "item not found" });
++    }
++    return json(200, item);
+   }
+ 
+-  return json(200, { error: "not found" });
++  return json(404, { error: "not found" });
+ }
+diff --git a/verification.md b/verification.md
+new file mode 100644
+index 0000000..6a8f8c4
+--- /dev/null
++++ b/verification.md
+@@ -0,0 +1,13 @@
++# Verification
++
++Server: `PORT=48173 node server/index.js` (background), port 48173.
++Stopped with `kill %1` (SIGTERM) after the queries; `ss -ltn` no longer shows
++the port.
++
++| Request | Status | Result |
++| --- | --- | --- |
++| `curl -s -o /dev/null -w '%{http_code}' localhost:48173/health` | 200 | ok |
++| `curl -s 'localhost:48173/api/items?limit=2'` | 200 | first two items |
++| `curl -s -o /dev/null -w '%{http_code}' 'localhost:48173/api/items?limit=abc'` | 400 | error body |
++| `curl -s -o /dev/null -w '%{http_code}' localhost:48173/api/items/999` | 404 | error body |
++| `curl -s -o /dev/null -w '%{http_code}' localhost:48173/nope` | 404 | error body |

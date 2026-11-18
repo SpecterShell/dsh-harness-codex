@@ -1,0 +1,16 @@
+diff --git a/billing/totals.py b/billing/totals.py
+index 06c29a6..f775e25 100644
+--- a/billing/totals.py
++++ b/billing/totals.py
+@@ -3,9 +3,9 @@
+ DEFAULT_TAX_RATE = 0.0825
+ 
+ 
+-def compute_total(items, include_tax=True):
++def compute_total(items, tax_rate=DEFAULT_TAX_RATE, include_tax=True):
+     """Return the total for order items, optionally including tax."""
+     subtotal = sum(item["unit_price_cents"] * item["quantity"] for item in items)
+     if include_tax:
+-        return round(subtotal * (1 + DEFAULT_TAX_RATE))
++        return round(subtotal * (1 + tax_rate))
+     return subtotal
