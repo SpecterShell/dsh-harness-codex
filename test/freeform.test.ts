@@ -141,9 +141,10 @@ async function fakeServer(t: TestContext, reply: Reply = () => textEvents()) {
       res.writeHead(200, { 'content-type': 'text/event-stream', 'cache-control': 'no-cache', connection: 'close' })
       for (const event of events) res.write(`event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`)
       res.end('data: [DONE]\n\n')
-    } catch (error) {
+    } catch {
+      // Test server: keep the error detail out of the response.
       res.writeHead(500, { 'content-type': 'application/json' })
-      res.end(JSON.stringify({ error: { message: String(error) } }))
+      res.end(JSON.stringify({ error: { message: 'test server handler failed' } }))
     }
   })
   await new Promise<void>((resolve, reject) => {
