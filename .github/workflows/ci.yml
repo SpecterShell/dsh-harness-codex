@@ -17,7 +17,6 @@ permissions:
 
 env:
   NODE_VERSION: '24'
-  DSH_HOST_VERSION: 0.2.2-rc.3
 
 jobs:
   check:
@@ -42,7 +41,7 @@ jobs:
       - name: Build
         run: pnpm build
       - name: Install the DSH host
-        run: npm install --global "@deepseek-ai/dsh@${DSH_HOST_VERSION}"
+        run: npm install --global "@deepseek-ai/dsh@0.2.2-rc.3"
       - name: Configure the DSH anchor
         run: |
           anchor="$(npm root -g)/@deepseek-ai/dsh/package.json"
@@ -128,7 +127,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Install the DSH host
-        run: npm install --global "@deepseek-ai/dsh@${DSH_HOST_VERSION}"
+        run: npm install --global "@deepseek-ai/dsh@0.2.2-rc.3"
       - name: Test
         run: |
           anchor="$(npm root -g)/@deepseek-ai/dsh/package.json"
