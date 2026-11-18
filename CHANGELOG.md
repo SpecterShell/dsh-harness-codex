@@ -2,7 +2,11 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+##  - 2026-11-18
+
+### Changed
+
+- `apply_patch` is now this package's own Codex-faithful implementation, replacing the native `dsh-tool-fs` row. It preserves UTF-8 BOMs and per-line endings (including CR-only files), keeps source context lines on fuzzy matches, appends insertions at the true end of file, and rejects empty patches, matching Codex HEAD.
 
 ### Changed
 
@@ -14,10 +18,6 @@ All notable changes to this project are documented here. The format follows [Kee
 - The **Codex Creator** preset (`codex-creator`) adds the tools for writing DSH plugins to the strict Codex set: Cordis runtime inspection, the skill loader, and the plugin manager and market tools when the profile exposes a plugin context.
 - The `review-agent` skill, adapted from Codex's review-agent sample under the Apache License 2.0. The Codex mode, Codex+ mode and Creator presets mount a skill provider for this package's `skills/` directory and the `skill` tool.
 - The settings card edits the free-form rules as a list: each configured rule has its own remove control, configured providers and models can be picked from the live DSH model catalog, and a wildcard input adds rules the pickers do not list. The stored `freeformRules` text keeps the same newline-joined form, so existing values, the host schema and the freeform bridge are unchanged.
-
-### Fixed
-
-- The settings card on the plugin's detail page renders with its intended row padding, hairline separators and label and hint typography again. Its class selectors no longer begin with the scoped package name, which browsers dropped as invalid.
 
 ## [0.1.2] - 2026-11-18
 
@@ -50,6 +50,7 @@ First public release, under the Apache-2.0 license.
 - A settings form on the plugin's detail page and in DSH settings, backed by a live `codexSettings` service, for the free-form rules, the tools kept visible and the project instruction budget.
 - CI on Linux and macOS, CodeQL, OpenSSF Scorecard and Dependabot. Releases carry a build-provenance attestation and stage on npm with provenance.
 
+[0.2.0]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.2.0
 [0.1.2]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.1.2
 [0.1.1]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.1.1
 [0.1.0]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.1.0
