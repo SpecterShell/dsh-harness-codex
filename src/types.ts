@@ -35,11 +35,13 @@ export interface BaseContext {
 export interface JsonSchema {
   type?: string
   description?: string
+  const?: string
   enum?: readonly string[]
   properties?: Record<string, JsonSchema>
   required?: readonly string[]
   additionalProperties?: boolean
   items?: JsonSchema
+  oneOf?: readonly JsonSchema[]
 }
 
 /** The dimensions Codex reports when an attachment was downscaled. */
@@ -190,8 +192,9 @@ export interface SystemPromptService {
   getSectionOrder(name: string): number
 }
 
-/** Filesystem target identity; only the display path is read here. */
+/** Filesystem target identity; the key is opaque and only compared for equality. */
 export interface FsTarget {
+  targetKey: string
   displayPath: string
 }
 
@@ -202,12 +205,39 @@ export interface FsInfo {
   size?: number
 }
 
-/** Filesystem service members the image and instruction plugins use. */
+/** Bounded text-write outcome; the patch tool reports its applied changes from it. */
+export interface FsTextWriteOutcome {
+  version: unknown
+  before: string | null
+  after: string
+}
+
+/** Bounded delete outcome used as an applied-change basis. */
+export interface FsTextDeleteOutcome {
+  before: string | null
+}
+
+/** Filesystem service members the tool rows use. */
 export interface FileSystemService {
+  /** The backend's default confinement mode; undefined when it never confines. */
+  readonly sandboxMode?: SandboxExecutionPolicy['mode']
   resolve(path: string, options?: { cwd?: string; signal?: AbortSignal }): Promise<FsTarget>
   stat(target: FsTarget, signal?: AbortSignal): Promise<FsInfo | undefined>
   readBytes(target: FsTarget, signal: AbortSignal | undefined, maxBytes: number): Promise<Uint8Array>
   readByteRange(target: FsTarget, range: { offset: number; length: number }, signal?: AbortSignal): Promise<Uint8Array>
+  writeText(
+    target: FsTarget,
+    content: string,
+    expected?: unknown,
+    signal?: AbortSignal,
+    sandboxPolicy?: SandboxExecutionPolicy,
+  ): Promise<FsTextWriteOutcome>
+  deleteFile(
+    target: FsTarget,
+    expected?: unknown,
+    signal?: AbortSignal,
+    sandboxPolicy?: SandboxExecutionPolicy,
+  ): Promise<FsTextDeleteOutcome>
   processPath(target: FsTarget): string
 }
 
@@ -445,6 +475,20 @@ export interface ExecContext extends BaseContext {
   shell: ShellExecutorService
   subprocess: SubprocessRuntimeService
   get<K extends keyof ExecServices>(name: K): ExecServices[K] | undefined
+}
+
+/** Optional services the patch row reaches through `ctx.get`. */
+export interface PatchServices {
+  sandboxPolicy: SandboxPolicyService
+  approval: ApprovalService
+}
+
+/** Context of the patch row. */
+export interface PatchContext extends BaseContext {
+  tools: ToolsService
+  fs: FileSystemService
+  workingDirectory: WorkingDirectoryService
+  get<K extends keyof PatchServices>(name: K): PatchServices[K] | undefined
 }
 
 /** Context of the freeform row. */

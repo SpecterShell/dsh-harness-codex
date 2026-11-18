@@ -38,6 +38,10 @@
       "types": "./lib/exec/index.d.ts",
       "default": "./lib/exec/index.js"
     },
+    "./patch": {
+      "types": "./lib/patch/index.d.ts",
+      "default": "./lib/patch/index.js"
+    },
     "./plan": {
       "types": "./lib/plan.d.ts",
       "default": "./lib/plan.js"
@@ -75,6 +79,7 @@
     "cordis.patch.yml",
     "locale",
     "prompts",
+    "skills",
     "assets",
     "NOTICE",
     "README.md",

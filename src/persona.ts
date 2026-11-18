@@ -1,5 +1,5 @@
 /**
- * Per-model persona for the Codex-inspired preset.
+ * Per-model persona for the Codex preset.
  *
  * Codex renders a catalog model's base instructions from the literal
  * `model_messages.instructions_template` in its models catalog, and uses
@@ -19,6 +19,7 @@
  * @module @spectershell/dsh-harness-codex/persona
  */
 import { readFileSync } from 'node:fs'
+import z from '@deepseek-ai/schemastery'
 import { loadCatalogIndex, matchCatalogSlug, slugCandidates } from './catalog.ts'
 import type { PersonaContext, PromptContext } from './types.js'
 
@@ -27,6 +28,18 @@ export const name = 'persona'
 
 /** The prompt registry this row contributes to. */
 export const inject = ['systemPrompt']
+
+/** Plugin config: whether the picked prompt replaces every inherited section. */
+export interface Config {
+  /** Make this persona the complete system prompt. Defaults to true. */
+  complete?: boolean
+}
+
+/** Runtime schema for the persona row. */
+export const Config: z<Config> = z.object({
+  complete: z.boolean().default(true)
+    .description('Replace every inherited prompt section with the selected persona.'),
+})
 
 /** The deployment persona slot a preset shadows with its own section. */
 const SECTION = 'deployment:persona-prefix'
@@ -67,16 +80,22 @@ function selectPrompt(prompts: ReturnType<typeof loadPrompts>, model: unknown): 
 }
 
 /**
- * Register the complete persona for this Agent scope.
+ * Register the persona for this Agent scope.
  * @param ctx - an Agent scope context that injects the system prompt.
+ * @param config - whether the section replaces the whole prompt.
  */
-export function apply(ctx: PersonaContext): void {
+export function apply(ctx: PersonaContext, config: Config = {}): void {
   const prompts = loadPrompts()
+  // A replacing section is the default: the Codex prompts are whole system
+  // prompts. `complete: false` keeps every other section, which the PTC preset
+  // needs because its transport instructions and tool SDK come from rows
+  // outside this one.
+  const complete = config.complete ?? true
   ctx.effect(() => ctx.systemPrompt.section({
     name: SECTION,
     order: ctx.systemPrompt.getSectionOrder('DEPLOYMENT_PERSONA_PREFIX'),
     text: (context: PromptContext) => selectPrompt(prompts, context.modelSelection?.model ?? context.agent?.options?.model),
-    complete: true,
+    ...(complete ? { complete: true } : {}),
     interpolate: false
   }), 'persona.section()')
 }

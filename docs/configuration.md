@@ -1,6 +1,6 @@
 # Configuration
 
-The preset is declared in [cordis.patch.yml](../cordis.patch.yml) as one `@deepseek-ai/dsh-agent-preset` row with the id `preset-codex-inspired`. Each entry in its `plugins` list is a row that can be changed.
+The presets are declared in [cordis.patch.yml](../cordis.patch.yml) as four `@deepseek-ai/dsh-agent-preset` rows with the ids `preset-codex-inspired`, `preset-codex-extended`, `preset-codex-ptc` and `preset-codex-creator`. Each entry in a preset's `plugins` list is a row that can be changed.
 
 ## Changing a row
 
@@ -13,16 +13,29 @@ Alternatively, the override can be written by hand. A patch that targets the pre
 - id: preset-codex-inspired
   name: '@deepseek-ai/dsh-agent-preset'
   config:
-    id: codex-inspired
-    name: Codex-inspired
+    id: codex
+    name: Codex mode
     order: 5
     plugins:
       # the full list from the package, with the desired changes
 ```
 
+The patch row id stays `preset-codex-inspired`; the preset id in its `config` is now `codex`. The other presets use `codex-extended`, `codex-ptc` and `codex-creator`.
+
 DSH must be restarted afterwards. Sessions that are already open retain the previous preset.
 
 An override can also be tested without modifying the profile by passing it at startup with `dsh --profile web --patch ./my-override.yml`.
+
+## Presets
+
+| Preset id | Display name | Composition |
+| --- | --- | --- |
+| `codex` | Codex mode | The strict preset: five Codex tools, the `skill` loader and this package's skills, with every host tool hidden. |
+| `codex-extended` | Codex+ mode | The same tools, with host tools kept unless their names duplicate a Codex tool. |
+| `codex-ptc` | Codex PTC | The Codex tool set reached through `run_code`, plus DSH's standard delegation group. |
+| `codex-creator` | Codex Creator | The strict set plus Cordis inspection, the skill loader, and the plugin manager and market tools. |
+
+Codex PTC sets `complete: false` on its persona row so the deployment guidance stays below the Codex prompt, and keeps the free-form patch row disabled because PTC rejects direct tool calls other than `run_code`. Codex Creator's plugin manager and market rows are disabled unless the profile exposes a plugin context.
 
 ## Settings
 
@@ -44,16 +57,23 @@ The free-form switch applies to the running preset: turning it on patches the ad
 
 | Row | Plugin | Notes |
 | --- | --- | --- |
-| `persona` | `@spectershell/dsh-harness-codex/persona` | Selects the system prompt according to the model. No options. |
+| `persona` | `@spectershell/dsh-harness-codex/persona` | Selects the system prompt according to the model. `complete: false` keeps inherited prompt sections. |
 | `agent-instructions` | `@deepseek-ai/dsh-agent-instructions` | Loads user-level instruction files. |
 | `project-instructions` | `@spectershell/dsh-harness-codex/instructions` | Loads project `AGENTS.md` files with Codex's precedence and 32 KiB budget. |
 | `exec` | `@spectershell/dsh-harness-codex/exec` | `exec_command` and `write_stdin`. Disabled on Windows. |
-| `tool-fs` | `@deepseek-ai/dsh-tool-fs` | Only `applyPatch` is enabled. |
+| `patch` | `@spectershell/dsh-harness-codex/patch` | `apply_patch`, ported from Codex's own parser and text updater. Preserves BOM, per-line endings and matched context. |
 | `freeform-patch` | `@spectershell/dsh-harness-codex/freeform` | Free-form `apply_patch`, disabled by default. See [freeform.md](freeform.md). |
 | `update-plan` | `@spectershell/dsh-harness-codex/plan` | `update_plan`. No options. |
 | `view-image` | `@spectershell/dsh-harness-codex/image` | `view_image`. Requires a model with image input. |
 | `surface` | `@spectershell/dsh-harness-codex/surface` | Hides tools contributed by the profile. |
+| `skill-filesystem` | `@deepseek-ai/dsh-skill-filesystem` | Adds this package's `skills/` directory as a skill root. Codex mode, Codex+ mode and Creator. |
+| `tool-skill` | `@deepseek-ai/dsh-tool-skill` | The `skill` loader. Codex mode, Codex+ mode and Creator. |
+| `tool-cordis` | `@deepseek-ai/dsh-tool-cordis` | `cordis_inspect_list` and `cordis_inspect_query`. Creator only. |
+| `tool-plugin-manager` | `@deepseek-ai/dsh-plugin-manager/tools` | Plugin management tools. Creator only; disabled when no profile context exists. |
+| `tool-plugin-market` | `@deepseek-ai/dsh-plugin-market/tools` | Plugin market tools. Creator only; disabled when no profile context exists. |
 | `compaction` | `@spectershell/dsh-harness-codex/compaction` | Codex-style local compaction. |
+| `delegation` | `cordis:group` | The standard preset's delegation group, isolating `workflowEngine`. Codex PTC only. |
+| `tool-executor-ptc` | `@deepseek-ai/dsh-tool-executor-ptc` | Makes `run_code` the only directly callable tool. Codex PTC only. |
 
 ### surface
 
@@ -63,12 +83,12 @@ The preset hides every tool registered by the profile, such as `working_director
 - id: surface
   name: @spectershell/dsh-harness-codex/surface
   config:
-    allow: [exec_command, write_stdin, apply_patch, update_plan, view_image, web_search]
+    allow: [exec_command, write_stdin, apply_patch, update_plan, view_image, skill, web_search]
 ```
 
-The five Codex tools should remain in the list. If the profile registers a tool with the same name as one of them, the preset's own tool takes precedence.
+The five Codex tools and `skill` should remain in the list. If the profile registers a tool with the same name as one of them, the preset's own tool takes precedence. An allow-only mask also filters the preset's own rows when an Agent views them, so every tool the preset mounts needs an entry. Codex Creator lists `cordis_inspect_list`, `cordis_inspect_query` and `skill` for that reason.
 
-The package also declares a second preset, **Codex-extended** (`codex-extended`). It mounts the same plugins and differs only in the `surface` row, which uses a fixed `deny` list instead of hiding all host tools:
+**Codex+ mode** (`codex-extended`) mounts the same plugins and differs only in the `surface` row, which uses a fixed `deny` list instead of hiding all host tools:
 
 ```yaml
 - id: surface
@@ -78,7 +98,7 @@ The package also declares a second preset, **Codex-extended** (`codex-extended`)
     allow: [exec_command, write_stdin, apply_patch, update_plan, view_image]
 ```
 
-In this mode a host tool is hidden only when its name is on the list, so tools from plugins installed later remain available. `allow` still protects the five Codex names.
+In this mode a host tool is hidden only when its name is on the list, so tools from plugins installed later remain available. `allow` still protects the five Codex names, and the preset's own `skill` row is visible because the deny list does not name it. **Codex PTC** (`codex-ptc`) uses the same deny list.
 
 ### project-instructions
 

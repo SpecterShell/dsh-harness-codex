@@ -2,7 +2,7 @@
 
 [English](configuration.md)
 
-预设在本包的 [cordis.patch.yml](../cordis.patch.yml) 里声明为一行 `@deepseek-ai/dsh-agent-preset`，id 为 `preset-codex-inspired`。`plugins` 列表中的每一条都是一行，都可以修改。
+预设在本包的 [cordis.patch.yml](../cordis.patch.yml) 里声明为四行 `@deepseek-ai/dsh-agent-preset`，id 分别为 `preset-codex-inspired`、`preset-codex-extended`、`preset-codex-ptc` 和 `preset-codex-creator`。每个预设的 `plugins` 列表中的每一条都是一行，都可以修改。
 
 ## 修改某一行
 
@@ -15,16 +15,29 @@ DSH Web 界面里的预设编辑器是最省事的做法，保存后的改动会
 - id: preset-codex-inspired
   name: '@deepseek-ai/dsh-agent-preset'
   config:
-    id: codex-inspired
-    name: Codex-inspired
+    id: codex
+    name: Codex mode
     order: 5
     plugins:
       # the full list from the package, with the desired changes
 ```
 
+补丁行 id 仍是 `preset-codex-inspired`，但 `config` 里的预设 id 现在是 `codex`。其余预设的 id 是 `codex-extended`、`codex-ptc` 和 `codex-creator`。
+
 之后必须重启 DSH。已经打开的会话仍沿用旧的预设。
 
 不修改 profile 也能试一下覆盖补丁，启动时用 `dsh --profile web --patch ./my-override.yml` 传入即可。
+
+## 预设
+
+| 预设 id | 显示名 | 组成 |
+| --- | --- | --- |
+| `codex` | Codex mode | 严格预设：五个 Codex 工具、`skill` 加载器和本包自带的技能，宿主工具全部隐藏。 |
+| `codex-extended` | Codex+ mode | 同一套工具，宿主工具除与 Codex 工具重名外都保留。 |
+| `codex-ptc` | Codex PTC | 通过 `run_code` 调用同一套 Codex 工具，并带上 DSH 标准预设的委派组。 |
+| `codex-creator` | Codex Creator | 严格套件加上 Cordis 查询、技能加载器，以及插件管理和插件市场工具。 |
+
+Codex PTC 把 persona 行设为 `complete: false`，让部署提示词保留在 Codex 提示词之后；free-form 补丁行保持关闭，因为 PTC 会拒绝 `run_code` 之外的直接工具调用。Codex Creator 的插件管理和插件市场行只在 profile 提供插件上下文时启用。
 
 ## 设置
 
@@ -46,16 +59,23 @@ DSH Web 界面里的预设编辑器是最省事的做法，保存后的改动会
 
 | 行 | 插件 | 说明 |
 | --- | --- | --- |
-| `persona` | `@spectershell/dsh-harness-codex/persona` | 根据模型选择系统提示词。没有选项。 |
+| `persona` | `@spectershell/dsh-harness-codex/persona` | 根据模型选择系统提示词。`complete: false` 时保留继承的提示词段落。 |
 | `agent-instructions` | `@deepseek-ai/dsh-agent-instructions` | 加载用户级指令文件。 |
 | `project-instructions` | `@spectershell/dsh-harness-codex/instructions` | 按 Codex 的优先级和 32 KiB 预算加载项目的 `AGENTS.md` 文件。 |
 | `exec` | `@spectershell/dsh-harness-codex/exec` | `exec_command` 和 `write_stdin`。在 Windows 上禁用。 |
-| `tool-fs` | `@deepseek-ai/dsh-tool-fs` | 只启用 `applyPatch`。 |
+| `patch` | `@spectershell/dsh-harness-codex/patch` | `apply_patch`，移植自 Codex 自己的解析器和文本更新器。保留 BOM、每行行尾和匹配到的上下文。 |
 | `freeform-patch` | `@spectershell/dsh-harness-codex/freeform` | Free-form 形式的 `apply_patch`，默认关闭。见 [freeform.zh-Hans.md](freeform.zh-Hans.md)。 |
 | `update-plan` | `@spectershell/dsh-harness-codex/plan` | `update_plan`。没有选项。 |
 | `view-image` | `@spectershell/dsh-harness-codex/image` | `view_image`。需要支持图片输入的模型。 |
 | `surface` | `@spectershell/dsh-harness-codex/surface` | 隐藏 profile 提供的工具。 |
+| `skill-filesystem` | `@deepseek-ai/dsh-skill-filesystem` | 把本包的 `skills/` 目录加入技能根目录。用于 Codex mode、Codex+ mode 和 Creator。 |
+| `tool-skill` | `@deepseek-ai/dsh-tool-skill` | `skill` 加载器。用于 Codex mode、Codex+ mode 和 Creator。 |
+| `tool-cordis` | `@deepseek-ai/dsh-tool-cordis` | `cordis_inspect_list` 和 `cordis_inspect_query`。仅 Creator。 |
+| `tool-plugin-manager` | `@deepseek-ai/dsh-plugin-manager/tools` | 插件管理工具。仅 Creator；没有 profile 上下文时禁用。 |
+| `tool-plugin-market` | `@deepseek-ai/dsh-plugin-market/tools` | 插件市场工具。仅 Creator；没有 profile 上下文时禁用。 |
 | `compaction` | `@spectershell/dsh-harness-codex/compaction` | Codex 风格的本地压缩。 |
+| `delegation` | `cordis:group` | 标准预设的委派组，隔离 `workflowEngine`。仅 Codex PTC。 |
+| `tool-executor-ptc` | `@deepseek-ai/dsh-tool-executor-ptc` | 让 `run_code` 成为唯一可以直接调用的工具。仅 Codex PTC。 |
 
 ### surface
 
@@ -65,12 +85,12 @@ DSH Web 界面里的预设编辑器是最省事的做法，保存后的改动会
 - id: surface
   name: @spectershell/dsh-harness-codex/surface
   config:
-    allow: [exec_command, write_stdin, apply_patch, update_plan, view_image, web_search]
+    allow: [exec_command, write_stdin, apply_patch, update_plan, view_image, skill, web_search]
 ```
 
-五个 Codex 工具应当留在列表里。如果 profile 注册了与其中某个工具同名的工具，预设自带的那个优先。
+五个 Codex 工具和 `skill` 应当留在列表里。如果 profile 注册了与其中某个工具同名的工具，预设自带的那个优先。只有 `allow` 的掩码在 Agent 视角下也会过滤预设自己挂载的行，所以预设提供的每个工具都要列进去。Codex Creator 因此把 `cordis_inspect_list`、`cordis_inspect_query` 和 `skill` 都列在 `allow` 中。
 
-本包还声明了第二个预设 **Codex-extended**（`codex-extended`）。它挂载同一批插件，只有 `surface` 行不同，用固定的 `deny` 列表代替隐藏全部宿主工具：
+**Codex+ mode**（`codex-extended`）挂载同一批插件，只有 `surface` 行不同，用固定的 `deny` 列表代替隐藏全部宿主工具：
 
 ```yaml
 - id: surface
@@ -80,7 +100,7 @@ DSH Web 界面里的预设编辑器是最省事的做法，保存后的改动会
     allow: [exec_command, write_stdin, apply_patch, update_plan, view_image]
 ```
 
-这种模式下，宿主工具只有名字在列表里才会被隐藏，之后安装的插件提供的工具仍然可用。`allow` 依旧保护五个 Codex 工具名。
+这种模式下，宿主工具只有名字在列表里才会被隐藏，之后安装的插件提供的工具仍然可用。`allow` 依旧保护五个 Codex 工具名，预设自己的 `skill` 行因为不在 `deny` 列表里而保持可见。**Codex PTC**（`codex-ptc`）使用同一份 `deny` 列表。
 
 ### project-instructions
 

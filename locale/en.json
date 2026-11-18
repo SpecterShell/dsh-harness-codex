@@ -1,13 +1,14 @@
 {
   "meta": {
-    "title": "Codex-inspired preset",
+    "title": "Codex preset",
     "description": "Lets the AI work like Codex: shell inspection, patch edits and one process per command."
   },
   "approval": {
-    "unsandboxed": "Allow this command to run without the sandbox: {justification}"
+    "unsandboxed": "Allow this command to run without the sandbox: {justification}",
+    "unsandboxedFiles": "Allow this file operation to run without the sandbox: {justification}"
   },
   "settings.title": "Codex preset",
-  "settings.description": "Free-form patches, visible tools and the project instruction budget for the Codex-inspired preset.",
+  "settings.description": "Free-form patches, visible tools and the project instruction budget for the Codex presets.",
   "settings.freeformEnabled": "Free-form apply_patch",
   "settings.freeformEnabledHint": "Send apply_patch to matching models as a grammar tool instead of a JSON function.",
   "settings.freeformCodexCatalog": "Follow the Codex catalog",

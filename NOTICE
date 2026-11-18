@@ -46,6 +46,42 @@ The exact freeform tool description sent by the bridge is copied from
 codex-rs/core/src/tools/handlers/apply_patch_spec.rs in that commit. That code
 is licensed under the Apache License, Version 2.0.
 
+The review-agent skill under skills/review-agent/ is adapted from OpenAI Codex,
+commit ca21fe65d18a9b6326759fb4263c65dfbb645aa5:
+
+  skills/review-agent/SKILL.md
+    codex-rs/skills/src/assets/samples/review-agent/SKILL.md
+
+The review methodology, checklist and result format are Codex's. The file is
+adapted for DSH rather than copied: its tool guidance names the DSH tools the
+review uses, and Codex's agents/openai.yaml interface metadata is not carried
+over. That code is licensed under the Apache License, Version 2.0.
+
+The apply_patch parser and text updater under src/patch/ are a TypeScript port
+of OpenAI Codex, commit ca21fe65d18a9b6326759fb4263c65dfbb645aa5. The port
+follows the upstream logic function by function; comments and module docs were
+written for this package rather than copied.
+
+  src/patch/parser.ts
+    codex-rs/apply-patch/src/parser.rs
+    codex-rs/apply-patch/src/streaming_parser.rs
+  src/patch/seek-sequence.ts
+    codex-rs/apply-patch/src/seek_sequence.rs
+  src/patch/text-file.ts
+    codex-rs/apply-patch/src/text_file.rs
+  src/patch/file-update.ts
+    codex-rs/apply-patch/src/file_update.rs
+  src/patch/execute.ts (verification/commit split, duplicate-target check)
+    codex-rs/apply-patch/src/lib.rs
+    codex-rs/apply-patch/src/invocation.rs (read-only verification)
+    codex-rs/core/src/apply_patch.rs (empty-patch rejection text)
+  src/patch/output.ts (result shape and render text)
+    @deepseek-ai/dsh-tool-fs src/apply-patch-output.ts (MIT), kept for wire
+    compatibility with hosted sessions and the Web diff view
+
+That Codex code is licensed under the Apache License, Version 2.0; the full
+license text is in LICENSE.
+
 The adapter snapshot technique in src/freeform/bridge.ts follows Anionex's
 dsh-smarter-edit freeform bridge (https://github.com/Anionex/dsh-smarter-edit),
 which is licensed under the MIT license.

@@ -4,8 +4,15 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Changed
+
+- The presets are renamed. `codex-inspired` is now `codex` with the display name **Codex mode**, and `codex-extended` keeps its id with the display name **Codex+ mode**. The `cordis.patch.yml` row ids (`preset-codex-inspired`, `preset-codex-extended`) are unchanged, so existing profile overrides keep targeting the same rows.
+
 ### Added
 
+- The **Codex PTC** preset (`codex-ptc`) reaches the Codex tools through `run_code`, carries the delegation group from DSH's standard preset, keeps the inherited prompt below the Codex persona and leaves the free-form patch bridge off.
+- The **Codex Creator** preset (`codex-creator`) adds the tools for writing DSH plugins to the strict Codex set: Cordis runtime inspection, the skill loader, and the plugin manager and market tools when the profile exposes a plugin context.
+- The `review-agent` skill, adapted from Codex's review-agent sample under the Apache License 2.0. The Codex mode, Codex+ mode and Creator presets mount a skill provider for this package's `skills/` directory and the `skill` tool.
 - The settings card edits the free-form rules as a list: each configured rule has its own remove control, configured providers and models can be picked from the live DSH model catalog, and a wildcard input adds rules the pickers do not list. The stored `freeformRules` text keeps the same newline-joined form, so existing values, the host schema and the freeform bridge are unchanged.
 
 ### Fixed
