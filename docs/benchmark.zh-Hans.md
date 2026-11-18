@@ -4,6 +4,8 @@
 
 本文在相同模型上对比 Codex mode 预设与 DSH 的 Standard 预设。任务、脚本和原始记录见 [eval/](../eval/)。
 
+两轮运行使用的是现在名为 **Codex mode** 的预设，当时它叫 **Codex-inspired**。下面的结果不受这次改名影响。
+
 ## 第一轮（2026-11-17）
 
 使用 DSH 0.2.2-rc.1 和 @spectershell/dsh-harness-codex 0.1.0 运行。

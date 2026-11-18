@@ -2,6 +2,8 @@
 
 This document compares the Codex mode preset with DSH's Standard preset on the same models. The tasks, scripts and raw notes are in [eval/](../eval/).
 
+Both rounds ran with the preset that is now **Codex mode**; at the time it was named **Codex-inspired**. The results below are unchanged.
+
 ## Round 1 (2026-11-17)
 
 Run with DSH 0.2.2-rc.1 and @spectershell/dsh-harness-codex 0.1.0.

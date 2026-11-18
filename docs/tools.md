@@ -2,7 +2,7 @@
 
 [简体中文](tools.zh-Hans.md)
 
-The presets expose five tools. Their names, parameters and output text follow Codex, so models trained on Codex can use them directly.
+The presets expose five Codex tools. Their names, parameters and output text follow Codex, so models trained on Codex can use them directly. Codex PTC reaches them from inside `run_code`, and Creator adds its own tools.
 
 ## exec_command
 
@@ -71,13 +71,13 @@ The grammar supports `*** Add File`, `*** Update File`, `*** Delete File` and `*
 
 ```text
 Success. Updated the following files:
-- update src/app.ts
-- add src/util.ts
+A src/util.ts
+M src/app.ts
 ```
 
 A partial failure reports the completed operations first, then the failed one with its patch line, then the ones that were not executed.
 
-The implementation is DSH's own, including its permission checks. With the free-form bridge enabled, GPT models receive this tool in Codex's grammar form. See [freeform.md](freeform.md).
+The implementation is this package's own port of Codex's patch parser and text updater, adapted to DSH's filesystem service and sandbox. It follows Codex's rules: a UTF-8 BOM is preserved, each source line keeps its own ending (CRLF, LF or a lone CR) and a replacement or inserted line takes the file's first ending, context lines matched by the fuzzy passes keep the spelling they have in the file, an empty patch is rejected, and an insertion marked `*** End of File` lands after the file's true last line. The JSON `input` field, the permission checks and the structured result are DSH's. With the free-form bridge enabled, GPT models receive this tool in Codex's grammar form. See [freeform.md](freeform.md).
 
 ## update_plan
 

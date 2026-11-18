@@ -22,7 +22,7 @@ DSH Web 界面里的预设编辑器是最省事的做法，保存后的改动会
       # the full list from the package, with the desired changes
 ```
 
-补丁行 id 仍是 `preset-codex-inspired`，但 `config` 里的预设 id 现在是 `codex`。其余预设的 id 是 `codex-extended`、`codex-ptc` 和 `codex-creator`。
+补丁行 id 仍是 `preset-codex-inspired`，已有的覆盖补丁继续命中这一行；只有 `config` 里的预设 id 改成了 `codex`。其余行 id 是 `preset-codex-extended`、`preset-codex-ptc` 和 `preset-codex-creator`，对应的 `config.id` 是 `codex-extended`、`codex-ptc` 和 `codex-creator`。
 
 之后必须重启 DSH。已经打开的会话仍沿用旧的预设。
 

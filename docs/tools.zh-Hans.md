@@ -2,7 +2,7 @@
 
 [English](tools.md)
 
-预设提供五个工具。工具的名称、参数和输出文本沿用 Codex，为 Codex 训练过的模型可以直接使用。
+预设提供五个 Codex 工具。工具的名称、参数和输出文本沿用 Codex，为 Codex 训练过的模型可以直接使用。Codex PTC 在 `run_code` 里调用它们，Creator 还会额外提供自己的工具。
 
 ## exec_command
 
@@ -71,13 +71,13 @@ tick 1
 
 ```text
 Success. Updated the following files:
-- update src/app.ts
-- add src/util.ts
+A src/util.ts
+M src/app.ts
 ```
 
 部分失败时，报告先列出已完成的操作，再列出失败的操作及其在补丁中的行号，最后是未执行的操作。
 
-实现来自 DSH 自带组件，权限检查也沿用 DSH。启用 free-form 桥接后，GPT 模型会以 Codex 的语法工具形式收到这个工具，详见 [freeform.zh-Hans.md](freeform.zh-Hans.md)。
+实现是本包自己的移植，取自 Codex 的补丁解析器和文本更新器，接在 DSH 的文件系统服务和沙箱上。行为遵循 Codex 的规则：保留 UTF-8 BOM，源文件的每一行各自保留原来的行尾（CRLF、LF 或单独的 CR），替换或新增的行取文件的第一个行尾，经模糊匹配命中的上下文行沿用文件里的原写法，空补丁会被拒绝，标有 `*** End of File` 的插入落在文件真正的最后一行之后。JSON 的 `input` 字段、权限检查和结构化结果沿用 DSH。启用 free-form 桥接后，GPT 模型会以 Codex 的语法工具形式收到这个工具，详见 [freeform.zh-Hans.md](freeform.zh-Hans.md)。
 
 ## update_plan
 
