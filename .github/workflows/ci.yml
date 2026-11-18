@@ -90,7 +90,7 @@ jobs:
           }
           for (const entry of entries) {
             assert(!entry.split('/').includes('..'), 'Unexpected archive path: ' + entry)
-            assert(/^package\/(?:package.json|LICENSE|NOTICE|CHANGELOG.md|README(?:\.[a-zA-Z-]+)?\.md|cordis\.patch\.yml|(?:lib|locale|prompts|assets)\/.*)$/.test(entry), 'Unexpected package file: ' + entry)
+            assert(/^package\/(?:package.json|LICENSE|NOTICE|CHANGELOG.md|README(?:\.[a-zA-Z-]+)?\.md|cordis\.patch\.yml|(?:lib|locale|prompts|assets|skills)\/.*)$/.test(entry), 'Unexpected package file: ' + entry)
           }
           const manifest = JSON.parse(execFileSync('tar', ['-xOf', archive, 'package/package.json'], { encoding: 'utf8' }))
           assert.equal(manifest.name, '@spectershell/dsh-harness-codex')
