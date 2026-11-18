@@ -4,6 +4,10 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Changed
+
+- The presets now carry the per-preset header note the built-in presets use, and each mounts the `time-context` row as the built-ins do.
+
 ### Added
 
 - Every preset now mounts the delegation group (subagents, messaging and workflows), matching DSH's standard preset. The Agent Team tools are no longer absent from the Codex presets.
