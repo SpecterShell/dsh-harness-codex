@@ -11,6 +11,9 @@
     # the live `codexSettings` service the preset rows read when present.
     - id: '@spectershell/dsh-harness-codex'
       name: '@spectershell/dsh-harness-codex'
+    # Agent preset codex-strict: one `@deepseek-ai/dsh-agent-preset` declaration
+    # inserted after the host row. Edits saved from the Web editor override this
+    # row's `config.plugins` by id from the profile patch.
     - id: preset-codex-inspired
       name: '@deepseek-ai/dsh-agent-preset'
       config:
@@ -21,6 +24,8 @@
         plugins:
           - id: persona
             name: '@spectershell/dsh-harness-codex/persona'
+          - id: time-context
+            name: '@deepseek-ai/dsh-time-context'
           - id: agent-instructions
             name: '@deepseek-ai/dsh-agent-instructions'
             config:
@@ -111,6 +116,9 @@
     # surface row differs: instead of hiding every host tool, it masks the
     # built-in tools that overlap with the Codex ones, so plugins installed
     # later (web, MCP, skills) remain available.
+    # Agent preset codex: one `@deepseek-ai/dsh-agent-preset` declaration
+    # inserted after the host row. Edits saved from the Web editor override this
+    # row's `config.plugins` by id from the profile patch.
     - id: preset-codex-extended
       name: '@deepseek-ai/dsh-agent-preset'
       config:
@@ -121,6 +129,8 @@
         plugins:
           - id: persona
             name: '@spectershell/dsh-harness-codex/persona'
+          - id: time-context
+            name: '@deepseek-ai/dsh-time-context'
           - id: agent-instructions
             name: '@deepseek-ai/dsh-agent-instructions'
             config:
@@ -204,6 +214,9 @@
     # PTC keeps the extended preset's deny-list surface and adds the executor
     # that makes `run_code` the only directly callable tool. Every other tool
     # in the preset is reachable from inside a program.
+    # Agent preset codex-ptc: one `@deepseek-ai/dsh-agent-preset` declaration
+    # inserted after the host row. Edits saved from the Web editor override this
+    # row's `config.plugins` by id from the profile patch.
     - id: preset-codex-ptc
       name: '@deepseek-ai/dsh-agent-preset'
       config:
@@ -214,6 +227,8 @@
         plugins:
           - id: persona
             name: '@spectershell/dsh-harness-codex/persona'
+          - id: time-context
+            name: '@deepseek-ai/dsh-time-context'
             config:
               # Keep every inherited prompt section instead of replacing them;
               # the PTC transport instructions and tool SDK render after the
@@ -295,6 +310,9 @@
     # Creator starts from the strict preset and adds the tooling for writing
     # DSH plugins: runtime inspection, the package's skills, and the plugin
     # manager and market tools when a profile context is available.
+    # Agent preset codex-creator: one `@deepseek-ai/dsh-agent-preset` declaration
+    # inserted after the host row. Edits saved from the Web editor override this
+    # row's `config.plugins` by id from the profile patch.
     - id: preset-codex-creator
       name: '@deepseek-ai/dsh-agent-preset'
       config:
@@ -305,6 +323,8 @@
         plugins:
           - id: persona
             name: '@spectershell/dsh-harness-codex/persona'
+          - id: time-context
+            name: '@deepseek-ai/dsh-time-context'
           - id: agent-instructions
             name: '@deepseek-ai/dsh-agent-instructions'
             config:

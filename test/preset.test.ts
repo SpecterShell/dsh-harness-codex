@@ -49,6 +49,7 @@ const { TokenMeter } = await native('dsh-token-meter')
 const compactionBasic = await native('dsh-compaction-basic')
 const { BasicCompactionEngine } = compactionBasic
 const agentInstructions = await native('dsh-agent-instructions')
+const timeContext = await native('dsh-time-context')
 const toolFs = await native('dsh-tool-fs')
 const commandCompact = await native('dsh-command-compact')
 const SkillRegistry = (await native('dsh-skill')).default
@@ -152,6 +153,7 @@ await test('the codex presets expose the Codex tools and their own additions to 
   const bindings = new Map([
     ['@spectershell/dsh-harness-codex/persona', 'codex-persona'],
     ['@deepseek-ai/dsh-agent-instructions', 'agent-instructions'],
+    ['@deepseek-ai/dsh-time-context', 'time-context'],
     ['@spectershell/dsh-harness-codex/instructions', 'codex-instructions'],
     ['@spectershell/dsh-harness-codex/compaction', 'codex-compaction'],
     ['@spectershell/dsh-harness-codex/exec', 'codex-exec'],
@@ -178,6 +180,7 @@ await test('the codex presets expose the Codex tools and their own additions to 
     ['agent-preset', AgentPreset],
     ['codex-persona', codexPersona],
     ['agent-instructions', agentInstructions],
+    ['time-context', timeContext],
     ['codex-instructions', codexInstructions],
     ['codex-compaction', codexCompaction],
     ['codex-exec', codexExec],
