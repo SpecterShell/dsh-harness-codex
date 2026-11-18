@@ -32,4 +32,4 @@ export function apply(ctx: ClientContext): void {
   mountSettingsCard(ctx, ctx.locale.bind('@spectershell/dsh-harness-codex'))
 }
 
-export const inject = ['locale', 'slots', 'configForms']
+export const inject = ['locale', 'slots', 'configForms', 'remote', 'remote.session']
