@@ -20,18 +20,59 @@ Runs a shell command in a new process and returns its output. A command that is 
 
 Every call starts a fresh process: `cd`, exported variables and shell functions do not carry over to the next call. Output is collected incrementally, so a session's replies never repeat or lose bytes. Output is capped at 1 MiB per process, and each reply is truncated to its token budget in Codex's format, keeping the head and tail.
 
-A reply looks like:
+### Examples
+
+#### Fast command
+
+A command that finishes inside the wait returns its exit code and output.
+
+Input
+
+```json
+{
+  "cmd": "git status --short"
+}
+```
+
+Output
 
 ```text
-Chunk ID: 3f2a91
-Wall time: 10.0000 seconds
+Wall time: 0.1200 seconds
+Process exited with code 0
+Original token count: 3
+Output:
+ M src/app.ts
+```
+
+#### Command still running
+
+A command that outlives the wait returns a session identifier. The session continues in the background.
+
+Input
+
+```json
+{
+  "cmd": "for i in 1 2 3; do echo tick $i; sleep 4; done",
+  "yield_time_ms": 250
+}
+```
+
+Output
+
+```text
+Wall time: 0.2500 seconds
 Process running with session ID 15893
-Original token count: 42
+Original token count: 6
 Output:
 tick 1
 ```
 
 When the command has finished, the reply carries `Process exited with code N` and no session identifier.
+
+### Special cases
+
+- Independent processes: two calls share no state, so a `cd` or an export in one is invisible to the next.
+- Cancellation while the first wait runs kills the process. Cancellation of a `write_stdin` poll leaves it running.
 
 ## write_stdin
 
@@ -47,6 +88,62 @@ Polls a running session for new output, or sends input to one started with `tty:
 Sessions belong to the agent that started them, so a session identifier cannot be used from another agent. Non-TTY sessions close their stdin: writing ordinary text fails, and the bare control character `Ctrl-C` ends the process. Sessions that finish keep their final output available for one last poll, and are dropped afterwards. An agent may hold at most 64 sessions. The oldest are terminated when the cap is reached, and ending the agent or unloading the preset terminates everything it left running.
 
 The reply uses the same format as `exec_command`, with the output produced since the previous reply for that session.
+
+### Examples
+
+#### Poll until exit
+
+Polling the session from the previous example with empty `chars` returns the remaining ticks, then the exit code.
+
+Input
+
+```json
+{
+  "session_id": 15893,
+  "chars": "",
+  "yield_time_ms": 10000
+}
+```
+
+Output
+
+```text
+Wall time: 8.0000 seconds
+Process exited with code 0
+Original token count: 12
+Output:
+tick 2
+tick 3
+```
+
+#### Write to a TTY session
+
+A session started with `tty: true` accepts input. A non-TTY session rejects ordinary input with `stdin is closed`.
+
+Input
+
+```json
+{
+  "session_id": 31020,
+  "chars": "codex\n",
+  "yield_time_ms": 5000
+}
+```
+
+Output
+
+```text
+Wall time: 0.3500 seconds
+Process exited with code 0
+Original token count: 11
+Output:
+codex hello codex
+```
+
+### Special cases
+
+- A session identifier from another agent is rejected, as is an identifier whose process has already been collected.
+- `Ctrl-C` as the whole `chars` value ends a non-TTY session instead of failing.
 
 ## apply_patch
 
@@ -90,6 +187,32 @@ Replaces the session's plan, shown in the To-dos panel.
 
 The reply is `Plan updated`. The plan is stored in the DSH todo projection, so it appears in the To-dos panel and survives session replay.
 
+### Examples
+
+#### Update the plan
+
+Input
+
+```json
+{
+  "plan": [
+    { "step": "Inspect the failing test", "status": "completed" },
+    { "step": "Fix the bug", "status": "in_progress" },
+    { "step": "Run the suite", "status": "pending" }
+  ]
+}
+```
+
+Output
+
+```text
+Plan updated
+```
+
+### Special cases
+
+- More than one step may be `in_progress`, matching Codex's handler.
+
 ## view_image
 
 Reads a local image file and attaches it to the conversation so the model can see it.
@@ -107,3 +230,31 @@ PNG, JPEG, WebP and GIF are accepted, subject to the deployment's size and pixel
 image/png image, 96x96 px, 356 bytes
 </content>
 ```
+
+### Examples
+
+#### View an image
+
+Input
+
+```json
+{
+  "path": "/tmp/workspace/diagram.png"
+}
+```
+
+Output
+
+```text
+<path>/tmp/workspace/diagram.png</path>
+<type>image</type>
+<content>
+image/png image, 96x96 px, 356 bytes
+</content>
+```
+
+The model receives the image attachment with the reply.
+
+### Special cases
+
+- A missing file, non-image bytes, or an image over the deployment's limits is rejected with the reason.
