@@ -106,4 +106,64 @@ declare module '@deepseek-ai/dsh-client-ui-primitives' {
     label: string
     disabled?: boolean
   }): ReactNode
+
+  /** Localized copy the terminal card needs from its render site. */
+  export interface TerminalBlockLabels {
+    commandLine: (line: number) => string
+    signal: (signal: string) => string
+    exitCode: (code: number) => string
+    noExitCode: string
+    running: string
+    failed: string
+    done: string
+    copy: string
+    copied: string
+    noOutput: string
+    collapseAria: string
+    collapse: string
+    expandAria: (hidden: number) => string
+    expand: (hidden: number) => string
+  }
+
+  /** A shell command rendered as a terminal surface, with run-state dot and fold. */
+  export function TerminalBlock(props: {
+    command: string
+    cwd?: string
+    home?: string
+    output?: string
+    exitCode?: number | null
+    signal?: string
+    running?: boolean
+    background?: boolean
+    maxLines?: number
+    copyText?: string
+    runStateDot?: boolean
+    className?: string
+    labels: TerminalBlockLabels
+  }): ReactNode
+
+  /** A small capsule; tone selects the palette. */
+  export function Tag(props: {
+    tone?: 'outline' | 'solid' | 'neutral' | 'quiet' | 'success' | 'info' | 'warning' | 'danger'
+    className?: string
+    children?: ReactNode
+  }): ReactNode
+
+  /** Shimmer sweep over active (running) copy. */
+  export function TextShimmer(props: {
+    children?: ReactNode
+    active?: boolean
+    className?: string
+    contentClassName?: string
+  }): ReactNode
+
+  /** Icon stroke props shared by the outline icon set. */
+  export interface IconProps {
+    size?: number
+    className?: string
+  }
+
+  export function IconCodeOutlineRegular(props: IconProps): ReactNode
+  export function IconChevronDownOutlineRegular(props: IconProps): ReactNode
+  export function IconChevronUpOutlineRegular(props: IconProps): ReactNode
 }
