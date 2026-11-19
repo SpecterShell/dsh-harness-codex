@@ -185,13 +185,6 @@ declare module '@deepseek-ai/dsh-client-ui-primitives' {
     className?: string
   }): ReactNode
 
-  export function ImagePreview(props: {
-    src: string
-    alt: string
-    loadingLabel: string
-    failedLabel: string
-  }): ReactNode
-
   export function IconCodeOutlineRegular(props: IconProps): ReactNode
   export function IconChecklistOutlineRegular(props: IconProps): ReactNode
   export function IconChevronDownOutlineRegular(props: IconProps): ReactNode

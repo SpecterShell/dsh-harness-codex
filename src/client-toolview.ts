@@ -7,14 +7,20 @@
  * only show as raw text. These rows mirror the built-in Bash card: a
  * collapsible header with the command summary and an exit-code badge, and an
  * expanded TerminalBlock whose state dot reads green on a clean exit, red on
- * a failure, and keeps chasing while the process runs.
+ * a failure, and keeps chasing while the call is unsettled. A settled call
+ * never claims the process still runs — the record is historical, and a Host
+ * restart kills every process it names — so a surviving session id renders as
+ * a plain `session n` tag.
  * @module @spectershell/dsh-harness-codex/client-toolview
  */
 import { createElement as h, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { DiffBlock, IconChecklistOutlineRegular, IconChevronDownOutlineRegular, IconChevronUpOutlineRegular, IconCodeOutlineRegular, ImagePreview, Tag, TerminalBlock, TextShimmer } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { DiffBlockLabels, DiffHunk, TerminalBlockLabels } from '@deepseek-ai/dsh-client-ui-primitives'
-import { isRecord } from './guards.ts'
+import { DiffBlock, IconChecklistOutlineRegular, IconChevronDownOutlineRegular, IconChevronUpOutlineRegular, IconCodeOutlineRegular, Tag, TerminalBlock, TextShimmer } from '@deepseek-ai/dsh-client-ui-primitives'
+import type { DiffBlockLabels, TerminalBlockLabels } from '@deepseek-ai/dsh-client-ui-primitives'
+import {
+  execModel, formatDuration, planItems, resultDiffs, resultImage, patchSummary, singleResultText,
+} from './client-toolview-model.ts'
+import type { AttachmentRef, ExecModel, ToolBlock } from './client-toolview-model.ts'
 
 /** The locale namespace the client entry registers these dictionaries under. */
 const NS = '@spectershell/dsh-harness-codex'
@@ -22,52 +28,12 @@ const NS = '@spectershell/dsh-harness-codex'
 /** Row translator; the slot runtime binds it to the entry's locale namespace. */
 type Translate = (key: string, params?: Record<string, string | number>) => string
 
-/** Streamed-argument accessor the Tool blocks expose to row models. */
-interface ArgsAccessor {
-  has: (key: string) => boolean
-  complete: (key: string) => boolean
-  text: (key: string) => string | undefined
+interface ImageLoader {
+  (attachment: { attachmentId: string, mediaType: string, bytes: number, width: number, height: number, name?: string }): Promise<string>
+  peek?: (attachment: { attachmentId: string, mediaType: string, bytes: number, width: number, height: number, name?: string }) => string | null
 }
-
-/** A call still streaming its arguments or waiting on the tool. */
-interface StreamingBlock {
-  phase: 'preparing' | 'start'
-  callId: string
-  name: string
-  args: ArgsAccessor
-  argsRaw: string
-}
-
-/** A settled call and its result content. */
-interface ResultBlock {
-  kind: string
-  callId: string
-  call: { name: string, argsRaw: string } | null
-  args: ArgsAccessor
-  content: readonly unknown[]
-  isError: boolean
-  error?: { code?: string }
-  meta?: unknown
-  parentCallId?: string
-}
-
-type ToolBlock = StreamingBlock | ResultBlock
 
 /** The props the `tool.call.toolview` slot hands every keyed entry. */
-interface AttachmentRef {
-  attachmentId: string
-  mediaType: string
-  bytes: number
-  width: number
-  height: number
-  name?: string
-}
-
-interface ImageLoader {
-  (attachment: AttachmentRef): Promise<string>
-  peek?: (attachment: AttachmentRef) => string | null
-}
-
 interface ToolviewProps {
   toolName: string
   block: ToolBlock
@@ -95,138 +61,6 @@ export interface ToolviewContext {
   slots?: SlotsLike
 }
 
-/** Codex's settled-process marker (`ExecCommandToolOutput::response_text`). */
-const EXIT_PATTERN = /^Process exited with code (-?\d+)$/m
-/** Codex's still-running marker; the session id feeds later write_stdin calls. */
-const SESSION_PATTERN = /^Process running with session ID (\d+)$/m
-/** The header/body separator Codex always ends the header with. */
-const OUTPUT_PATTERN = /\nOutput:\n/
-
-/** The first line of a possibly multi-line text. */
-function firstLine(text: string): string {
-  const end = text.indexOf('\n')
-  return end < 0 ? text : text.slice(0, end)
-}
-
-/**
- * Read the exact single text block of a settled result.
- * @param block - settled Tool result.
- * @returns its text, or undefined for any other content layout.
- */
-function singleResultText(block: ResultBlock): string | undefined {
-  if (block.content.length !== 1) return undefined
-  const only = block.content[0]
-  return isRecord(only) && only.type === 'text' && typeof only.text === 'string' ? only.text : undefined
-}
-
-/** The parsed Codex process status: exit code or live session, plus the body. */
-interface ProcessStatus {
-  output: string
-  exitCode?: number
-  sessionId?: string
-}
-
-/**
- * Parse Codex's reply envelope without importing the Host's exec plugin.
- * @param text - the raw result text.
- * @returns the output body and any status the header carried.
- */
-function parseProcessStatus(text: string): ProcessStatus {
-  const exit = EXIT_PATTERN.exec(text)
-  const session = SESSION_PATTERN.exec(text)
-  const marker = OUTPUT_PATTERN.exec(text)
-  const output = marker === null ? text : text.slice(marker.index + marker[0].length)
-  return {
-    output,
-    ...exit?.[1] !== undefined ? { exitCode: Number(exit[1]) } : {},
-    ...session?.[1] !== undefined ? { sessionId: session[1] } : {},
-  }
-}
-
-/** Presentation states, matching the built-in row's vocabulary. */
-type ExecState = 'preparing' | 'running' | 'ok' | 'error' | 'stopped'
-
-/** Everything the row renders, derived once per block. */
-interface ExecModel {
-  state: ExecState
-  /** The terminal prompt text: the command, or the stdin bytes sent. */
-  command: string
-  /** True when the tool settled but the process outlived the wait. */
-  processRunning: boolean
-  output?: string
-  exitCode?: number
-  /** The collapsed row's one-line summary. */
-  summary: string
-}
-
-/**
- * Read the chars a write_stdin call sent; an empty write is a poll.
- * @param args - the call's streamed arguments.
- * @returns the raw bytes, or undefined when they have not streamed yet.
- */
-function stdinChars(args: ArgsAccessor): string | undefined {
-  return args.has('chars') ? args.text('chars') ?? '' : undefined
-}
-
-/**
- * Derive the row model from a frozen call slice.
- *
- * The tool settles a failing command as a completed call (`isError` stays
- * false: the exit status is result data), exactly like the built-in bash
- * tool, so a non-zero exit code turns the row red without the tool failing.
- * @param toolName - wire tool name (`exec_command` or `write_stdin`).
- * @param block - preparing call, dispatched call, or result from the snapshot.
- * @param pollLabel - localized label for a write_stdin poll.
- * @returns the row model.
- */
-function execModel(toolName: string, block: ToolBlock, pollLabel: string): ExecModel {
-  const raw = toolName === 'write_stdin' ? stdinChars(block.args) : block.args.text('cmd')
-  const command = raw ?? ''
-  const base = {
-    command,
-    summary: command === '' && toolName === 'write_stdin' ? pollLabel : firstLine(command),
-  }
-  if (!('kind' in block)) {
-    return {
-      ...base,
-      state: block.phase === 'preparing' ? 'preparing' : 'running',
-      processRunning: true,
-    }
-  }
-  if (block.error?.code === 'interrupted') {
-    return { ...base, state: 'stopped', processRunning: false }
-  }
-  if (block.isError) {
-    const output = singleResultText(block)
-    return {
-      ...base,
-      state: 'error',
-      processRunning: false,
-      ...output !== undefined ? { output, summary: firstLine(output) } : {},
-    }
-  }
-  const text = singleResultText(block)
-  if (text === undefined) {
-    return { ...base, state: 'ok', processRunning: false }
-  }
-  const status = parseProcessStatus(text)
-  if (status.exitCode !== undefined) {
-    return {
-      ...base,
-      state: status.exitCode === 0 ? 'ok' : 'error',
-      processRunning: false,
-      output: status.output,
-      exitCode: status.exitCode,
-    }
-  }
-  return {
-    ...base,
-    state: 'ok',
-    processRunning: status.sessionId !== undefined,
-    output: status.output,
-  }
-}
-
 /** Build the TerminalBlock copy from the row translator. */
 function terminalLabels(t: Translate): TerminalBlockLabels {
   return {
@@ -248,7 +82,7 @@ function terminalLabels(t: Translate): TerminalBlockLabels {
 }
 
 /** Visually hidden status for the color-only running sweep and error tone. */
-function stateStatus(state: ExecState, t: Translate): string | null {
+function stateStatus(state: ExecModel['state'], t: Translate): string | null {
   switch (state) {
     case 'preparing': return t('toolview.preparing')
     case 'running': return t('toolview.running')
@@ -266,6 +100,20 @@ function ExitCodeBadge(props: { label: string }): ReactNode {
     h('span', { key: 'dot', className: 'dsh-harness-codex-exec-badge-dot', 'aria-hidden': true }),
     props.label,
   ])
+}
+
+/** The browser timer functions, declared like `document` below (no DOM lib). */
+declare function setInterval(callback: () => void, ms: number): unknown
+declare function clearInterval(handle: unknown): void
+
+/** Live elapsed badge while the tool call itself is unsettled. */
+function Elapsed(props: { since: number }): ReactNode {
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(timer)
+  }, [])
+  return h(Tag, { tone: 'quiet', className: 'dsh-harness-codex-exec-badge' }, formatDuration(Math.max(0, (now - props.since) / 1000)))
 }
 
 /**
@@ -309,6 +157,9 @@ function ExecRow(props: ToolviewProps): ReactNode {
       ...model.output !== undefined ? { output: model.output } : {},
       ...model.exitCode !== undefined ? { exitCode: model.exitCode } : {},
       running: model.processRunning,
+      // A settled result without an exit code names a session that may or may
+      // not still exist; the state dot has nothing truthful to say there.
+      runStateDot: model.processRunning || model.exitCode !== undefined,
       maxLines: Infinity,
       labels,
       className: 'dsh-harness-codex-exec-terminal',
@@ -361,8 +212,14 @@ function ExecRow(props: ToolviewProps): ReactNode {
           }, model.summary)
           : null,
       ]),
-      model.processRunning && !running
-        ? h(Tag, { key: 'session', tone: 'info', className: 'dsh-harness-codex-exec-badge' }, labels.running)
+      running && typeof block.time === 'number'
+        ? h(Elapsed, { key: 'elapsed', since: block.time })
+        : null,
+      !running && model.wallSeconds !== undefined
+        ? h(Tag, { key: 'wall', tone: 'quiet', className: 'dsh-harness-codex-exec-badge' }, formatDuration(model.wallSeconds))
+        : null,
+      !running && model.sessionId !== undefined
+        ? h(Tag, { key: 'session', tone: 'quiet', className: 'dsh-harness-codex-exec-badge' }, t('toolview.session', { id: model.sessionId }))
         : null,
       exitLabel !== null ? h(ExitCodeBadge, { key: 'exit', label: exitLabel }) : null,
     ]),
@@ -403,26 +260,6 @@ function CardRow(props: {
   ])
 }
 
-interface PlanItem { step: string, status: 'pending' | 'in_progress' | 'completed' }
-
-/** Parse the `plan` argument from the raw call arguments, as the built-in todo card does. */
-function planItems(block: ToolBlock): PlanItem[] {
-  const raw = 'argsRaw' in block ? block.argsRaw : block.call?.argsRaw
-  if (raw === undefined) return []
-  try {
-    const outer: unknown = JSON.parse(raw)
-    const value: unknown = isRecord(outer) ? outer.plan : undefined
-    if (!Array.isArray(value)) return []
-    return value.flatMap(item => isRecord(item)
-      && typeof item.step === 'string'
-      && (item.status === 'pending' || item.status === 'in_progress' || item.status === 'completed')
-      ? [{ step: item.step, status: item.status }]
-      : [])
-  } catch {
-    return []
-  }
-}
-
 /** Render a Codex update_plan call from its own arguments. */
 function PlanRow({ block, useDisclosure, t }: ToolviewProps): ReactNode {
   const plan = planItems(block)
@@ -438,19 +275,6 @@ function PlanRow({ block, useDisclosure, t }: ToolviewProps): ReactNode {
   return h(CardRow, { icon: h(IconChecklistOutlineRegular, {}), title: 'update_plan', summary, body, useDisclosure })
 }
 
-/** Locate the durable image reference emitted in the settled result content. */
-function resultImage(block: ToolBlock): AttachmentRef | undefined {
-  if (!('kind' in block) || block.isError) return undefined
-  for (const part of block.content) {
-    if (!isRecord(part) || part.type !== 'image' || !isRecord(part.attachment)) continue
-    const ref = part.attachment
-    if (typeof ref.attachmentId === 'string' && typeof ref.mediaType === 'string'
-      && typeof ref.bytes === 'number' && typeof ref.width === 'number' && typeof ref.height === 'number') {
-      return { attachmentId: ref.attachmentId, mediaType: ref.mediaType, bytes: ref.bytes, width: ref.width, height: ref.height, ...(typeof ref.name === 'string' ? { name: ref.name } : {}) }
-    }
-  }
-}
-
 /** Preview one attachment through the same loader supplied to built-in toolviews. */
 function LoadedImage({ attachment, loadImage, t }: { attachment: AttachmentRef, loadImage: ImageLoader, t: Translate }): ReactNode {
   const [src, setSrc] = useState<string | null>(() => loadImage.peek?.(attachment) ?? null)
@@ -461,7 +285,7 @@ function LoadedImage({ attachment, loadImage, t }: { attachment: AttachmentRef, 
   }, [attachment, loadImage])
   return src === null
     ? h('div', { className: 'dsh-harness-codex-image-loading' }, t('toolview.image.loading'))
-    : h(ImagePreview, { src, alt: attachment.name ?? t('toolview.image.alt'), loadingLabel: t('toolview.image.loading'), failedLabel: t('toolview.image.failed') })
+    : h('img', { className: 'dsh-harness-codex-image-preview', src, alt: attachment.name ?? t('toolview.image.alt') })
 }
 
 declare const navigator: { clipboard?: { writeText: (text: string) => Promise<void> } } | undefined
@@ -498,17 +322,6 @@ function ViewImageRow({ block, loadImage, useDisclosure, t }: ToolviewProps): Re
   return h(CardRow, { icon: h(IconCodeOutlineRegular, { size: 14 }), title: 'view_image', summary, body, useDisclosure })
 }
 
-/** Narrow apply_patch presentation metadata to the DiffBlock contract. */
-function resultDiffs(block: ToolBlock): DiffHunk[] {
-  if (!('kind' in block) || block.isError || !isRecord(block.meta) || !Array.isArray(block.meta.diffs)) return []
-  return block.meta.diffs.flatMap(diff => isRecord(diff)
-    && typeof diff.path === 'string'
-    && (diff.oldText === null || typeof diff.oldText === 'string')
-    && typeof diff.newText === 'string'
-    ? [{ path: diff.path, oldText: diff.oldText, newText: diff.newText }]
-    : [])
-}
-
 function diffLabels(t: Translate): DiffBlockLabels {
   return {
     copy: t('toolview.copy'), copied: t('toolview.copied'), collapseAria: t('toolview.collapseAria'),
@@ -517,14 +330,28 @@ function diffLabels(t: Translate): DiffBlockLabels {
   }
 }
 
-/** Shadow the built-in apply_patch key so free-form calls can carry a badge. */
+/**
+ * Shadow the built-in apply_patch key so free-form calls can carry a badge.
+ *
+ * The diff card appears when the result metadata records applied hunks. Calls
+ * recorded before presentation metadata existed (or reporting a stopped
+ * patch) keep the built-in row's other expand path: the result text itself.
+ */
 function ApplyPatchRow({ block, useDisclosure, t }: ToolviewProps): ReactNode {
   const diffs = resultDiffs(block)
   const badge = block.callId.includes('|ctc_')
     ? h(Tag, { tone: 'quiet', className: 'dsh-harness-codex-freeform' }, t('toolview.freeForm'))
     : undefined
-  const body = diffs.length === 0 ? undefined : h(DiffBlock, { diffs, labels: diffLabels(t), maxLines: 9 })
-  return h(CardRow, { icon: h(IconCodeOutlineRegular, { size: 14 }), title: 'apply_patch', summary: '', badge, body, useDisclosure })
+  const text = 'kind' in block ? singleResultText(block) : undefined
+  const body = diffs.length > 0
+    ? h(DiffBlock, { diffs, labels: diffLabels(t), maxLines: 9 })
+    : text !== undefined
+      ? h('div', {
+        className: 'dsh-harness-codex-patch-output',
+        ...('kind' in block) && block.isError ? { 'data-error': true } : {},
+      }, text)
+      : undefined
+  return h(CardRow, { icon: h(IconCodeOutlineRegular, { size: 14 }), title: 'apply_patch', summary: patchSummary(block, diffs), badge, body, useDisclosure })
 }
 
 /**
@@ -569,6 +396,8 @@ const STYLE = `
 .dsh-harness-codex-card-title { flex: none; font-size: var(--dsh-content-font-size-secondary, 13px); }
 .dsh-harness-codex-card-summary { min-width: 0; margin-left: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--dsw-alias-label-secondary); font-size: var(--dsh-content-font-size-secondary, 13px); }
 .dsh-harness-codex-card-body { margin: 4px 0 4px 22px; }
+.dsh-harness-codex-patch-output { max-height: 150px; padding: 12px 16px; overflow-y: auto; border: 0.5px solid var(--dsw-alias-border-l1); border-radius: var(--dsw-radius-lg); background: var(--dsw-alias-markdown-code-block); font: var(--dsw-font-markdown-code-block-small); white-space: pre-wrap; word-break: break-word; color: var(--dsw-alias-label-secondary); }
+.dsh-harness-codex-patch-output[data-error] { color: var(--dsw-alias-state-error-primary); }
 .dsh-harness-codex-plan { display: flex; flex-direction: column; gap: 7px; margin: 0; padding: 10px 12px; list-style: none; border: 0.5px solid var(--dsw-alias-border-l1); border-radius: var(--dsw-radius-lg); }
 .dsh-harness-codex-plan-item { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .dsh-harness-codex-plan-mark { width: 6px; height: 6px; flex: none; border-radius: 50%; background: var(--dsw-alias-label-caption); }
@@ -576,6 +405,7 @@ const STYLE = `
 .dsh-harness-codex-plan-item[data-status=in_progress] .dsh-harness-codex-plan-mark { background: var(--dsw-alias-state-info-primary); }
 .dsh-harness-codex-plan-step { flex: 1; min-width: 0; color: var(--dsw-alias-label-secondary); }
 .dsh-harness-codex-image { display: flex; max-width: 360px; flex-direction: column; gap: 6px; }
+.dsh-harness-codex-image-preview { max-width: 100%; height: auto; border: 0.5px solid var(--dsw-alias-border-l1); border-radius: var(--dsw-radius-lg); }
 .dsh-harness-codex-image-path-row { display: flex; align-items: center; gap: 8px; }
 .dsh-harness-codex-image-path { min-width: 0; flex: 1; }
 .dsh-harness-codex-image-path, .dsh-harness-codex-image-meta, .dsh-harness-codex-image-loading { color: var(--dsw-alias-label-secondary); font-size: var(--dsh-content-font-size-secondary, 13px); overflow-wrap: anywhere; }

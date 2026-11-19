@@ -64,6 +64,7 @@
   "toolview.expandAria": "Show {n} hidden lines",
   "toolview.expand": "{n} more lines",
   "toolview.poll": "Poll session",
+  "toolview.session": "session {id}",
   "toolview.input": "Input",
   "toolview.output": "Output",
   "toolview.plan.done": "{done}/{total} completed",

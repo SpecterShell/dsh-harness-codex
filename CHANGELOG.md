@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2026-11-19
+
+### Added
+
+- `exec_command` and `write_stdin` rows show the wall time the reply header records, and a live elapsed badge while the call is still running.
+
+### Fixed
+
+- Settled `exec_command` and `write_stdin` rows no longer claim the process is still running. The reply text is a historical record and a Harness restart kills every process it names, so a surviving session identifier now renders as a plain `session n` tag and the terminal card shows no liveness dot for it.
+- `apply_patch` rows stay expandable when the result carries no diff metadata, as with calls recorded by older versions or stopped patches. The row falls back to the reply text, as the built-in card did.
+- `view_image` no longer crashes on a successful read. The preview component it used is not part of the web module table, and the row now renders a plain image element.
+
 ## [0.3.1] - 2026-11-19
 
 ### Added
