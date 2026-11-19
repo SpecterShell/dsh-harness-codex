@@ -4,6 +4,10 @@
 
 Long conversations are compacted so work can continue within the model's context window. This preset replaces DSH's own engine with a local one that follows Codex's rule: the model receives a summary, then the newest original user messages that fit in a fixed budget.
 
+![Compaction](figures/compaction.svg)
+
+The example shows five user messages U1 to U5 and three assistant steps A1 to A3 with tool results R1 to R3. After compaction, the context keeps the system and developer messages, the user messages that fit the budget, and one summary. The assistant steps and tool results are gone.
+
 ## How it works
 
 Compaction runs before a step when the estimated context reaches 90% of the model's window, and on demand through `/compact`.
@@ -21,10 +25,6 @@ Tool results, assistant steps and everything else in the range are dropped. An e
 Automatic compaction that would not shrink the context is skipped, and it is skipped again until new content arrives. A failed or cancelled summary leaves the context untouched, and a failed session save is reported without recording a false close. Manual compaction with `/compact` always proceeds.
 
 The original events stay in the session log. Compaction replaces the surface the next request is built from, and the log keeps every original message, the summary and the replacement records.
-
-## Codex parity and remaining differences
-
-The trigger ratio, the 20,000-token budget, the truncation marker and the compaction prompt match Codex at commit [ca21fe65](https://github.com/openai/codex/tree/ca21fe65d18a9b6326759fb4263c65dfbb645aa5). The differences that remain are listed in [differences.md](differences.md): Codex can also compact at a separate turn-end threshold or in the background, and it rebuilds the leading context from the session configuration, while this preset keeps the DSH system and developer messages.
 
 ## Settings
 

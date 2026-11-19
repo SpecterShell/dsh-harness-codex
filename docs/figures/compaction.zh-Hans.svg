@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="104" viewBox="0 0 900 104" role="img" aria-labelledby="title desc">
+  <title id="title">压缩</title>
+  <desc id="desc">上图：按时间排列的上下文，先是系统和开发者消息，然后是用户消息 U1 到 U5 和 Agent 步骤 A1 到 A3 及工具结果 R1 到 R3，从左到右由旧到新。下图：上下文变成保留的用户消息 U3、U4、U5，后面跟一条摘要。工具结果和 Agent 步骤都被移除，旧的摘要会被替换而不是保留。虚线框标出被移除的范围和摘要。</desc>
+  <rect width="100%" height="100%" fill="white"/>
+  <rect x="6" y="8" width="62" height="29" rx="0" fill="#CD9600"/><text x="37" y="27.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">系统</text>
+  <rect x="69" y="8" width="82" height="29" rx="0" fill="#CD9600"/><text x="110" y="27.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">开发者</text>
+  <rect x="152" y="8" width="48" height="29" rx="0" fill="#F8766D"/><text x="176" y="27.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">U1</text>
+  <rect x="201" y="8" width="46" height="29" rx="0" fill="#00BE67"/><text x="224" y="27.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">A1</text>
+  <rect x="248" y="8" width="40" height="29" rx="0" fill="#C77CFF"/><text x="268" y="27.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">R1</text>
+  <rect x="289" y="8" width="48" height="29" rx="0" fill="#F8766D"/><text x="313" y="27.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">U2</text>
+  <rect x="338" y="8" width="46" height="29" rx="0" fill="#00BE67"/><text x="361" y="27.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">A2</text>
+  <rect x="385" y="8" width="40" height="29" rx="0" fill="#C77CFF"/><text x="405" y="27.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">R2</text>
+  <rect x="426" y="8" width="48" height="29" rx="0" fill="#F8766D"/><text x="450" y="27.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">U3</text>
+  <rect x="475" y="8" width="46" height="29" rx="0" fill="#00BE67"/><text x="498" y="27.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">A3</text>
+  <rect x="522" y="8" width="40" height="29" rx="0" fill="#C77CFF"/><text x="542" y="27.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">R3</text>
+  <rect x="563" y="8" width="48" height="29" rx="0" fill="#F8766D"/><text x="587" y="27.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">U4</text>
+  <rect x="612" y="8" width="48" height="29" rx="0" fill="#F8766D"/><text x="636" y="27.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">U5</text>
+  <rect x="6" y="62" width="62" height="29" rx="0" fill="#CD9600"/><text x="37" y="81.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">系统</text>
+  <rect x="69" y="62" width="82" height="29" rx="0" fill="#CD9600"/><text x="110" y="81.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">开发者</text>
+  <rect x="152" y="62" width="48" height="29" rx="0" fill="#F8766D"/><text x="176" y="81.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">U3</text>
+  <rect x="201" y="62" width="48" height="29" rx="0" fill="#F8766D"/><text x="225" y="81.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">U4</text>
+  <rect x="250" y="62" width="48" height="29" rx="0" fill="#F8766D"/><text x="274" y="81.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">U5</text>
+  <rect x="299" y="62" width="110" height="29" rx="0" fill="#00BFC4"/><text x="354" y="81.5" font-family="system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#172033">摘要</text>
+  <rect x="152" y="4" width="509" height="37" rx="2" fill="none" stroke="#7a7a7a" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <rect x="298" y="58" width="112" height="37" rx="2" fill="none" stroke="#7a7a7a" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <line x1="37" y1="41" x2="37" y2="58" stroke="#7a7a7a" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <line x1="110" y1="41" x2="110" y2="58" stroke="#7a7a7a" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <line x1="450" y1="41" x2="176" y2="58" stroke="#7a7a7a" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <line x1="587" y1="41" x2="225" y2="58" stroke="#7a7a7a" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <line x1="636" y1="41" x2="274" y2="58" stroke="#7a7a7a" stroke-width="1.5" stroke-dasharray="4 4"/>
+</svg>
