@@ -65,5 +65,13 @@
   "toolview.expand": "{n} more lines",
   "toolview.poll": "Poll session",
   "toolview.input": "Input",
-  "toolview.output": "Output"
+  "toolview.output": "Output",
+  "toolview.plan.done": "{done}/{total} completed",
+  "toolview.plan.inProgress": "In progress",
+  "toolview.plan.pending": "Pending",
+  "toolview.plan.completed": "Completed",
+  "toolview.image.loading": "Loading image…",
+  "toolview.image.failed": "Could not load image",
+  "toolview.image.alt": "Tool image",
+  "toolview.freeForm": "free-form"
 }

@@ -163,7 +163,37 @@ declare module '@deepseek-ai/dsh-client-ui-primitives' {
     className?: string
   }
 
+  export interface DiffHunk {
+    path: string
+    oldText: string | null
+    newText: string
+  }
+
+  export interface DiffBlockLabels {
+    copy: string
+    copied: string
+    collapseAria: string
+    expandAria: (hidden: number) => string
+    collapse: string
+    expand: (hidden: number) => string
+  }
+
+  export function DiffBlock(props: {
+    diffs: DiffHunk[]
+    labels: DiffBlockLabels
+    maxLines?: number
+    className?: string
+  }): ReactNode
+
+  export function ImagePreview(props: {
+    src: string
+    alt: string
+    loadingLabel: string
+    failedLabel: string
+  }): ReactNode
+
   export function IconCodeOutlineRegular(props: IconProps): ReactNode
+  export function IconChecklistOutlineRegular(props: IconProps): ReactNode
   export function IconChevronDownOutlineRegular(props: IconProps): ReactNode
   export function IconChevronUpOutlineRegular(props: IconProps): ReactNode
 }
