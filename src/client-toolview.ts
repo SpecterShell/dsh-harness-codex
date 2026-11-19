@@ -10,10 +10,10 @@
  * a failure, and keeps chasing while the process runs.
  * @module @spectershell/dsh-harness-codex/client-toolview
  */
-import { createElement as h, useMemo } from 'react'
+import { createElement as h, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { IconChevronDownOutlineRegular, IconChevronUpOutlineRegular, IconCodeOutlineRegular, Tag, TerminalBlock, TextShimmer } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { TerminalBlockLabels } from '@deepseek-ai/dsh-client-ui-primitives'
+import { DiffBlock, IconChecklistOutlineRegular, IconChevronDownOutlineRegular, IconChevronUpOutlineRegular, IconCodeOutlineRegular, ImagePreview, Tag, TerminalBlock, TextShimmer } from '@deepseek-ai/dsh-client-ui-primitives'
+import type { DiffBlockLabels, DiffHunk, TerminalBlockLabels } from '@deepseek-ai/dsh-client-ui-primitives'
 import { isRecord } from './guards.ts'
 
 /** The locale namespace the client entry registers these dictionaries under. */
@@ -54,11 +54,26 @@ interface ResultBlock {
 type ToolBlock = StreamingBlock | ResultBlock
 
 /** The props the `tool.call.toolview` slot hands every keyed entry. */
+interface AttachmentRef {
+  attachmentId: string
+  mediaType: string
+  bytes: number
+  width: number
+  height: number
+  name?: string
+}
+
+interface ImageLoader {
+  (attachment: AttachmentRef): Promise<string>
+  peek?: (attachment: AttachmentRef) => string | null
+}
+
 interface ToolviewProps {
   toolName: string
   block: ToolBlock
   cwd?: string
   home?: string
+  loadImage?: ImageLoader
   useDisclosure: () => { expanded: boolean, toggle: () => void }
   t: Translate
 }
@@ -70,6 +85,7 @@ interface SlotsLike {
     name: string
     key: string
     locale: string
+    priority?: number
   }, factory: (props: ToolviewProps) => ReactNode) => () => void
 }
 
@@ -354,6 +370,163 @@ function ExecRow(props: ToolviewProps): ReactNode {
   ])
 }
 
+/** A compact expandable row shared by the Codex-only cards. */
+function CardRow(props: {
+  icon: ReactNode
+  title: string
+  summary: string
+  badge?: ReactNode
+  body?: ReactNode
+  useDisclosure: ToolviewProps['useDisclosure']
+}): ReactNode {
+  const { expanded, toggle } = props.useDisclosure()
+  const open = expanded && props.body !== undefined
+  return h('div', { className: 'dsh-harness-codex-card' }, [
+    h('div', {
+      key: 'head',
+      className: 'dsh-harness-codex-card-head',
+      ...(props.body !== undefined ? {
+        role: 'button', tabIndex: 0, 'aria-expanded': open, onClick: toggle,
+        onKeyDown: (event: { key: string, preventDefault: () => void }) => {
+          if (event.key !== 'Enter' && event.key !== ' ') return
+          event.preventDefault()
+          toggle()
+        },
+      } : {}),
+    }, [
+      h('span', { key: 'icon', className: 'dsh-harness-codex-card-icon' }, open ? h(IconChevronUpOutlineRegular, {}) : props.icon),
+      h('span', { key: 'title', className: 'dsh-harness-codex-card-title' }, props.title),
+      props.summary === '' ? null : h('span', { key: 'summary', className: 'dsh-harness-codex-card-summary' }, props.summary),
+      props.badge ?? null,
+    ]),
+    open ? h('div', { key: 'body', className: 'dsh-harness-codex-card-body' }, props.body) : null,
+  ])
+}
+
+interface PlanItem { step: string, status: 'pending' | 'in_progress' | 'completed' }
+
+/** Parse the `plan` argument from the raw call arguments, as the built-in todo card does. */
+function planItems(block: ToolBlock): PlanItem[] {
+  const raw = 'argsRaw' in block ? block.argsRaw : block.call?.argsRaw
+  if (raw === undefined) return []
+  try {
+    const outer: unknown = JSON.parse(raw)
+    const value: unknown = isRecord(outer) ? outer.plan : undefined
+    if (!Array.isArray(value)) return []
+    return value.flatMap(item => isRecord(item)
+      && typeof item.step === 'string'
+      && (item.status === 'pending' || item.status === 'in_progress' || item.status === 'completed')
+      ? [{ step: item.step, status: item.status }]
+      : [])
+  } catch {
+    return []
+  }
+}
+
+/** Render a Codex update_plan call from its own arguments. */
+function PlanRow({ block, useDisclosure, t }: ToolviewProps): ReactNode {
+  const plan = planItems(block)
+  const done = plan.filter(item => item.status === 'completed').length
+  const active = plan.find(item => item.status === 'in_progress')?.step
+  const summary = `${t('toolview.plan.done', { done, total: plan.length })}${active === undefined ? '' : ` · ${active}`}`
+  const body = plan.length === 0 ? undefined : h('ol', { className: 'dsh-harness-codex-plan' }, plan.map((item, index) =>
+    h('li', { key: `${index}:${item.step}`, className: 'dsh-harness-codex-plan-item', 'data-status': item.status }, [
+      h('span', { key: 'mark', className: 'dsh-harness-codex-plan-mark', 'aria-hidden': true }),
+      h('span', { key: 'step', className: 'dsh-harness-codex-plan-step' }, item.step),
+      h(Tag, { key: 'status', tone: item.status === 'completed' ? 'success' : item.status === 'in_progress' ? 'info' : 'quiet' }, t(`toolview.plan.${item.status === 'in_progress' ? 'inProgress' : item.status}`)),
+    ])))
+  return h(CardRow, { icon: h(IconChecklistOutlineRegular, {}), title: 'update_plan', summary, body, useDisclosure })
+}
+
+/** Locate the durable image reference emitted in the settled result content. */
+function resultImage(block: ToolBlock): AttachmentRef | undefined {
+  if (!('kind' in block) || block.isError) return undefined
+  for (const part of block.content) {
+    if (!isRecord(part) || part.type !== 'image' || !isRecord(part.attachment)) continue
+    const ref = part.attachment
+    if (typeof ref.attachmentId === 'string' && typeof ref.mediaType === 'string'
+      && typeof ref.bytes === 'number' && typeof ref.width === 'number' && typeof ref.height === 'number') {
+      return { attachmentId: ref.attachmentId, mediaType: ref.mediaType, bytes: ref.bytes, width: ref.width, height: ref.height, ...(typeof ref.name === 'string' ? { name: ref.name } : {}) }
+    }
+  }
+}
+
+/** Preview one attachment through the same loader supplied to built-in toolviews. */
+function LoadedImage({ attachment, loadImage, t }: { attachment: AttachmentRef, loadImage: ImageLoader, t: Translate }): ReactNode {
+  const [src, setSrc] = useState<string | null>(() => loadImage.peek?.(attachment) ?? null)
+  useEffect(() => {
+    let live = true
+    loadImage(attachment).then(value => { if (live) setSrc(value) }).catch(() => { if (live) setSrc('') })
+    return () => { live = false }
+  }, [attachment, loadImage])
+  return src === null
+    ? h('div', { className: 'dsh-harness-codex-image-loading' }, t('toolview.image.loading'))
+    : h(ImagePreview, { src, alt: attachment.name ?? t('toolview.image.alt'), loadingLabel: t('toolview.image.loading'), failedLabel: t('toolview.image.failed') })
+}
+
+declare const navigator: { clipboard?: { writeText: (text: string) => Promise<void> } } | undefined
+
+/** Small path copy action, kept inside the expanded image metadata. */
+function CopyPath({ path, t }: { path: string, t: Translate }): ReactNode {
+  const [copied, setCopied] = useState(false)
+  return h('button', {
+    type: 'button',
+    className: 'dsh-harness-codex-image-copy',
+    onClick: (event: { stopPropagation: () => void }) => {
+      event.stopPropagation()
+      if (typeof navigator === 'undefined' || navigator.clipboard === undefined) return
+      navigator.clipboard.writeText(path).then(() => setCopied(true)).catch(() => {})
+    },
+  }, copied ? t('toolview.copied') : t('toolview.copy'))
+}
+
+/** Render view_image with the attachment loader already carried by ToolCallTree. */
+function ViewImageRow({ block, loadImage, useDisclosure, t }: ToolviewProps): ReactNode {
+  const attachment = resultImage(block)
+  const path = block.args.text('path') ?? ''
+  const summary = attachment === undefined ? path : `${path} · ${attachment.width}×${attachment.height} · ${attachment.bytes} B`
+  const body = attachment !== undefined && loadImage !== undefined
+    ? h('div', { className: 'dsh-harness-codex-image' }, [
+      h(LoadedImage, { key: 'preview', attachment, loadImage, t }),
+      h('div', { key: 'pathrow', className: 'dsh-harness-codex-image-path-row' }, [
+        h('div', { key: 'path', className: 'dsh-harness-codex-image-path' }, path),
+        h(CopyPath, { key: 'copy', path, t }),
+      ]),
+      h('div', { key: 'meta', className: 'dsh-harness-codex-image-meta' }, `${attachment.width}×${attachment.height} · ${attachment.bytes} B`),
+    ])
+    : undefined
+  return h(CardRow, { icon: h(IconCodeOutlineRegular, { size: 14 }), title: 'view_image', summary, body, useDisclosure })
+}
+
+/** Narrow apply_patch presentation metadata to the DiffBlock contract. */
+function resultDiffs(block: ToolBlock): DiffHunk[] {
+  if (!('kind' in block) || block.isError || !isRecord(block.meta) || !Array.isArray(block.meta.diffs)) return []
+  return block.meta.diffs.flatMap(diff => isRecord(diff)
+    && typeof diff.path === 'string'
+    && (diff.oldText === null || typeof diff.oldText === 'string')
+    && typeof diff.newText === 'string'
+    ? [{ path: diff.path, oldText: diff.oldText, newText: diff.newText }]
+    : [])
+}
+
+function diffLabels(t: Translate): DiffBlockLabels {
+  return {
+    copy: t('toolview.copy'), copied: t('toolview.copied'), collapseAria: t('toolview.collapseAria'),
+    expandAria: hidden => t('toolview.expandAria', { n: hidden }), collapse: t('toolview.collapse'),
+    expand: hidden => t('toolview.expand', { n: hidden }),
+  }
+}
+
+/** Shadow the built-in apply_patch key so free-form calls can carry a badge. */
+function ApplyPatchRow({ block, useDisclosure, t }: ToolviewProps): ReactNode {
+  const diffs = resultDiffs(block)
+  const badge = block.callId.includes('|ctc_')
+    ? h(Tag, { tone: 'quiet', className: 'dsh-harness-codex-freeform' }, t('toolview.freeForm'))
+    : undefined
+  const body = diffs.length === 0 ? undefined : h(DiffBlock, { diffs, labels: diffLabels(t), maxLines: 9 })
+  return h(CardRow, { icon: h(IconCodeOutlineRegular, { size: 14 }), title: 'apply_patch', summary: '', badge, body, useDisclosure })
+}
+
 /**
  * The row chrome, adapted from the built-in BashRow sheet with the interactive
  * bits (inspect button, background-command styling) these rows do not use
@@ -389,6 +562,25 @@ const STYLE = `
 .dsh-harness-codex-exec-badge-dot { flex: none; width: 4px; height: 4px; border-radius: 50%; corner-shape: round; background: var(--dsw-alias-state-error-primary); }
 .dsh-harness-codex-exec-body { display: flex; flex-direction: column; }
 .dsh-harness-codex-exec-visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.dsh-harness-codex-card { display: flex; flex-direction: column; }
+.dsh-harness-codex-card-head { display: flex; align-items: center; min-width: 0; min-height: 24px; color: var(--dsw-alias-label-tertiary); }
+.dsh-harness-codex-card-head[role=button] { cursor: pointer; }
+.dsh-harness-codex-card-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; margin-right: 6px; }
+.dsh-harness-codex-card-title { flex: none; font-size: var(--dsh-content-font-size-secondary, 13px); }
+.dsh-harness-codex-card-summary { min-width: 0; margin-left: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--dsw-alias-label-secondary); font-size: var(--dsh-content-font-size-secondary, 13px); }
+.dsh-harness-codex-card-body { margin: 4px 0 4px 22px; }
+.dsh-harness-codex-plan { display: flex; flex-direction: column; gap: 7px; margin: 0; padding: 10px 12px; list-style: none; border: 0.5px solid var(--dsw-alias-border-l1); border-radius: var(--dsw-radius-lg); }
+.dsh-harness-codex-plan-item { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.dsh-harness-codex-plan-mark { width: 6px; height: 6px; flex: none; border-radius: 50%; background: var(--dsw-alias-label-caption); }
+.dsh-harness-codex-plan-item[data-status=completed] .dsh-harness-codex-plan-mark { background: var(--dsw-alias-state-success-primary); }
+.dsh-harness-codex-plan-item[data-status=in_progress] .dsh-harness-codex-plan-mark { background: var(--dsw-alias-state-info-primary); }
+.dsh-harness-codex-plan-step { flex: 1; min-width: 0; color: var(--dsw-alias-label-secondary); }
+.dsh-harness-codex-image { display: flex; max-width: 360px; flex-direction: column; gap: 6px; }
+.dsh-harness-codex-image-path-row { display: flex; align-items: center; gap: 8px; }
+.dsh-harness-codex-image-path { min-width: 0; flex: 1; }
+.dsh-harness-codex-image-path, .dsh-harness-codex-image-meta, .dsh-harness-codex-image-loading { color: var(--dsw-alias-label-secondary); font-size: var(--dsh-content-font-size-secondary, 13px); overflow-wrap: anywhere; }
+.dsh-harness-codex-image-copy { flex: none; border: 0; padding: 2px 6px; border-radius: var(--dsw-radius-sm); color: var(--dsw-alias-label-secondary); background: transparent; cursor: pointer; }
+.dsh-harness-codex-freeform { flex: none; margin-left: 8px; }
 `
 
 const STYLE_TAG_ID = '@spectershell/dsh-harness-codex/exec-toolview.css'
@@ -427,5 +619,10 @@ export function apply(ctx: ToolviewContext): void {
   ctx.effect(() => slots.inject('tool.call.toolview', function* () {
     yield slots.register({ name: 'tool.call.toolview', key: 'exec_command', locale: NS }, ExecRow)
     yield slots.register({ name: 'tool.call.toolview', key: 'write_stdin', locale: NS }, ExecRow)
+    yield slots.register({ name: 'tool.call.toolview', key: 'update_plan', locale: NS }, PlanRow)
+    yield slots.register({ name: 'tool.call.toolview', key: 'view_image', locale: NS }, ViewImageRow)
+    // Keyed entries at the same priority collide. A lower priority shadows the
+    // built-in registration because keyed dispatch renders the lowest entry.
+    yield slots.register({ name: 'tool.call.toolview', key: 'apply_patch', locale: NS, priority: -1 }, ApplyPatchRow)
   }), '@spectershell/dsh-harness-codex: exec toolviews')
 }

@@ -65,5 +65,13 @@
   "toolview.expand": "还有 {n} 行",
   "toolview.poll": "轮询会话",
   "toolview.input": "输入",
-  "toolview.output": "输出"
+  "toolview.output": "输出",
+  "toolview.plan.done": "已完成 {done}/{total}",
+  "toolview.plan.inProgress": "进行中",
+  "toolview.plan.pending": "待处理",
+  "toolview.plan.completed": "已完成",
+  "toolview.image.loading": "正在加载图片…",
+  "toolview.image.failed": "图片加载失败",
+  "toolview.image.alt": "工具返回的图片",
+  "toolview.freeForm": "自由格式"
 }
