@@ -64,6 +64,7 @@
   "toolview.expandAria": "显示 {n} 行隐藏内容",
   "toolview.expand": "还有 {n} 行",
   "toolview.poll": "轮询会话",
+  "toolview.session": "会话 {id}",
   "toolview.input": "输入",
   "toolview.output": "输出",
   "toolview.plan.done": "已完成 {done}/{total}",
