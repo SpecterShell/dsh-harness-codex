@@ -2,6 +2,20 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-11-19
+
+### Added
+
+- `exec_command` and `write_stdin` render in the web UI like the built-in `bash` tool: state from the parsed reply, an exit code badge for failures, and terminal-style output.
+- `apply_patch` edits render through the built-in file-mutation diff card, with a free-form tag when the call went through the free-form bridge.
+- `update_plan` renders a todo-style card with done/total counts and step statuses.
+- `view_image` renders the built-in image preview card.
+- A compaction doc in English and Chinese, with a figure.
+
+### Changed
+
+- The reset control on the settings page's boolean rows is now an undo icon to the left of the toggle instead of text after it.
+
 ## [0.3.0] - 2026-11-19
 
 ### Changed
@@ -65,6 +79,7 @@ First public release, under the Apache-2.0 license.
 - A settings form on the plugin's detail page and in DSH settings, backed by a live `codexSettings` service, for the free-form rules, the tools kept visible and the project instruction budget.
 - CI on Linux and macOS, CodeQL, OpenSSF Scorecard and Dependabot. Releases carry a build-provenance attestation and stage on npm with provenance.
 
+[0.3.1]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.3.1
 [0.3.0]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.3.0
 [0.2.1]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.2.1
 [0.2.0]: https://github.com/SpecterShell/dsh-harness-codex/releases/tag/v0.2.0
