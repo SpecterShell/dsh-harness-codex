@@ -88,6 +88,7 @@ Codex 向 GPT 模型提供 `apply_patch` 的方式是带语法约束的 free-for
 - [工具](docs/tools.zh-Hans.md)
 - [配置](docs/configuration.zh-Hans.md)
 - [Free-form 补丁](docs/freeform.zh-Hans.md)
+- [压缩](docs/compaction.zh-Hans.md)
 - [与 Codex 的差异](docs/differences.zh-Hans.md)
 - [基准测试](docs/benchmark.zh-Hans.md)
 - [更新日志](CHANGELOG.md)

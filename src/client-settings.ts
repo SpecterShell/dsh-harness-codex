@@ -146,8 +146,10 @@ const STYLE = `
 .dsh-harness-codex-settings-hint { margin: 4px 0 0; font-size: 12px; line-height: 1.5; color: var(--dsw-alias-label-tertiary); }
 .dsh-harness-codex-settings-note { margin: 12px 0 0; font-size: 12px; line-height: 1.5; color: var(--dsw-alias-label-tertiary); }
 .dsh-harness-codex-settings-badge { font-size: 12px; line-height: 1.5; color: var(--dsw-alias-label-tertiary); }
-.dsh-harness-codex-settings-reset { padding: 0; border: 0; background: none; font-size: 12px; line-height: 1.5; color: var(--dsw-alias-label-secondary); cursor: pointer; }
+.dsh-harness-codex-settings-reset { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; padding: 0; border: 0; background: none; color: var(--dsw-alias-label-secondary); cursor: pointer; }
+.dsh-harness-codex-settings-reset:hover { color: var(--dsw-alias-label-primary); }
 .dsh-harness-codex-settings-reset:disabled { cursor: default; opacity: 0.5; }
+.dsh-harness-codex-settings-reset svg { display: block; }
 .dsh-harness-codex-settings-rules { display: flex; flex-direction: column; gap: 6px; margin: 8px 0 0; padding: 0; list-style: none; }
 .dsh-harness-codex-settings-rule { display: flex; align-items: center; gap: 8px; min-height: 30px; padding: 0 8px; border: 0.5px solid var(--dsw-alias-border-l2); border-radius: var(--dsw-radius-md); background: var(--dsw-alias-bg-layer-1); }
 .dsh-harness-codex-settings-rule-text { flex: 1; min-width: 0; font-size: 13px; line-height: 1.5; color: var(--dsw-alias-label-primary); overflow-wrap: anywhere; }
@@ -180,6 +182,22 @@ const ACTION_CLASS = 'dsh-harness-codex-settings-action'
 const REMOVE_CLASS = 'dsh-harness-codex-settings-remove'
 const NOTICE_CLASS = 'dsh-harness-codex-settings-notice'
 const ERROR_CLASS = 'dsh-harness-codex-settings-error'
+
+/** A counterclockwise arrow, drawn with the DSH icon stroke weight. */
+const RESET_ICON = h('svg', {
+  width: 14,
+  height: 14,
+  viewBox: '0 0 14 14',
+  fill: 'none',
+  stroke: 'currentColor',
+  'stroke-width': 1.5,
+  'stroke-linecap': 'round',
+  'stroke-linejoin': 'round',
+  'aria-hidden': true,
+}, [
+  h('path', { key: 'arc', d: 'M2.5 5.5a4.75 4.75 0 1 0 1.4-3.3L2.5 3.6' }),
+  h('path', { key: 'tip', d: 'M2.5 1.2v2.4h2.4' }),
+])
 
 /** One model advertised by a configured provider. */
 interface CatalogModel {
@@ -337,6 +355,17 @@ function ChoiceField(props: {
   return h('div', { key: props.id, className: FIELD_CLASS }, [
     h('div', { key: 'head', className: HEAD_CLASS }, [
       h('span', { key: 'label', className: LABEL_CLASS }, props.label),
+      props.overridden
+        ? h('button', {
+          key: 'reset',
+          type: 'button',
+          className: 'dsh-harness-codex-settings-reset',
+          disabled: props.disabled,
+          onClick: props.onReset,
+          'aria-label': props.resetLabel,
+          title: props.resetLabel,
+        }, RESET_ICON)
+        : null,
       h(SegmentedControl, {
         key: 'control',
         id: props.id,
@@ -350,15 +379,6 @@ function ChoiceField(props: {
         onChange: (next: string) => props.onEdit(next),
       }),
       props.overridden ? h('span', { key: 'badge', className: 'dsh-harness-codex-settings-badge' }, props.overriddenLabel) : null,
-      props.overridden
-        ? h('button', {
-          key: 'reset',
-          type: 'button',
-          className: 'dsh-harness-codex-settings-reset',
-          disabled: props.disabled,
-          onClick: props.onReset,
-        }, props.resetLabel)
-        : null,
     ]),
     h('p', { key: 'hint', className: HINT_CLASS }, props.hint),
   ])

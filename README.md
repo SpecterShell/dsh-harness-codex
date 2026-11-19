@@ -88,6 +88,7 @@ The plugin's settings form, rendered in the DSH settings and on the plugin's det
 - [Tools](docs/tools.md)
 - [Configuration](docs/configuration.md)
 - [Free-form patches](docs/freeform.md)
+- [Compaction](docs/compaction.md)
 - [Differences from Codex](docs/differences.md)
 - [Benchmark](docs/benchmark.md)
 - [Changelog](CHANGELOG.md)

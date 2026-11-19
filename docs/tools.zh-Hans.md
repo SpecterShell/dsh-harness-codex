@@ -20,18 +20,59 @@
 
 每次调用都启动一个新进程：`cd`、导出的变量和 Shell 函数不会带入下一次调用。输出按增量收集，同一会话的多次回复不会重复也不会丢失内容。每个进程的输出上限是 1 MiB，每次回复按 token 预算以 Codex 的格式截断，保留开头和结尾。
 
-回复的格式如下：
+### 示例
+
+#### 快速命令
+
+在等待时间内结束的命令返回退出码和输出。
+
+输入
+
+```json
+{
+  "cmd": "git status --short"
+}
+```
+
+输出
 
 ```text
-Chunk ID: 3f2a91
-Wall time: 10.0000 seconds
+Wall time: 0.1200 seconds
+Process exited with code 0
+Original token count: 3
+Output:
+ M src/app.ts
+```
+
+#### 命令仍在运行
+
+超过等待时间仍在运行的命令返回会话标识符，会话在后台继续。
+
+输入
+
+```json
+{
+  "cmd": "for i in 1 2 3; do echo tick $i; sleep 4; done",
+  "yield_time_ms": 250
+}
+```
+
+输出
+
+```text
+Wall time: 0.2500 seconds
 Process running with session ID 15893
-Original token count: 42
+Original token count: 6
 Output:
 tick 1
 ```
 
 命令结束后，回复带有 `Process exited with code N`，不再有会话标识符。
+
+### 特殊情况
+
+- 两次调用各自独立，一次调用里的 `cd` 或导出变量对另一次不可见。
+- 第一次等待期间取消调用会终止进程。取消 `write_stdin` 的轮询则让进程继续运行。
 
 ## write_stdin
 
@@ -47,6 +88,62 @@ tick 1
 会话属于启动它的 Agent，会话标识符不能在其他 Agent 中使用。非 TTY 会话的 stdin 是关闭的：写入普通文本会失败，单独发送控制字符 `Ctrl-C` 会结束进程。已结束的会话保留最终输出供最后一次轮询，之后被移除。一个 Agent 最多持有 64 个会话；超过上限时最旧的会话被终止，Agent 结束或预设卸载时，它留下的所有会话都会被终止。
 
 回复的格式与 `exec_command` 相同，输出部分是该会话自上次回复以来产生的内容。
+
+### 示例
+
+#### 轮询直到退出
+
+以上一个示例的会话为例，用空的 `chars` 轮询会返回剩余的输出，然后是退出码。
+
+输入
+
+```json
+{
+  "session_id": 15893,
+  "chars": "",
+  "yield_time_ms": 10000
+}
+```
+
+输出
+
+```text
+Wall time: 8.0000 seconds
+Process exited with code 0
+Original token count: 12
+Output:
+tick 2
+tick 3
+```
+
+#### 向 TTY 会话写入
+
+以 `tty: true` 启动的会话接受输入。非 TTY 会话会拒绝普通输入，报 `stdin is closed`。
+
+输入
+
+```json
+{
+  "session_id": 31020,
+  "chars": "codex\n",
+  "yield_time_ms": 5000
+}
+```
+
+输出
+
+```text
+Wall time: 0.3500 seconds
+Process exited with code 0
+Original token count: 11
+Output:
+codex hello codex
+```
+
+### 特殊情况
+
+- 属于其他 Agent 的会话标识符会被拒绝，进程已被回收的标识符同样被拒绝。
+- `chars` 整体为 `Ctrl-C` 时会结束非 TTY 会话，而不是报错。
 
 ## apply_patch
 
@@ -90,6 +187,32 @@ M src/app.ts
 
 回复是 `Plan updated`。计划存储在 DSH 的待办投影中，所以会显示在待办面板里，也会随会话重放保留。
 
+### 示例
+
+#### 更新计划
+
+输入
+
+```json
+{
+  "plan": [
+    { "step": "检查失败的测试", "status": "completed" },
+    { "step": "修复缺陷", "status": "in_progress" },
+    { "step": "运行测试", "status": "pending" }
+  ]
+}
+```
+
+输出
+
+```text
+Plan updated
+```
+
+### 特殊情况
+
+- 允许同时有多个步骤处于 `in_progress`，与 Codex 的处理一致。
+
 ## view_image
 
 读取本地图片文件并附加到对话中，让模型查看。
@@ -107,3 +230,31 @@ M src/app.ts
 image/png image, 96x96 px, 356 bytes
 </content>
 ```
+
+### 示例
+
+#### 查看图片
+
+输入
+
+```json
+{
+  "path": "/tmp/workspace/diagram.png"
+}
+```
+
+输出
+
+```text
+<path>/tmp/workspace/diagram.png</path>
+<type>image</type>
+<content>
+image/png image, 96x96 px, 356 bytes
+</content>
+```
+
+模型会随回复收到这张图片附件。
+
+### 特殊情况
+
+- 文件不存在、内容不是图片，或图片超出部署限制时，会以相应原因拒绝。
