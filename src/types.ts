@@ -85,6 +85,8 @@ export type ToolContentBlock =
 export interface ToolOutput<Value> {
   readonly schema: JsonSchema
   render(args: unknown, value: Value): readonly ToolContentBlock[]
+  /** Presentation metadata the Web UI reads for rich tool cards. */
+  presentationMeta?(args: unknown, value: Value): unknown
 }
 
 /** One model-facing tool definition, narrowed to the members we register. */

@@ -12,7 +12,7 @@
  */
 import { isRecord } from '../guards.ts'
 import { runApplyPatch } from './execute.ts'
-import { PATCH_OUTPUT_SCHEMA, renderPatch } from './output.ts'
+import { PATCH_OUTPUT_SCHEMA, patchPresentationMeta, renderPatch } from './output.ts'
 import { createPatchSandbox } from './sandbox.ts'
 import type { PatchToolValue } from './output.js'
 import type { JsonSchema, PatchContext, ToolExecution } from '../types.js'
@@ -63,6 +63,7 @@ export function apply(ctx: PatchContext): void {
     output: {
       schema: PATCH_OUTPUT_SCHEMA,
       render: (_args: unknown, value: PatchToolValue) => [{ type: 'text', text: renderPatch(value) }],
+      presentationMeta: (_args: unknown, value: PatchToolValue) => patchPresentationMeta(value),
     },
     async execute(args: ApplyPatchArgs, exec: ToolExecution): Promise<PatchToolValue> {
       if (!isRecord(args) || typeof args.input !== 'string') {

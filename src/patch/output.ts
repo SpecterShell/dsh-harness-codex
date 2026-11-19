@@ -7,6 +7,7 @@
  * without changing how a stopped patch is displayed.
  * @module @spectershell/dsh-harness-codex/patch/output
  */
+import { structuredPatch } from 'diff'
 import type { JsonSchema } from '../types.js'
 
 /** One applied change basis; paths use the backend's process spelling. */
@@ -86,6 +87,57 @@ export const PATCH_OUTPUT_SCHEMA: JsonSchema = {
 /** Whether every operation finished; a cancelled call never did. */
 export function patchStopped(value: PatchToolValue): boolean {
   return value.cancelled || value.operations.some(operation => operation.status !== 'completed')
+}
+
+/**
+ * Compute the per-hunk diffs between two file states, as the native tool's
+ * `computeHunkDiffs` does for its diff card.
+ * @param path - the file path shown in the card.
+ * @param before - the file text before the patch.
+ * @param after - the file text after the patch.
+ * @returns one diff entry per hunk, with shared context lines in both sides.
+ */
+function computeHunkDiffs(path: string, before: string, after: string): { path: string; oldText: string | null; newText: string }[] {
+  const patch = structuredPatch('', '', before, after, undefined, undefined, { context: 3 })
+  return patch.hunks.map(hunk => {
+    const oldLines: string[] = []
+    const newLines: string[] = []
+    for (const line of hunk.lines) {
+      if (line.startsWith('\\')) continue
+      const text = line.slice(1)
+      if (line.startsWith('-')) oldLines.push(text)
+      else if (line.startsWith('+')) newLines.push(text)
+      else {
+        oldLines.push(text)
+        newLines.push(text)
+      }
+    }
+    return {
+      path,
+      oldText: oldLines.length > 0 ? oldLines.join('\n') : null,
+      newText: newLines.join('\n'),
+    }
+  })
+}
+
+/**
+ * The presentation metadata the Web diff card reads, in the same shape as the
+ * native patch tool's `patchPresentationMeta`.
+ * @param value - canonical result.
+ * @returns hunk diffs for every completed operation, plus the stopped flag.
+ */
+export function patchPresentationMeta(value: PatchToolValue): unknown {
+  return {
+    diffs: value.operations.flatMap(operation => {
+      if (operation.status !== 'completed') return []
+      return (operation.changes ?? []).flatMap(({ path, before, after }) => {
+        if (before === null) return []
+        if (after === null) return [{ path, oldText: before, newText: '' }]
+        return computeHunkDiffs(path, before, after)
+      })
+    }).map(({ path, oldText, newText }) => ({ path, oldText, newText })),
+    stopped: patchStopped(value),
+  }
 }
 
 /**
