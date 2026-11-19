@@ -1,0 +1,6 @@
+- Project: `dsh-harness-codex`, a DSH (DeepSeek Harness?) plugin bundle that adapts OpenAI Codex CLI as a harness; repo at github.com/SpecterShell/dsh-harness-codex.
+- Codex tool result envelope formats: `Process exited with code N\nOutput:\n...` and `Process running with session ID n\nOutput:\n...`; the toolview parses these to derive ok/error/running state.
+- Build/test workflow: `pnpm build` → `lib/client.js`, `pnpm typecheck`, `pnpm test` (81 pass / 1 skip baseline).
+- Live verification of toolviews is done by refreshing the DSH GUI in an eval profile and checking rendered DOM (e.g. `dsh-harness-codex-exec-root` rows with `data-state` ok/error).
+- Known cosmetic limitation: `write_stdin` header shows first line of `chars` verbatim, so control bytes like `\x03` render raw.
+- Next release containing this work will be 0.3.1.
