@@ -1,0 +1,3 @@
+- In dsh tool cards, structured arguments (arrays/objects) must be read from `block.argsRaw` via JSON.parse, not `args.text(...)`, which returns nothing for non-string fields.
+- The `apply_patch` free-form tag should only render when the call id carries `ctc_`; JSON calls must show no tag.
+- The tool-presentation handoff doc for zcode lives at `/home/haodong/.dsh/bot/workspace/docs/dsh-tool-presentation-handoff-2026-11-19.md` and should be kept updated with lessons learned.

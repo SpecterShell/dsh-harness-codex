@@ -1,0 +1,1 @@
+- [Extracted project memory](FACTS.md) — durable facts learned from prior interactive sessions
